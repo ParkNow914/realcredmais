@@ -2062,66 +2062,142 @@ class EducationalContent {
             excerpt: "Estratégias práticas para quitar suas dívidas e recuperar o controle financeiro.",
             category: "Educação Financeira",
             readTime: "5 min",
-            image: "https://images.unsplash.com/photo-1519125323398-675f0ddb6308?auto=format&fit=crop&w=600&q=80" // dívidas
+            image: "assets/images/sairdasdividas.png"
         },
         {
             id: 2,
             title: "Empréstimo Consignado vs Crédito Pessoal: Qual Escolher?",
-            excerpt: "Compare as modalidades e descubra qual é a melhor opção para seu perfil.",
-            category: "Empréstimos",
-            readTime: "7 min",
-            image: "https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?auto=format&fit=crop&w=600&q=80" // comparação
+            excerpt: "Entenda as diferenças e escolha a melhor opção para o seu perfil.",
+            category: "Crédito",
+            readTime: "4 min",
+            image: "assets/images/creditopessoalvsconsignado.png"
         },
         {
             id: 3,
             title: "Saque Aniversário FGTS: Vale a Pena em 2025?",
-            excerpt: "Entenda as vantagens e desvantagens da modalidade atualizada.",
+            excerpt: "Tudo o que você precisa saber sobre o Saque Aniversário do FGTS.",
             category: "FGTS",
-            readTime: "4 min",
-            image: "https://images.unsplash.com/photo-1508385082359-f48b1c1b1f57?auto=format&fit=crop&w=600&q=80" // FGTS
+            readTime: "3 min",
+            image: "assets/images/fgtsvaleapena.png"
         }
     ];
     
     static renderBlogSection() {
-        const blogSection = document.createElement('section');
-        blogSection.className = 'blog-section';
-        blogSection.innerHTML = `
-            <div class="container">
-                <div class="section-header">
-                    <h2 class="section-title">Educação Financeira</h2>
-                    <p class="section-subtitle">Aprenda a tomar melhores decisões financeiras</p>
-                </div>
-                <div class="blog-grid">
-                    ${this.articles.map(article => `
-                        <article class="blog-card">
-                            <div class="blog-image">
-                                <img src="${article.image}" alt="${article.title}" loading="lazy">
-                                <span class="blog-category">${article.category}</span>
-                            </div>
-                            <div class="blog-content">
-                                <h3>${article.title}</h3>
-                                <p>${article.excerpt}</p>
-                                <div class="blog-meta">
-                                    <span class="read-time">📖 ${article.readTime}</span>
-                                    <button class="read-more-btn" onclick="educationalContent.openArticle(${article.id})">
-                                        Ler mais
-                                    </button>
-                                </div>
-                            </div>
-                        </article>
-                    `).join('')}
-                </div>
-            </div>
+        console.log('Iniciando renderização da seção de blog...');
+        
+        // Cria o container principal
+        const container = document.createElement('div');
+        container.className = 'container';
+        
+        // Cria o header da seção
+        const sectionHeader = document.createElement('div');
+        sectionHeader.className = 'section-header';
+        sectionHeader.innerHTML = `
+            <h2 class="section-title">Educação Financeira</h2>
+            <p class="section-subtitle">Aprenda a tomar melhores decisões financeiras</p>
         `;
         
-        return blogSection;
+        // Cria o grid de cards
+        const blogGrid = document.createElement('div');
+        blogGrid.className = 'blog-grid';
+        
+        // Adiciona os artigos ao grid
+        this.articles.forEach(article => {
+            const articleCard = document.createElement('article');
+            articleCard.className = 'blog-card';
+            
+            // Cria a imagem do artigo
+            const blogImage = document.createElement('div');
+            blogImage.className = 'blog-image';
+            
+            const img = document.createElement('img');
+            img.src = article.image;
+            img.alt = article.title;
+            img.loading = 'lazy';
+            
+            // Adiciona manipuladores de evento para a imagem
+            img.onload = function() {
+                console.log('Imagem carregada com sucesso:', this.src);
+                this.style.opacity = '1';
+            };
+            
+            img.onerror = function() {
+                console.error('Erro ao carregar a imagem:', this.src);
+                this.src = 'assets/images/happy_people1.jpg';
+                this.style.opacity = '1';
+            };
+            
+            // Cria a categoria
+            const categorySpan = document.createElement('span');
+            categorySpan.className = 'blog-category';
+            categorySpan.textContent = article.category;
+            
+            // Adiciona a imagem e a categoria ao container de imagem
+            blogImage.appendChild(img);
+            blogImage.appendChild(categorySpan);
+            
+            // Cria o conteúdo do card
+            const blogContent = document.createElement('div');
+            blogContent.className = 'blog-content';
+            
+            const title = document.createElement('h3');
+            title.textContent = article.title;
+            
+            const excerpt = document.createElement('p');
+            excerpt.textContent = article.excerpt;
+            
+            // Cria o rodapé do card
+            const blogMeta = document.createElement('div');
+            blogMeta.className = 'blog-meta';
+            
+            const readTime = document.createElement('span');
+            readTime.className = 'read-time';
+            readTime.innerHTML = `📖 ${article.readTime}`;
+            
+            const readMoreBtn = document.createElement('button');
+            readMoreBtn.className = 'read-more-btn';
+            readMoreBtn.textContent = 'Ler mais';
+            readMoreBtn.onclick = () => this.openArticle(article.id);
+            
+            // Monta a estrutura do card
+            blogMeta.appendChild(readTime);
+            blogMeta.appendChild(readMoreBtn);
+            
+            blogContent.appendChild(title);
+            blogContent.appendChild(excerpt);
+            blogContent.appendChild(blogMeta);
+            
+            articleCard.appendChild(blogImage);
+            articleCard.appendChild(blogContent);
+            
+            // Adiciona o card ao grid
+            blogGrid.appendChild(articleCard);
+        });
+        
+        // Monta a estrutura final
+        container.appendChild(sectionHeader);
+        container.appendChild(blogGrid);
+        
+        console.log('Seção de blog renderizada com sucesso!');
+        return container;
     }
     
     static openArticle(articleId) {
         const article = this.articles.find(a => a.id === articleId);
         if (article) {
-            // Simular abertura de artigo (em implementação real, seria uma página separada)
-            alert(`Artigo: ${article.title}\n\nEm breve, este artigo estará disponível em nosso blog completo!`);
+            // Mapear IDs de artigo para URLs de páginas
+            const articleUrls = {
+                1: 'artigos/como-sair-das-dividas-2025.html',
+                2: 'artigos/emprestimo-consignado-vs-credito-pessoal.html',
+                3: 'artigos/saque-aniversario-fgts-2025.html'
+            };
+            
+            const articleUrl = articleUrls[articleId];
+            if (articleUrl) {
+                window.location.href = articleUrl;
+            } else {
+                console.error('URL do artigo não encontrada para o ID:', articleId);
+            }
         }
     }
 }
@@ -2195,7 +2271,119 @@ class PerformanceOptimizer {
 }
 
 // Inicialização dos novos recursos
+// Função para inicializar a seção de educação financeira
+function initEducationFinanceira() {
+    console.log('Iniciando inicialização da seção de educação financeira...');
+    
+    // Inicializar Educational Content
+    window.educationalContent = EducationalContent;
+    
+    // Renderizar a seção de blog
+    const blogSection = document.getElementById('educacao-financeira');
+    if (!blogSection) {
+        console.log('Seção de educação financeira não encontrada na página atual');
+        return; // Sair da função se o elemento não existir
+    }
+    
+    // Verificar se o elemento está visível
+    if (blogSection.offsetParent === null) {
+        console.log('Seção de educação financeira encontrada, mas não está visível');
+        return;
+    }
+    
+    console.log('Elemento da seção encontrado, preparando para renderizar...');
+    
+    // Limpa o conteúdo existente e adiciona um indicador de carregamento
+    blogSection.innerHTML = '<div class="container"><p>Carregando conteúdo de educação financeira...</p></div>';
+    blogSection.className = 'blog-section';
+    blogSection.style.opacity = '1';
+    blogSection.style.visibility = 'visible';
+    
+    // Pequeno atraso para garantir que o DOM foi atualizado
+    setTimeout(() => {
+        try {
+            console.log('Renderizando o conteúdo da seção...');
+            
+            // Renderiza o conteúdo
+            const content = EducationalContent.renderBlogSection();
+            blogSection.innerHTML = '';
+            blogSection.appendChild(content);
+            
+            console.log('Conteúdo renderizado, verificando imagens...');
+            
+            // Verifica se as imagens foram carregadas corretamente
+            const images = blogSection.querySelectorAll('img');
+            console.log(`Total de imagens encontradas: ${images.length}`);
+            
+            if (images.length === 0) {
+                console.warn('Nenhuma imagem encontrada na seção!');
+            }
+            
+            images.forEach((img, index) => {
+                console.log(`Imagem ${index + 1}:`);
+                console.log(`- SRC: ${img.src}`);
+                console.log(`- Alt: ${img.alt}`);
+                console.log(`- Natural Width: ${img.naturalWidth}px`);
+                console.log(`- Natural Height: ${img.naturalHeight}px`);
+                console.log(`- Complete: ${img.complete}`);
+                
+                // Força o redesenho das imagens
+                img.style.opacity = '0';
+                img.style.transition = 'opacity 0.5s ease';
+                
+                if (img.complete) {
+                    if (img.naturalWidth === 0) {
+                        console.error(`Erro: A imagem não foi carregada corretamente: ${img.src}`);
+                        img.src = 'assets/images/happy_people1.jpg';
+                    } else {
+                        console.log(`Imagem ${index + 1} já estava carregada!`);
+                        img.style.opacity = '1';
+                    }
+                } else {
+                    img.onload = function() {
+                        console.log(`Imagem carregada com sucesso: ${this.src}`);
+                        this.style.opacity = '1';
+                    };
+                    img.onerror = function() {
+                        console.error(`Erro ao carregar a imagem: ${this.src}`);
+                        this.src = 'assets/images/happy_people1.jpg';
+                        this.style.opacity = '1';
+                    };
+                }
+                
+                // Força o carregamento da imagem
+                const src = img.src;
+                img.src = '';
+                img.src = src;
+            });
+            
+            console.log('Seção de educação financeira renderizada com sucesso!');
+            
+        } catch (error) {
+            console.error('Erro ao renderizar a seção de educação financeira:', error);
+            blogSection.innerHTML = `
+                <div class="container">
+                    <div class="section-header">
+                        <h2 class="section-title">Educação Financeira</h2>
+                        <p class="section-subtitle">Ocorreu um erro ao carregar o conteúdo. Por favor, atualize a página.</p>
+                        <p>${error.message}</p>
+                    </div>
+                </div>
+            `;
+        }
+    }, 100);
+}
+
+// Função para verificar se um elemento existe e está visível
+function isElementVisible(selector) {
+    const el = document.querySelector(selector);
+    return el && (el.offsetWidth > 0 || el.offsetHeight > 0 || el.getClientRects().length > 0);
+}
+
+// Inicialização quando o DOM estiver pronto
 document.addEventListener('DOMContentLoaded', function() {
+    console.log('DOM completamente carregado, inicializando componentes...');
+    
     // Inicializar FAQ Manager
     window.faqManager = new FAQManager();
     
@@ -2208,15 +2396,21 @@ document.addEventListener('DOMContentLoaded', function() {
     // Inicializar Performance Optimizer
     window.performanceOptimizer = new PerformanceOptimizer();
     
-    // Inicializar Educational Content
-    window.educationalContent = EducationalContent;
-    
-    // Adicionar seção do blog ao final da página
-    const blogSection = EducationalContent.renderBlogSection();
-    const footer = document.querySelector('footer');
-    if (footer) {
-        footer.parentNode.insertBefore(blogSection, footer);
+    // Função para inicializar a seção de educação financeira quando disponível
+    function initEducationSection() {
+        const blogSection = document.getElementById('educacao-financeira');
+        if (blogSection) {
+            console.log('Seção de educação financeira encontrada, inicializando...');
+            initEducationFinanceira();
+        } else {
+            console.log('Seção de educação financeira ainda não disponível, tentando novamente...');
+            // Tenta novamente após um curto atraso
+            setTimeout(initEducationSection, 500);
+        }
     }
+    
+    // Inicia a verificação da seção de educação financeira
+    initEducationSection();
 });
 
 // Hotjar Integration (simulação)
