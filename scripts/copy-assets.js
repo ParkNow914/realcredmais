@@ -19,6 +19,9 @@ async function copyAssets() {
     await fse.ensureDir('public/artigos');
     await fse.copy('artigos', 'public/artigos', { overwrite: true });
     
+    // Copiar service worker para a pasta de build
+    await fse.copy('sw.js', 'public/sw.js', { overwrite: true });
+    
     console.log('✅ Assets copiados com sucesso!');
   } catch (err) {
     console.error('❌ Erro ao copiar assets:', err);

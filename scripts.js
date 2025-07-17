@@ -1928,8 +1928,8 @@ class PushNotificationManager {
         if (this.permission === 'granted') {
             const notification = new Notification('RealCred + | Não perca esta oportunidade!', {
                 body: 'Complete sua simulação e descubra as melhores condições de empréstimo para você.',
-                icon: 'assets/images/realcred_logo.png',
-                badge: 'assets/images/realcred_logo.png'
+                icon: '/assets/images/realcred_logo.png',
+                badge: '/assets/images/realcred_logo.png'
             });
             
             notification.onclick = () => {
@@ -2062,7 +2062,7 @@ class EducationalContent {
             excerpt: "Estratégias práticas para quitar suas dívidas e recuperar o controle financeiro.",
             category: "Educação Financeira",
             readTime: "5 min",
-            image: "assets/images/sairdasdividas.png"
+            image: "/assets/images/sairdasdividas.png"
         },
         {
             id: 2,
@@ -2070,7 +2070,7 @@ class EducationalContent {
             excerpt: "Entenda as diferenças e escolha a melhor opção para o seu perfil.",
             category: "Crédito",
             readTime: "4 min",
-            image: "assets/images/creditopessoalvsconsignado.png"
+            image: "/assets/images/creditopessoalvsconsignado.png"
         },
         {
             id: 3,
@@ -2078,7 +2078,7 @@ class EducationalContent {
             excerpt: "Tudo o que você precisa saber sobre o Saque Aniversário do FGTS.",
             category: "FGTS",
             readTime: "3 min",
-            image: "assets/images/fgtsvaleapena.png"
+            image: "/assets/images/fgtsvaleapena.png"
         }
     ];
     
@@ -2123,7 +2123,7 @@ class EducationalContent {
             
             img.onerror = function() {
                 console.error('Erro ao carregar a imagem:', this.src);
-                this.src = 'assets/images/happy_people1.jpg';
+                this.src = '/assets/images/happy_people1.jpg';
                 this.style.opacity = '1';
             };
             
@@ -2334,7 +2334,7 @@ function initEducationFinanceira() {
                 if (img.complete) {
                     if (img.naturalWidth === 0) {
                         console.error(`Erro: A imagem não foi carregada corretamente: ${img.src}`);
-                        img.src = 'assets/images/happy_people1.jpg';
+                        img.src = '/assets/images/happy_people1.jpg';
                     } else {
                         console.log(`Imagem ${index + 1} já estava carregada!`);
                         img.style.opacity = '1';
@@ -2346,7 +2346,7 @@ function initEducationFinanceira() {
                     };
                     img.onerror = function() {
                         console.error(`Erro ao carregar a imagem: ${this.src}`);
-                        this.src = 'assets/images/happy_people1.jpg';
+                        this.src = '/assets/images/happy_people1.jpg';
                         this.style.opacity = '1';
                     };
                 }
@@ -2838,7 +2838,7 @@ function closeModal(modalId) {
     }
 }
 
-function safeBlogImage(src, fallback = 'assets/images/realcred_logo.png') {
+function safeBlogImage(src, fallback = '/assets/images/realcred_logo.png') {
     const img = new Image();
     img.src = src;
     img.onerror = function() {
