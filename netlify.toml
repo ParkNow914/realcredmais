@@ -1,0 +1,73 @@
+[build]
+  command = "npm run build"
+  publish = "dist"
+  functions = "functions"
+
+[build.environment]
+  NODE_VERSION = "18"
+  NPM_FLAGS = "--production=false"
+
+# Configurações de segurança
+[build.processing]
+  skip_processing = false
+
+# Configuração de redirecionamentos
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
+
+# Configuração de headers de segurança
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Frame-Options = "DENY"
+    X-Content-Type-Options = "nosniff"
+    X-XSS-Protection = "1; mode=block"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+    Content-Security-Policy = "default-src 'self'; script-src 'self' 'unsafe-inline' https://www.googletagmanager.com https://www.google-analytics.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' data: https:; font-src 'self' https://fonts.gstatic.com; connect-src 'self' https://www.google-analytics.com;"
+    Permissions-Policy = "geolocation=(), microphone=(), camera=()"
+
+# Configuração de segurança para varreduras de segredos
+[context.production]
+  command = "npm run build:production"
+  environment = { 
+    NODE_ENV = "production",
+    SECRETS_SCAN_ENABLED = "true",
+    SECRETS_SCAN_OMIT_PATHS = "node_modules/**,.netlify/**,.git/**,.github/**,.vscode/**,.husky/**,*.log,*.lock,package-lock.json,yarn.lock,.env.example,README.md,CONTRIBUTING.md",
+    SECRETS_SCAN_OMIT_KEYS = "NODE_ENV,PORT,LOG_LEVEL,LOG_FORMAT,EMAIL_SERVICE,ALLOWED_ORIGINS,ALLOWED_METHODS,ALLOWED_HEADERS"
+  }
+
+# Configuração para branches de desenvolvimento
+[context.deploy-preview]
+  command = "npm run build"
+  environment = { 
+    NODE_ENV = "development",
+    SECRETS_SCAN_ENABLED = "false"
+  }
+
+# Configuração para branches de feature
+[context.branch-deploy]
+  command = "npm run build"
+  environment = { 
+    NODE_ENV = "development",
+    SECRETS_SCAN_ENABLED = "false"
+  }
+
+# Configuração para ambiente de desenvolvimento local
+[dev]
+  command = "npm run dev"
+  targetPort = 3000
+  publish = "dist"
+  autoLaunch = false
+  framework = "#custom"
+
+# Configuração de build específica para o Netlify
+[build.lifecycle]
+  preBuild = "npm install"
+  postBuild = "npm run postbuild"
+
+# Configuração de funções serverless (se aplicável)
+[functions]
+  node_bundler = "esbuild"
+  external_node_modules = ["sharp"]

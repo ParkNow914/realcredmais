@@ -10,8 +10,7 @@
 .env.*
 !.env.example
 
-# Arquivos de configuração sensível
-netlify.toml
+# Arquivos de configuração do Netlify
 .netlify/
 *.env.production
 *.env.development
