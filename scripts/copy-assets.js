@@ -1,24 +1,30 @@
-const fs = require('fs-extra');
-const path = require('path');
+import { promises as fs } from 'fs';
+import path from 'path';
+import { fileURLToPath } from 'url';
+import fse from 'fs-extra';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 async function copyAssets() {
   try {
     // Criar diretório de destino se não existir
-    await fs.ensureDir('public/assets');
-    await fs.ensureDir('public/assets/images');
+    await fse.ensureDir('public/assets');
+    await fse.ensureDir('public/assets/images');
     
     // Copiar assets estáticos
-    await fs.copy('assets', 'public/assets', { overwrite: true });
+    await fse.copy('assets', 'public/assets', { overwrite: true });
     
     // Copiar artigos para a pasta de build
-    await fs.ensureDir('public/artigos');
-    await fs.copy('artigos', 'public/artigos', { overwrite: true });
+    await fse.ensureDir('public/artigos');
+    await fse.copy('artigos', 'public/artigos', { overwrite: true });
     
-    console.log('Assets copiados com sucesso!');
+    console.log('✅ Assets copiados com sucesso!');
   } catch (err) {
-    console.error('Erro ao copiar assets:', err);
+    console.error('❌ Erro ao copiar assets:', err);
     process.exit(1);
   }
 }
 
-copyAssets();
+// Executa a função principal
+copyAssets().catch(console.error);

@@ -20,7 +20,7 @@
     "format": "prettier --write \"**/*.{js,jsx,json,html,css}\"",
     "test": "jest",
     "prepare": "[ -f .git/hooks/pre-commit ] || npx husky install",
-    "build:production": "npm install --production=false && npm run build",
+    "build:production": "npm install --include=dev && npm run build",
     "postinstall": "npx husky install"
   },
   "dependencies": {
