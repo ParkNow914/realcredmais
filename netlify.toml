@@ -31,28 +31,25 @@
 # Configuração de segurança para varreduras de segredos
 [context.production]
   command = "npm run build:production"
-  environment = { 
-    NODE_ENV = "production",
-    SECRETS_SCAN_ENABLED = "true",
-    SECRETS_SCAN_OMIT_PATHS = "node_modules/**,.netlify/**,.git/**,.github/**,.vscode/**,.husky/**,*.log,*.lock,package-lock.json,yarn.lock,.env.example,README.md,CONTRIBUTING.md",
+  [context.production.environment]
+    NODE_ENV = "production"
+    SECRETS_SCAN_ENABLED = "true"
+    SECRETS_SCAN_OMIT_PATHS = "node_modules/**,.netlify/**,.git/**,.github/**,.vscode/**,.husky/**,*.log,*.lock,package-lock.json,yarn.lock,.env.example,README.md,CONTRIBUTING.md"
     SECRETS_SCAN_OMIT_KEYS = "NODE_ENV,PORT,LOG_LEVEL,LOG_FORMAT,EMAIL_SERVICE,ALLOWED_ORIGINS,ALLOWED_METHODS,ALLOWED_HEADERS"
-  }
 
 # Configuração para branches de desenvolvimento
 [context.deploy-preview]
   command = "npm run build"
-  environment = { 
-    NODE_ENV = "development",
+  [context.deploy-preview.environment]
+    NODE_ENV = "development"
     SECRETS_SCAN_ENABLED = "false"
-  }
 
 # Configuração para branches de feature
 [context.branch-deploy]
   command = "npm run build"
-  environment = { 
-    NODE_ENV = "development",
+  [context.branch-deploy.environment]
+    NODE_ENV = "development"
     SECRETS_SCAN_ENABLED = "false"
-  }
 
 # Configuração para ambiente de desenvolvimento local
 [dev]
