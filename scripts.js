@@ -1184,7 +1184,7 @@ class ServerValidation {
             const categoria = formData.get('categoria');
             
             let margemMaxima = 0.35; // INSS padrão
-            if (categoria === 'Servidor Público' || categoria === 'Militar') {
+            if (categoria === 'servidor' || categoria === 'militar') {
                 margemMaxima = 0.40;
             }
 
@@ -1222,7 +1222,7 @@ class ServerValidation {
         const categoria = formData.get('categoria');
 
         // Validar se categoria é válida
-        const categoriasValidas = ['Aposentado/Pensionista INSS', 'Servidor Público', 'Militar', 'CLT'];
+        const categoriasValidas = ['inss', 'servidor', 'militar', 'clt', 'credito-pessoal', 'fgts'];
         if (categoria && !categoriasValidas.includes(categoria)) {
             return {
                 isValid: false,

@@ -43,13 +43,33 @@ const __dirname = path.dirname(__filename);
 
 
 
+// Parse JSON bodies
+app.use(express.json());
+
+// Configuração de CORS dinâmica baseada em ambiente
+const allowedOrigins = process.env.ALLOWED_ORIGINS 
+    ? process.env.ALLOWED_ORIGINS.split(',').map(origin => origin.trim())
+    : ['http://localhost:3000', 'http://localhost:3001'];
+
 // CORS configuration
 const corsOptions = {
-    origin: ['http://localhost:3001', 'https://yourdomain.com'], // Frontend na porta 3001
-    methods: ['GET', 'POST', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization'],
+    origin: (origin, callback) => {
+        // Permite requisições sem origem (como mobile apps ou curl)
+        if (!origin) return callback(null, true);
+        
+        if (allowedOrigins.indexOf(origin) === -1) {
+            const msg = 'A política de CORS para este site não permite acesso a partir da origem especificada.';
+            return callback(new Error(msg), false);
+        }
+        return callback(null, true);
+    },
+    methods: ['GET', 'POST', 'OPTIONS', 'PUT', 'PATCH', 'DELETE'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept', 'Origin'],
+    exposedHeaders: ['Content-Length', 'X-Foo', 'X-Bar'],
     credentials: true,
-    optionsSuccessStatus: 200 // Some legacy browsers (IE11, various SmartTVs) choke on 204
+    maxAge: 86400, // 24 horas
+    preflightContinue: false,
+    optionsSuccessStatus: 204
 };
 
 // Apply CORS with the specified options
@@ -57,7 +77,6 @@ app.use(cors(corsOptions));
 
 // Handle preflight requests
 app.options('*', cors(corsOptions));
-app.use(express.json());
 
 // Basic security headers
 app.use((req, res, next) => {

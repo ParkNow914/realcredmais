@@ -16,7 +16,7 @@
     <meta name="twitter:title" content="RealCred + | Empréstimos Consignados - Taxa INSS 1,85% a.m.">
     <meta name="twitter:description" content="Especialistas em crédito consignado para INSS, servidores e militares. Aprovação rápida e melhores taxas!">
     <link rel="stylesheet" href="styles.css">
-    <link rel="stylesheet" href="public/css/form-styles.css">
+    <link rel="stylesheet" href="/public/css/form-styles.css">
     <!-- Favicon -->
     <link rel="icon" type="image/jpeg" href="assets/LOGO%202.jpeg">
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -279,29 +279,30 @@
                     <div class="simulation-progress-bar" id="simulationProgressBar"></div>
                 </div>
                 <form class="simulation-form" id="simulationForm" method="POST" novalidate>
+                    <div id="form-messages"></div>
                     <div class="form-group">
                         <label for="nome">Nome Completo</label>
-                        <input type="text" id="nome" name="nome" required aria-describedby="nome-error">
-                        <span class="error-message" id="nome-error" role="alert"></span>
+                        <input type="text" id="nome" name="nome" required>
+                        <span class="error-message" id="nome-error"></span>
                     </div>
                     <div class="form-group">
                         <label for="cpf">CPF (somente números)</label>
-                        <input type="text" id="cpf" name="cpf" maxlength="11" required aria-describedby="cpf-error" placeholder="Digite apenas números">
-                        <span class="error-message" id="cpf-error" role="alert"></span>
+                        <input type="text" id="cpf" name="cpf" maxlength="14" required placeholder="000.000.000-00">
+                        <span class="error-message" id="cpf-error"></span>
                     </div>
                     <div class="form-group">
                         <label for="email">E-mail</label>
-                        <input type="email" id="email" name="email" aria-describedby="email-error" placeholder="seu@email.com">
-                        <span class="error-message" id="email-error" role="alert"></span>
+                        <input type="email" id="email" name="email" placeholder="seu@email.com">
+                        <span class="error-message" id="email-error"></span>
                     </div>
                     <div class="form-group">
                         <label for="telefone">Telefone (com DDD)</label>
-                        <input type="tel" id="telefone" name="telefone" aria-describedby="telefone-error" placeholder="Apenas números com DDD">
-                        <span class="error-message" id="telefone-error" role="alert"></span>
+                        <input type="tel" id="telefone" name="telefone" required placeholder="(00) 00000-0000">
+                        <span class="error-message" id="telefone-error"></span>
                     </div>
                     <div class="form-group">
                         <label for="categoria">Categoria</label>
-                        <select id="categoria" name="categoria" required aria-describedby="categoria-error">
+                        <select id="categoria" name="categoria" required>
                             <option value="">Selecione sua categoria</option>
                             <option value="inss">Aposentado/Pensionista INSS</option>
                             <option value="servidor">Servidor Público</option>
@@ -310,21 +311,21 @@
                             <option value="credito-pessoal">Crédito Pessoal</option>
                             <option value="fgts">Saque Aniversário FGTS</option>
                         </select>
-                        <span class="error-message" id="categoria-error" role="alert"></span>
+                        <span class="error-message" id="categoria-error"></span>
                     </div>
                     <div class="form-group">
                         <label for="salario">Salário/Benefício Líquido</label>
-                        <input type="text" inputmode="decimal" id="salario" name="salario" placeholder="Ex: 2500,50" required aria-describedby="salario-error">
-                        <span class="error-message" id="salario-error" role="alert"></span>
+                        <input type="text" inputmode="decimal" id="salario" name="salario" placeholder="Ex: 2500,50" required>
+                        <span class="error-message" id="salario-error"></span>
                     </div>
                     <div class="form-group">
                         <label for="valor">Valor Desejado</label>
-                        <input type="text" inputmode="decimal" id="valor" name="valor" placeholder="Ex: 5000,00" required aria-describedby="valor-error">
-                        <span class="error-message" id="valor-error" role="alert"></span>
+                        <input type="text" inputmode="decimal" id="valor" name="valor" placeholder="Ex: 5000,00" required>
+                        <span class="error-message" id="valor-error"></span>
                     </div>
                     <div class="form-group">
                         <label for="prazo">Prazo (meses)</label>
-                        <select id="prazo" name="prazo" required aria-describedby="prazo-error">
+                        <select id="prazo" name="prazo" required>
                             <option value="">Selecione o prazo</option>
                             <option value="12">12 meses</option>
                             <option value="24">24 meses</option>
@@ -335,7 +336,7 @@
                             <option value="84">84 meses</option>
                             <option value="96">96 meses</option>
                         </select>
-                        <span class="error-message" id="prazo-error" role="alert"></span>
+                        <span class="error-message" id="prazo-error"></span>
                     </div>
                     <button type="submit" class="btn btn-primary btn-large">Simular Agora</button>
                 </form>
@@ -1059,9 +1060,8 @@ function compartilharEndereco() {
 }
 </script>
 
-    <!-- Form Handler -->
-    <script src="/js/form-handler.js"></script>
     <!-- Form Masks and Validations -->
+    <script src="/js/form-handler.js"></script>
     <script src="/js/form-masks.js"></script>
     <!-- Contact Form Validations -->
     <script src="/js/contact-form.js"></script>
