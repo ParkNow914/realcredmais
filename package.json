@@ -11,6 +11,7 @@
     "build": "npm install && vite build",
     "images:webp": "node convert-to-webp.js",
     "postbuild": "node inline-critical.js",
+    "deploy": "npm run build && npx wrangler pages deploy dist",
     "dev:all": "concurrently \"npm run dev\" \"npm run frontend:dev\"",
     "start:all": "concurrently \"npm start\" \"npm run frontend:build\""
   },
