@@ -5,8 +5,8 @@ const urlsToCache = [
     '/index.html',
     '/styles.css',
     '/scripts.js',
-    '/assets/images/realcred_logo.png',
-    '/assets/images/realcred_logo.webp',
+    'assets/images/realcred_logo.png',
+    'assets/images/realcred_logo.webp',
     'https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap'
 ];
 
@@ -21,18 +21,46 @@ self.addEventListener('install', function(event) {
     );
 });
 
-// Fetch event
+// Fetch event with better error handling
 self.addEventListener('fetch', function(event) {
+    // Skip non-GET requests
+    if (event.request.method !== 'GET') return;
+
+    // Skip non-http/https requests
+    if (!event.request.url.startsWith('http')) return;
+
     event.respondWith(
         caches.match(event.request)
             .then(function(response) {
-                // Return cached version or fetch from network
+                // Return cached version if found
                 if (response) {
                     return response;
                 }
-                return fetch(event.request);
-            }
-        )
+                
+                // Otherwise, try to fetch from network
+                return fetch(event.request)
+                    .then(function(networkResponse) {
+                        // Check if we received a valid response
+                        if (!networkResponse || networkResponse.status !== 200 || networkResponse.type !== 'basic') {
+                            return networkResponse;
+                        }
+
+                        // Clone the response
+                        const responseToCache = networkResponse.clone();
+
+                        // Add to cache for future use
+                        caches.open(CACHE_NAME)
+                            .then(function(cache) {
+                                cache.put(event.request, responseToCache);
+                            });
+
+                        return networkResponse;
+                    })
+                    .catch(function(error) {
+                        console.error('Fetch failed; returning offline page', error);
+                        // You could return a custom offline page here if desired
+                    });
+            })
     );
 });
 
@@ -56,8 +84,8 @@ self.addEventListener('activate', function(event) {
 self.addEventListener('push', function(event) {
     const options = {
         body: event.data ? event.data.text() : 'Nova oferta disponível!',
-        icon: '/assets/images/realcred_logo.png',
-        badge: '/assets/images/realcred_logo.png',
+        icon: 'assets/images/realcred_logo.png',
+        badge: 'assets/images/realcred_logo.png',
         vibrate: [100, 50, 100],
         data: {
             dateOfArrival: Date.now(),
@@ -67,12 +95,12 @@ self.addEventListener('push', function(event) {
             {
                 action: 'explore',
                 title: 'Ver Oferta',
-                icon: '/assets/images/realcred_logo.png'
+                icon: 'assets/images/realcred_logo.png'
             },
             {
                 action: 'close',
                 title: 'Fechar',
-                icon: '/assets/images/realcred_logo.png'
+                icon: 'assets/images/realcred_logo.png'
             }
         ]
     };

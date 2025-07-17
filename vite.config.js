@@ -4,8 +4,9 @@ import { resolve } from 'path';
 // https://vitejs.dev/config/
 export default defineConfig({
   root: '.', // index.html está na raiz
-  base: './', // caminhos relativos para poder hospedar em qualquer subpasta
-  publicDir: 'public', // Serve files from the public directory
+  base: '/', // Usar caminhos absolutos a partir da raiz
+  publicDir: 'public', // Pasta de arquivos públicos
+  assetsInclude: ['**/*.jpg', '**/*.jpeg', '**/*.png', '**/*.svg', '**/*.gif', '**/*.webp'],
   server: {
     host: true, // Permite acesso em rede local
     port: 3000,
