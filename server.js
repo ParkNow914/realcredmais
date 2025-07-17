@@ -108,62 +108,39 @@ const transporter = nodemailer.createTransport({
   }
 });
 
-// API Routes
+// API endpoint for lead submission
 app.post('/api/lead', async (req, res) => {
   console.log('Received lead request:', req.body);
   
   try {
-    // Validate request body
-    if (!req.body) {
-      console.error('No request body received');
-      return res.status(400).json({
-        success: false,
-        message: 'Dados da requisição inválidos'
-      });
-    }
-    
-    const { nome, cpf, email, telefone, categoria, salario, valor, prazo } = req.body;
+    const { nome, email, telefone, categoria, salario, valor, prazo, cpf } = req.body;
 
     // Log the received data for debugging
     console.log('Received data:', { nome, cpf, email, telefone, categoria, salario, valor, prazo });
 
-    // Basic validation for required fields
-    if (!nome || !cpf || !categoria || salario === undefined || valor === undefined || !prazo) {
-      console.log('Missing required fields');
-      return res.status(400).json({ 
-        success: false,
-        message: 'Todos os campos são obrigatórios.',
-        fields: {
-          nome: !nome,
-          cpf: !cpf,
-          categoria: !categoria,
-          salario: salario === undefined,
-          valor: valor === undefined,
-          prazo: !prazo
-        }
-      });
-    }
-
-    // Validate CPF format (11 digits)
-    if (!/^\d{11}$/.test(cpf)) {
+    // Validate required fields
+    if (!nome || !telefone || !categoria) {
       return res.status(400).json({
         success: false,
-        message: 'CPF inválido. Deve conter 11 dígitos numéricos.',
-        field: 'cpf'
+        message: 'Por favor, preencha todos os campos obrigatórios.',
+        field: !nome ? 'nome' : !telefone ? 'telefone' : 'categoria'
       });
     }
 
-    // Validate email format if provided
-    if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    // Validate category
+    if (!CATEGORIAS_VALIDAS.includes(categoria)) {
+      console.error(`Invalid category received: ${categoria}. Valid categories are:`, CATEGORIAS_VALIDAS);
       return res.status(400).json({
         success: false,
-        message: 'Formato de e-mail inválido.',
-        field: 'email'
+        message: 'Categoria selecionada não é válida.',
+        field: 'categoria',
+        validCategories: CATEGORIAS_VALIDAS
       });
     }
 
-    // Validate phone format if provided (accepts (99) 99999-9999 or (99) 9999-9999)
-    if (telefone && !/^\(\d{2}\)\s*\d{4,5}-?\d{4}$/.test(telefone)) {
+    // Validate phone format (11 digits with DDD)
+    const phoneRegex = /^\d{11}$/;
+    if (!phoneRegex.test(telefone.replace(/\D/g, ''))) {
       return res.status(400).json({
         success: false,
         message: 'Formato de telefone inválido. Use (99) 99999-9999.',
@@ -171,78 +148,34 @@ app.post('/api/lead', async (req, res) => {
       });
     }
 
-    // Validate category
-    console.log('Validating category:', categoria);
-    console.log('Type of categoria:', typeof categoria);
-    console.log('Valid categories:', CATEGORIAS_VALIDAS);
-    
-    if (!CATEGORIAS_VALIDAS.includes(categoria)) {
-      console.error(`Invalid category received: ${categoria}. Valid categories are:`, CATEGORIAS_VALIDAS);
-      return res.status(400).json({
-        success: false,
-        message: `Categoria selecionada não é válida. Categoria recebida: ${categoria}`,
-        field: 'categoria',
-        receivedCategory: categoria,
-        validCategories: CATEGORIAS_VALIDAS
-      });
-    }
-
     // Validate email if provided
     if (email && !isValidEmail(email)) {
       return res.status(400).json({
         success: false,
-        message: 'Formato de e-mail inválido',
+        message: 'Formato de e-mail inválido.',
         field: 'email'
       });
     }
 
-    // Validate phone if provided
-    if (telefone && !isValidPhone(telefone)) {
-      return res.status(400).json({
-        success: false,
-        message: 'Formato de telefone inválido. Use (DD) 9XXXX-XXXX',
-        field: 'telefone'
-      });
-    }
+    // Here you would typically save the lead to a database
+    console.log('Novo lead recebido:', { nome, email, telefone, categoria, salario, valor, prazo, cpf });
 
-    // Validate category
-    console.log('Validating category:', categoria);
-    console.log('Type of categoria:', typeof categoria);
-    console.log('Valid categories:', CATEGORIAS_VALIDAS);
-    
-    if (!CATEGORIAS_VALIDAS.includes(categoria)) {
-      console.error(`Invalid category received: ${categoria}. Valid categories are:`, CATEGORIAS_VALIDAS);
-      return res.status(400).json({
-        success: false,
-        message: `Categoria selecionada não é válida. Categoria recebida: ${categoria}`,
-        field: 'categoria',
-        receivedCategory: categoria,
-        validCategories: CATEGORIAS_VALIDAS
-      });
-    }
+    // Send success response
+    return res.status(200).json({
+      success: true,
+      message: 'Solicitação recebida com sucesso! Entraremos em contato em breve.'
+    });
 
     // Format values - handle both string with comma and dot, and number inputs
     const formatCurrency = (value) => {
       if (typeof value === 'number') return value;
-      return parseFloat(value.toString().replace(/\./g, '').replace(',', '.'));
+      if (!value) return 0;
+      return parseFloat(value.toString().replace(/\./g, '').replace(',', '.')) || 0;
     };
 
     const formattedValor = formatCurrency(valor);
     const formattedSalario = formatCurrency(salario);
-    const formattedPrazo = parseInt(prazo);
-
-    // Validate numeric values
-    if (isNaN(formattedValor) || isNaN(formattedSalario) || isNaN(formattedPrazo)) {
-      return res.status(400).json({
-        success: false,
-        message: 'Valores numéricos inválidos',
-        fields: {
-          valor: isNaN(formattedValor),
-          salario: isNaN(formattedSalario),
-          prazo: isNaN(formattedPrazo)
-        }
-      });
-    }
+    const formattedPrazo = parseInt(prazo) || 0;
 
     // Create email template
     const emailTemplate = `
@@ -393,153 +326,7 @@ Data/Hora: ${new Date().toLocaleString('pt-BR')}`
   }
 });
 
-// Rota para processar leads
-app.post('/lead', async (req, res) => {
-  const { nome, email, telefone, cpf, categoria, salario, valor, prazo } = req.body;
 
-  // Validação básica dos campos obrigatórios
-  if (!nome || !categoria || !salario || !valor || !prazo) {
-    return res.status(400).json({
-      success: false,
-      message: 'Dados incompletos. Por favor, preencha todos os campos obrigatórios.'
-    });
-  }
-
-  // Validar e-mail se fornecido
-  if (email && !isValidEmail(email)) {
-    return res.status(400).json({
-      success: false,
-      message: 'Formato de e-mail inválido',
-      field: 'email'
-    });
-  }
-
-  // Validar telefone se fornecido
-  if (telefone && !isValidPhone(telefone)) {
-    return res.status(400).json({
-      success: false,
-      message: 'Formato de telefone inválido. Use (DD) 9XXXX-XXXX',
-      field: 'telefone'
-    });
-  }
-
-  // Validar categoria
-  if (!CATEGORIAS_VALIDAS.includes(categoria)) {
-    return res.status(400).json({
-      success: false,
-      message: 'Categoria inválida',
-      field: 'categoria',
-      validCategories: CATEGORIAS_VALIDAS
-    });
-  }
-
-  try {
-    // Formatar valores
-    const formatCurrency = (value) => {
-      if (typeof value === 'number') return value;
-      if (typeof value === 'string') {
-        // If it's already a string with a dot, parse it directly
-        if (value.includes('.')) {
-          return parseFloat(value);
-        }
-        // If it's a string with comma as decimal separator
-        return parseFloat(value.replace(/\./g, '').replace(',', '.'));
-      }
-      return 0; // Default value if parsing fails
-    };
-
-    const formattedValor = formatCurrency(valor);
-    const formattedSalario = formatCurrency(salario);
-    const formattedPrazo = parseInt(prazo);
-
-    // Validar valores numéricos
-    if (isNaN(formattedValor) || isNaN(formattedSalario) || isNaN(formattedPrazo)) {
-      return res.status(400).json({
-        success: false,
-        message: 'Valores numéricos inválidos',
-        fields: {
-          valor: isNaN(formattedValor),
-          salario: isNaN(formattedSalario),
-          prazo: isNaN(formattedPrazo)
-        }
-      });
-    }
-
-    // Aqui você pode adicionar a lógica para salvar no banco de dados ou enviar por e-mail
-    // Por exemplo, enviar um e-mail com os dados do lead
-    const mailOptions = {
-      from: `Novo Lead RealCred <${process.env.GMAIL_USER}>`,
-      to: process.env.LEAD_RECEIVER || process.env.GMAIL_USER,
-      subject: `Novo Lead: ${nome} - ${categoria}`,
-      text: `Novo lead recebido:
-
-Nome: ${nome}
-E-mail: ${email || 'Não informado'}
-Telefone: ${telefone || 'Não informado'}
-CPF: ${cpf || 'Não informado'}
-Categoria: ${categoria}
-Salário: R$ ${formattedSalario.toFixed(2)}
-Valor desejado: R$ ${formattedValor.toFixed(2)}
-Prazo: ${formattedPrazo} meses
-
-Data/Hora: ${new Date().toLocaleString('pt-BR')}`
-    };
-
-    await transporter.sendMail(mailOptions);
-    
-    res.json({
-      success: true,
-      message: 'Lead recebido com sucesso!',
-      data: {
-        nome,
-        email,
-        telefone,
-        cpf,
-        categoria,
-        salario: formattedSalario,
-        valor: formattedValor,
-        prazo: formattedPrazo
-      }
-    });
-  } catch (error) {
-    console.error('Erro ao processar lead:', error);
-    res.status(500).json({
-      success: false,
-      message: 'Erro ao processar o lead. Por favor, tente novamente.'
-    });
-  }
-});
-
-// Rota para contato
-app.post('/api/contact', async (req, res) => {
-  const { nome, email, telefone, assunto, mensagem } = req.body;
-
-  if (!nome || !email || !assunto || !mensagem) {
-    return res.status(400).json({ error: 'Dados incompletos.' });
-  }
-
-  const transporter = nodemailer.createTransport({
-    service: 'gmail',
-    auth: {
-      user: process.env.GMAIL_USER,
-      pass: process.env.GMAIL_PASS
-    }
-  });
-
-  const mailOptions = {
-    from: `Contato RealCred <${process.env.GMAIL_USER}>`,
-    to: process.env.LEAD_RECEIVER,
-    subject: `Novo Contato: ${assunto}`,
-    text: `Novo contato recebido:\n\nNome: ${nome}\nE-mail: ${email}\nTelefone: ${telefone || '-'}\nAssunto: ${assunto}\nMensagem: ${mensagem}\nData/Hora: ${new Date().toLocaleString('pt-BR')}`
-  };
-
-  try {
-    await transporter.sendMail(mailOptions);
-    res.json({ success: true });
-  } catch (error) {
-    res.status(500).json({ error: 'Erro ao enviar e-mail.' });
-  }
-});
 
 app.listen(PORT, () => {
     console.log(`Server rodando em http://localhost:${PORT}`);

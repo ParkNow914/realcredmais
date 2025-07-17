@@ -88,19 +88,31 @@ async function handleFormSubmit(e) {
         
         console.log('Form data being sent:', formDataObj);
         
+        // Ensure category is valid
+        const validCategories = ['inss', 'servidor', 'militar', 'clt', 'credito-pessoal', 'fgts'];
+        if (!validCategories.includes(formDataObj.categoria)) {
+            throw new Error('Por favor, selecione uma categoria válida');
+        }
+
         // Send data to server
-        const response = await fetch('/lead', {
+        const response = await fetch('/api/lead', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
-                'Accept': 'application/json'
+                'Accept': 'application/json',
+                'X-Requested-With': 'XMLHttpRequest'
             },
             body: JSON.stringify(formDataObj),
         });
         
+        if (!response.ok) {
+            const error = await response.json().catch(() => ({}));
+            throw new Error(error.message || 'Erro ao enviar o formulário');
+        }
+        
         const result = await response.json();
         
-        if (response.ok) {
+        if (result.success) {
             // Show success message
             showFeedback(result.message || 'Solicitação enviada com sucesso! Entraremos em contato em breve.', 'success');
             
