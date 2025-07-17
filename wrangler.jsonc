@@ -7,18 +7,6 @@
   },
   "build": {
     "command": "npm run build",
-    "cwd": ".",
-    "watch_directories": ["src"],
-    "upload": {
-      "format": "service-worker"
-    }
-  },
-  "env": {
-    "production": {
-      "route": "realcredmais.pages.dev/*",
-      "vars": {
-        "ENVIRONMENT": "production"
-      }
-    }
+    "cwd": "."
   }
 }
