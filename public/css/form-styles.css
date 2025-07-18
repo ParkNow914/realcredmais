@@ -38,8 +38,8 @@
 input.error,
 select.error,
 textarea.error {
-    border-color: #ef9a9a !important;
-    background-color: #fff9f9;
+    border-color: var(--gray-300) !important;
+    background-color: var(--white) !important;
 }
 
 @keyframes fadeIn {
@@ -78,16 +78,7 @@ button[type="submit"]:disabled::after {
 
 /* Error message styling */
 .error-message {
-    display: none;
-    color: #c62828;
-    font-size: 0.9rem;
-    margin-top: 0.35rem;
-    font-weight: 500;
-    padding: 0.25rem 0.5rem;
-    background-color: rgba(198, 40, 40, 0.08);
-    border-radius: 4px;
-    display: inline-block;
-    margin-left: 0.25rem;
+    display: none !important;
 }
 
 /* Show error message when input is invalid */
@@ -101,13 +92,13 @@ textarea:invalid + .error-message {
 input:invalid,
 select:invalid,
 textarea:invalid {
-    border-color: #ef9a9a;
-    background-color: #ffebee;
+    border-color: var(--gray-300);
+    background-color: var(--white);
 }
 
 input:focus:invalid,
 select:focus:invalid,
 textarea:focus:invalid {
-    box-shadow: 0 0 0 2px rgba(198, 40, 40, 0.2);
-    border-color: #ef5350;
+    box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.2);
+    border-color: var(--primary);
 }

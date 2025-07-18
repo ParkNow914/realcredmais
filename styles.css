@@ -1156,6 +1156,29 @@ img {
     to { transform: rotate(360deg); }
 }
 
+/* Reset de estilos de validação de formulário */
+input, select, textarea, .form-control, .form-input {
+    border-color: var(--gray-300) !important;
+    background-color: var(--white) !important;
+}
+
+input:invalid, select:invalid, textarea:invalid,
+input.error, select.error, textarea.error {
+    border-color: var(--gray-300) !important;
+    background-color: var(--white) !important;
+    box-shadow: none !important;
+    background-image: none !important;
+}
+
+input:focus:invalid, select:focus:invalid, textarea:focus:invalid {
+    box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.2) !important;
+    border-color: var(--primary) !important;
+}
+
+.error-message {
+    display: none !important;
+}
+
 /* Estados de formulário modernos */
 .error-message {
     color: var(--error);

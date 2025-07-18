@@ -236,21 +236,20 @@ class FormHandler {
         submitButton.innerHTML = 'Enviando...';
 
         try {
-            // Simular envio para o servidor
-            await this.sendFormData(form, formData);
-            
             // Se for o formulário de simulação, mostrar resultado
             if (form.id === 'simulationForm') {
                 this.showSimulationResult(form, formData);
             } else {
-                // Mostrar mensagem de sucesso para outros formulários
+                // Para outros formulários, simular envio
+                await this.sendFormData(form, formData);
+                // Mostrar mensagem de sucesso
                 this.showFeedback(form, 'Mensagem enviada com sucesso! Em breve entraremos em contato.', 'success');
                 form.reset();
             }
             
         } catch (error) {
-            console.error('Erro ao enviar formulário:', error);
-            this.showFeedback(form, 'Erro ao enviar mensagem. Por favor, tente novamente mais tarde.', 'error');
+            console.error('Erro ao processar formulário:', error);
+            this.showFeedback(form, 'Erro ao processar sua solicitação. Por favor, tente novamente mais tarde.', 'error');
         } finally {
             // Reativar botão
             submitButton.disabled = false;
@@ -262,20 +261,31 @@ class FormHandler {
         // Simular atraso de rede
         await new Promise(resolve => setTimeout(resolve, 1000));
         
-        // Aqui você pode adicionar o código para enviar os dados para o servidor
-        // Por exemplo, usando fetch()
+        // Se você quiser implementar o envio real para um backend no futuro,
+        // descomente e ajuste o código abaixo:
         /*
-        const response = await fetch('/api/lead', {
-            method: 'POST',
-            body: formData
-        });
-        
-        if (!response.ok) {
-            throw new Error('Erro ao enviar formulário');
+        try {
+            const response = await fetch('/api/lead', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(Object.fromEntries(formData))
+            });
+            
+            if (!response.ok) {
+                throw new Error('Erro ao enviar formulário');
+            }
+            
+            return await response.json();
+        } catch (error) {
+            console.error('Erro ao enviar dados:', error);
+            throw error;
         }
         */
         
-        return true;
+        // Por enquanto, apenas simulamos um envio bem-sucedido
+        return { success: true };
     }
     
     showSimulationResult(form, formData) {
