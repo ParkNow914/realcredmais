@@ -5,20 +5,50 @@ document.addEventListener('DOMContentLoaded', function() {
     if (cpfInput) {
         cpfInput.addEventListener('input', function(e) {
             let value = e.target.value.replace(/\D/g, '');
+            
+            // Limita a 11 dígitos
             if (value.length > 11) {
                 value = value.substring(0, 11);
             }
             
-            // Formatar CPF: 000.000.000-00
-            if (value.length > 9) {
-                value = value.replace(/(\d{3})(\d{3})(\d{3})(\d{2}).*/, '$1.$2.$3-$4');
-            } else if (value.length > 6) {
-                value = value.replace(/(\d{3})(\d{3})(\d{1,3})/, '$1.$2.$3');
-            } else if (value.length > 3) {
-                value = value.replace(/(\d{3})(\d{1,3})/, '$1.$2');
+            // Aplica a formatação enquanto o usuário digita
+            let formattedValue = '';
+            for (let i = 0; i < value.length; i++) {
+                if (i === 3 || i === 6) {
+                    formattedValue += '.';
+                } else if (i === 9) {
+                    formattedValue += '-';
+                }
+                formattedValue += value[i];
             }
             
-            e.target.value = value;
+            // Atualiza o valor do campo
+            e.target.value = formattedValue;
+            
+            // Dispara o evento de validação
+            const event = new Event('blur');
+            e.target.dispatchEvent(event);
+        });
+        
+        // Validação ao sair do campo
+        cpfInput.addEventListener('blur', function(e) {
+            const value = e.target.value.replace(/\D/g, '');
+            if (value.length === 11) {
+                const formHandler = new FormHandler();
+                if (!formHandler.isValidCPF(e.target.value)) {
+                    const errorElement = document.getElementById('cpf-error') || e.target.nextElementSibling;
+                    if (errorElement && errorElement.classList.contains('error-message')) {
+                        errorElement.textContent = 'CPF inválido';
+                        errorElement.style.display = 'block';
+                    }
+                } else {
+                    const errorElement = document.getElementById('cpf-error') || e.target.nextElementSibling;
+                    if (errorElement && errorElement.classList.contains('error-message')) {
+                        errorElement.textContent = '';
+                        errorElement.style.display = 'none';
+                    }
+                }
+            }
         });
     }
 

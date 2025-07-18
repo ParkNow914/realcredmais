@@ -173,31 +173,51 @@ class FormHandler {
     }
     
     isValidCPF(cpf) {
+        // Remove caracteres não numéricos
         cpf = cpf.replace(/[\D]/g, '');
-        if (cpf.length !== 11) return false;
         
-        // Verifica se todos os dígitos são iguais
-        if (/^(\d)\1+$/.test(cpf)) return false;
+        // Verifica se tem 11 dígitos
+        if (cpf.length !== 11) {
+            return false;
+        }
+        
+        // Verifica se todos os dígitos são iguais (CPF inválido)
+        if (/^(\d)\1{10}$/.test(cpf)) {
+            return false;
+        }
         
         // Validação do primeiro dígito verificador
         let sum = 0;
-        for (let i = 0; i < 9; i++) {
-            sum += parseInt(cpf.charAt(i)) * (10 - i);
+        for (let i = 1; i <= 9; i++) {
+            sum += parseInt(cpf.substring(i-1, i)) * (11 - i);
         }
-        let remainder = 11 - (sum % 11);
-        const digit1 = remainder >= 10 ? 0 : remainder;
+        let remainder = (sum * 10) % 11;
         
-        if (digit1 !== parseInt(cpf.charAt(9))) return false;
+        if ((remainder === 10) || (remainder === 11)) {
+            remainder = 0;
+        }
+        
+        if (remainder !== parseInt(cpf.substring(9, 10))) {
+            return false;
+        }
         
         // Validação do segundo dígito verificador
         sum = 0;
-        for (let i = 0; i < 10; i++) {
-            sum += parseInt(cpf.charAt(i)) * (11 - i);
+        for (let i = 1; i <= 10; i++) {
+            sum += parseInt(cpf.substring(i-1, i)) * (12 - i);
         }
-        remainder = 11 - (sum % 11);
-        const digit2 = remainder >= 10 ? 0 : remainder;
         
-        return digit2 === parseInt(cpf.charAt(10));
+        remainder = (sum * 10) % 11;
+        
+        if ((remainder === 10) || (remainder === 11)) {
+            remainder = 0;
+        }
+        
+        if (remainder !== parseInt(cpf.substring(10, 11))) {
+            return false;
+        }
+        
+        return true;
     }
     
     isValidPhone(phone) {
@@ -211,58 +231,66 @@ class FormHandler {
 
     async handleFormSubmit(event) {
         event.preventDefault();
+        event.stopPropagation();
         
-        try {
-            const form = event.target;
-            const formData = new FormData(form);
-            const submitButton = form.querySelector('button[type="submit"]');
-            
-            // Validar todos os campos antes de enviar
-            const fields = form.querySelectorAll('input[required], select[required], textarea[required]');
-            let isFormValid = true;
-            
-            fields.forEach(field => {
-                if (!this.validateField(field)) {
-                    isFormValid = false;
-                }
-            });
-            
-            if (!isFormValid) {
-                this.showFeedback(form, 'Por favor, preencha todos os campos obrigatórios corretamente.', 'error');
+        const form = event.target;
+        const formData = new FormData(form);
+        const submitButton = form.querySelector('button[type="submit"]');
+        
+        // Validar CPF primeiro se existir no formulário
+        const cpfField = form.querySelector('input[name="cpf"]');
+        if (cpfField) {
+            const cpfValue = cpfField.value.replace(/[\D]/g, '');
+            if (cpfValue.length > 0 && !this.isValidCPF(cpfField.value)) {
+                this.showError(cpfField, 'Por favor, insira um CPF válido.');
+                this.showFeedback(form, 'Por favor, verifique os campos destacados.', 'error');
+                cpfField.focus();
                 return;
             }
-            
-            // Desabilitar botão para evitar múltiplos envios
-            const originalButtonText = submitButton.innerHTML;
-            submitButton.disabled = true;
-            submitButton.innerHTML = 'Enviando...';
+        }
+        
+        // Validar todos os campos obrigatórios
+        const fields = form.querySelectorAll('input[required], select[required], textarea[required]');
+        let isFormValid = true;
+        
+        fields.forEach(field => {
+            if (!this.validateField(field)) {
+                if (isFormValid) {
+                    field.focus();
+                }
+                isFormValid = false;
+            }
+        });
+        
+        if (!isFormValid) {
+            this.showFeedback(form, 'Por favor, preencha todos os campos obrigatórios corretamente.', 'error');
+            return;
+        }
+        
+        // Desabilitar botão para evitar múltiplos envios
+        const originalButtonText = submitButton.innerHTML;
+        submitButton.disabled = true;
+        submitButton.innerHTML = 'Enviando...';
 
-            try {
-                // Se for o formulário de simulação, mostrar resultado
-                if (form.id === 'simulationForm') {
-                    this.showSimulationResult(form, formData);
-                } else {
-                    // Para outros formulários, simular envio
-                    await this.sendFormData(form, formData);
-                    // Mostrar mensagem de sucesso
-                    this.showFeedback(form, 'Mensagem enviada com sucesso! Em breve entraremos em contato.', 'success');
-                    form.reset();
-                }
-            } catch (error) {
-                console.error('Erro ao processar formulário:', error);
-                this.showFeedback(form, 'Erro ao processar sua solicitação. Por favor, tente novamente mais tarde.', 'error');
-            } finally {
-                // Reativar botão
-                if (submitButton) {
-                    submitButton.disabled = false;
-                    submitButton.innerHTML = originalButtonText;
-                }
+        try {
+            // Se for o formulário de simulação, mostrar resultado
+            if (form.id === 'simulationForm') {
+                this.showSimulationResult(form, formData);
+            } else {
+                // Para outros formulários, simular envio
+                await this.sendFormData(form, formData);
+                // Mostrar mensagem de sucesso
+                this.showFeedback(form, 'Mensagem enviada com sucesso! Em breve entraremos em contato.', 'success');
+                form.reset();
             }
         } catch (error) {
-            console.error('Erro inesperado no envio do formulário:', error);
-            // Mostrar mensagem de erro genérica
-            if (event.target) {
-                this.showFeedback(event.target, 'Ocorreu um erro inesperado. Por favor, tente novamente.', 'error');
+            console.error('Erro ao processar formulário:', error);
+            this.showFeedback(form, 'Erro ao processar sua solicitação. Por favor, tente novamente mais tarde.', 'error');
+        } finally {
+            // Reativar botão
+            if (submitButton) {
+                submitButton.disabled = false;
+                submitButton.innerHTML = originalButtonText;
             }
         }
     }
@@ -367,56 +395,117 @@ class FormHandler {
     }
 
     showError(field, message) {
-        const errorId = `${field.id}-error`;
-        let errorElement = document.getElementById(errorId);
+        // Encontra o elemento de erro
+        let errorElement = field.nextElementSibling;
         
-        if (!errorElement) {
-            errorElement = document.createElement('span');
-            errorElement.className = 'error-message';
-            errorElement.id = errorId;
-            field.parentNode.insertBefore(errorElement, field.nextSibling);
+        // Se não encontrar como próximo irmão, tenta pelo ID
+        if (!errorElement || !errorElement.classList.contains('error-message')) {
+            const errorId = `${field.id}-error`;
+            errorElement = document.getElementById(errorId);
+            
+            // Se ainda não encontrou, cria um novo elemento
+            if (!errorElement) {
+                errorElement = document.createElement('span');
+                errorElement.id = errorId;
+                errorElement.className = 'error-message';
+                
+                // Insere após o campo
+                field.parentNode.insertBefore(errorElement, field.nextSibling);
+            }
         }
         
+        // Atualiza a mensagem de erro
         errorElement.textContent = message;
+        errorElement.style.display = 'block';
+        
+        // Adiciona classe de erro ao campo e ao grupo do formulário
         field.classList.add('error');
+        field.parentNode.classList.add('error');
+        
+        // Configura acessibilidade
+        field.setAttribute('aria-invalid', 'true');
+        field.setAttribute('aria-describedby', errorElement.id);
+        
+        // Rola até o campo com erro
+        field.scrollIntoView({ behavior: 'smooth', block: 'center' });
     }
     
     clearError(field) {
-        const errorId = `${field.id}-error`;
-        const errorElement = document.getElementById(errorId);
+        // Encontra o elemento de erro
+        let errorElement = field.nextElementSibling;
         
-        if (errorElement) {
+        // Se não encontrar como próximo irmão, tenta pelo ID
+        if (!errorElement || !errorElement.classList.contains('error-message')) {
+            const errorId = `${field.id}-error`;
+            errorElement = document.getElementById(errorId);
+        }
+        
+        // Limpa a mensagem de erro se existir
+        if (errorElement && errorElement.classList.contains('error-message')) {
             errorElement.textContent = '';
+            errorElement.style.display = 'none';
         }
         
+        // Remove as classes de erro
         field.classList.remove('error');
-    }
-
-    showFeedback(form, message, type) {
-        // Remover mensagens anteriores
-        const existingFeedback = form.querySelector('.form-feedback');
-        if (existingFeedback) {
-            existingFeedback.remove();
+        if (field.parentNode) {
+            field.parentNode.classList.remove('error');
         }
-
-        // Criar elemento de feedback
-        const feedback = document.createElement('div');
-        feedback.className = `form-feedback ${type}`;
-        feedback.textContent = message;
         
-        // Inserir no início do formulário
-        const firstElement = form.firstElementChild;
-        form.insertBefore(feedback, firstElement);
-        
-        // Rolar até o feedback
-        feedback.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        
-        // Remover após 5 segundos
-        setTimeout(() => {
-            feedback.remove();
-        }, 10000);
+        // Remove atributos de acessibilidade
+        field.removeAttribute('aria-invalid');
+        field.removeAttribute('aria-describedby');
     }
-}
+
+    showFeedback(form, message, type = 'info') {
+        // Encontra ou cria o elemento de feedback
+        let feedbackElement = form.querySelector('.feedback-message');
+        
+        if (!feedbackElement) {
+            feedbackElement = document.createElement('div');
+            feedbackElement.className = 'feedback-message';
+            
+            // Insere o feedback logo após o formulário
+            if (form.nextElementSibling) {
+                form.parentNode.insertBefore(feedbackElement, form.nextSibling);
+            } else {
+                form.parentNode.appendChild(feedbackElement);
+            }
+        }
+        
+        // Define o conteúdo e as classes
+        feedbackElement.textContent = message;
+        feedbackElement.className = `feedback-message ${type}`;
+        feedbackElement.style.display = 'block';
+        feedbackElement.setAttribute('role', 'alert');
+        feedbackElement.setAttribute('aria-live', 'assertive');
+        
+        // Rola até o feedback
+        feedbackElement.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        
+        // Remove a mensagem após 5 segundos (exceto para erros)
+        if (type !== 'error') {
+            setTimeout(() => {
+                if (feedbackElement) {
+                    feedbackElement.style.opacity = '0';
+                    setTimeout(() => {
+                        if (feedbackElement) {
+                            feedbackElement.style.display = 'none';
+                            feedbackElement.style.opacity = '1';
+                        }
+                    }, 300);
+                }
+            }, 5000);
+        }
+        
+        field.setAttribute('aria-describedby', errorElement.id);
+        
+        // Rola até o campo com erro
+        field.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        
+        return feedbackElement;
+    }
+} // Close the FormHandler class
 
 // Inicializar quando o DOM estiver carregado
 document.addEventListener('DOMContentLoaded', () => {

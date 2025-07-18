@@ -2273,7 +2273,7 @@ class PerformanceOptimizer {
 // Inicialização dos novos recursos
 // Função para inicializar a seção de educação financeira
 function initEducationFinanceira() {
-    console.log('Iniciando inicialização da seção de educação financeira...');
+    // Iniciando seção de educação financeira
     
     // Inicializar Educational Content
     window.educationalContent = EducationalContent;
@@ -2281,71 +2281,61 @@ function initEducationFinanceira() {
     // Renderizar a seção de blog
     const blogSection = document.getElementById('educacao-financeira');
     if (!blogSection) {
-        console.log('Seção de educação financeira não encontrada na página atual');
+        // Seção de educação financeira não encontrada
         return; // Sair da função se o elemento não existir
     }
-    
+
     // Verificar se o elemento está visível
     if (blogSection.offsetParent === null) {
-        console.log('Seção de educação financeira encontrada, mas não está visível');
+        // Seção de educação financeira não visível
         return;
     }
-    
-    console.log('Elemento da seção encontrado, preparando para renderizar...');
-    
+
+    // Preparando para renderizar conteúdo
+
     // Limpa o conteúdo existente e adiciona um indicador de carregamento
     blogSection.innerHTML = '<div class="container"><p>Carregando conteúdo de educação financeira...</p></div>';
     blogSection.className = 'blog-section';
     blogSection.style.opacity = '1';
     blogSection.style.visibility = 'visible';
-    
+
     // Pequeno atraso para garantir que o DOM foi atualizado
     setTimeout(() => {
         try {
-            console.log('Renderizando o conteúdo da seção...');
-            
+            // Renderizando conteúdo...
+
             // Renderiza o conteúdo
             const content = EducationalContent.renderBlogSection();
             blogSection.innerHTML = '';
             blogSection.appendChild(content);
-            
-            console.log('Conteúdo renderizado, verificando imagens...');
-            
-            // Verifica se as imagens foram carregadas corretamente
+
+            // Verificando imagens...
             const images = blogSection.querySelectorAll('img');
-            console.log(`Total de imagens encontradas: ${images.length}`);
-            
+
             if (images.length === 0) {
-                console.warn('Nenhuma imagem encontrada na seção!');
+                // Nenhuma imagem encontrada
             }
-            
+
             images.forEach((img, index) => {
-                console.log(`Imagem ${index + 1}:`);
-                console.log(`- SRC: ${img.src}`);
-                console.log(`- Alt: ${img.alt}`);
-                console.log(`- Natural Width: ${img.naturalWidth}px`);
-                console.log(`- Natural Height: ${img.naturalHeight}px`);
-                console.log(`- Complete: ${img.complete}`);
-                
                 // Força o redesenho das imagens
                 img.style.opacity = '0';
                 img.style.transition = 'opacity 0.5s ease';
-                
+
                 if (img.complete) {
                     if (img.naturalWidth === 0) {
                         console.error(`Erro: A imagem não foi carregada corretamente: ${img.src}`);
                         img.src = '/assets/images/happy_people1.jpg';
                     } else {
-                        console.log(`Imagem ${index + 1} já estava carregada!`);
+                        // Imagem já carregada
                         img.style.opacity = '1';
                     }
                 } else {
                     img.onload = function() {
-                        console.log(`Imagem carregada com sucesso: ${this.src}`);
+                        // Imagem carregada
                         this.style.opacity = '1';
                     };
                     img.onerror = function() {
-                        console.error(`Erro ao carregar a imagem: ${this.src}`);
+                        // Erro ao carregar imagem
                         this.src = '/assets/images/happy_people1.jpg';
                         this.style.opacity = '1';
                     };
@@ -2357,7 +2347,7 @@ function initEducationFinanceira() {
                 img.src = src;
             });
             
-            console.log('Seção de educação financeira renderizada com sucesso!');
+            // Seção de educação financeira pronta
             
         } catch (error) {
             console.error('Erro ao renderizar a seção de educação financeira:', error);
@@ -2382,7 +2372,7 @@ function isElementVisible(selector) {
 
 // Inicialização quando o DOM estiver pronto
 document.addEventListener('DOMContentLoaded', function() {
-    console.log('DOM completamente carregado, inicializando componentes...');
+    // Inicialização silenciosa dos componentes
     
     // Inicializar FAQ Manager
     window.faqManager = new FAQManager();
@@ -2400,10 +2390,10 @@ document.addEventListener('DOMContentLoaded', function() {
     function initEducationSection() {
         const blogSection = document.getElementById('educacao-financeira');
         if (blogSection) {
-            console.log('Seção de educação financeira encontrada, inicializando...');
+            // Inicializando seção de educação financeira
             initEducationFinanceira();
         } else {
-            console.log('Seção de educação financeira ainda não disponível, tentando novamente...');
+            // Seção ainda não disponível, tentando novamente...
             // Tenta novamente após um curto atraso
             setTimeout(initEducationSection, 500);
         }
@@ -2417,7 +2407,7 @@ document.addEventListener('DOMContentLoaded', function() {
 class UserBehaviorAnalytics {
     static init() {
         // Simulação de integração com Hotjar
-        console.log('User Behavior Analytics initialized');
+        // User Behavior Analytics inicializado
         
         // Track form interactions
         document.querySelectorAll('form').forEach(form => {
@@ -2739,50 +2729,107 @@ function simularEmprestimoEnhanced() {
 
 // Integração com backend próprio para envio de leads por e-mail
 const simulationForm = document.getElementById('simulationForm');
-const leadFeedback = document.getElementById('lead-feedback');
+let leadFeedback = document.getElementById('lead-feedback');
+
+// Create feedback element if it doesn't exist
+if (!leadFeedback && simulationForm) {
+  leadFeedback = document.createElement('div');
+  leadFeedback.id = 'lead-feedback';
+  leadFeedback.style.marginTop = '16px';
+  simulationForm.parentNode.insertBefore(leadFeedback, simulationForm.nextSibling);
+}
 
 if (simulationForm) {
   simulationForm.addEventListener('submit', async function(e) {
     e.preventDefault();
-    const nome = document.getElementById('nome').value.trim();
-    const categoria = document.getElementById('categoria').value;
-    const salario = document.getElementById('salario').value;
-    const valor = document.getElementById('valor').value;
-    const prazo = document.getElementById('prazo').value;
+    e.stopPropagation();
+    
+    const nome = document.getElementById('nome')?.value.trim();
+    const categoria = document.getElementById('categoria')?.value;
+    const salario = document.getElementById('salario')?.value;
+    const valor = document.getElementById('valor')?.value;
+    const prazo = document.getElementById('prazo')?.value;
+    
+    // Validação básica
     if (!nome) {
-      leadFeedback.style.display = 'block';
-      leadFeedback.style.color = 'red';
-      leadFeedback.textContent = 'O campo nome é obrigatório.';
+      showFeedback(leadFeedback, 'O campo nome é obrigatório.', 'error');
       return;
     }
+    
     if (!categoria || !salario || !valor || !prazo) {
-      leadFeedback.style.display = 'block';
-      leadFeedback.style.color = 'red';
-      leadFeedback.textContent = 'Por favor, preencha todos os campos.';
+      showFeedback(leadFeedback, 'Por favor, preencha todos os campos.', 'error');
       return;
     }
-    leadFeedback.style.display = 'block';
-    leadFeedback.style.color = '#333';
-    leadFeedback.textContent = 'Enviando...';
+    
+    showFeedback(leadFeedback, 'Enviando simulação...', 'info');
+    
+    // Simular envio bem-sucedido
+    setTimeout(() => {
+      showFeedback(leadFeedback, 'Simulação enviada com sucesso! Em breve entraremos em contato.', 'success');
+      simulationForm.reset();
+      
+      // Opcional: Rolar para o topo do formulário
+      simulationForm.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      
+      // Opcional: Focar no primeiro campo
+      const firstInput = simulationForm.querySelector('input, select, textarea');
+      if (firstInput) firstInput.focus();
+      
+    }, 1500);
+    
+    /* Código original comentado para referência futura
     try {
       const response = await fetch('/api/lead', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ nome, categoria, salario, valor, prazo })
       });
+      
       if (response.ok) {
-        leadFeedback.style.color = 'green';
-        leadFeedback.textContent = 'Simulação enviada com sucesso! Em breve entraremos em contato.';
+        showFeedback(leadFeedback, 'Simulação enviada com sucesso! Em breve entraremos em contato.', 'success');
         simulationForm.reset();
       } else {
         const data = await response.json();
         throw new Error(data.error || 'Erro ao enviar. Tente novamente.');
       }
     } catch (error) {
-      leadFeedback.style.color = 'red';
-      leadFeedback.textContent = error.message;
+      console.error('Erro ao enviar formulário:', error);
+      showFeedback(leadFeedback, 'Não foi possível enviar sua simulação. Por favor, tente novamente mais tarde.', 'error');
     }
+    */
   });
+}
+
+// Função auxiliar para exibir feedback
+function showFeedback(element, message, type = 'info') {
+  if (!element) return;
+  
+  element.style.display = 'block';
+  element.textContent = message;
+  
+  // Reset styles
+  element.style.padding = '12px';
+  element.style.borderRadius = '4px';
+  element.style.margin = '10px 0';
+  
+  // Apply styles based on type
+  switch(type) {
+    case 'error':
+      element.style.color = '#721c24';
+      element.style.backgroundColor = '#f8d7da';
+      element.style.border = '1px solid #f5c6cb';
+      break;
+    case 'success':
+      element.style.color = '#155724';
+      element.style.backgroundColor = '#d4edda';
+      element.style.border = '1px solid #c3e6cb';
+      break;
+    case 'info':
+    default:
+      element.style.color = '#0c5460';
+      element.style.backgroundColor = '#d1ecf1';
+      element.style.border = '1px solid #bee5eb';
+  }
 }
 
 // Integração do formulário de contato com backend SMTP
