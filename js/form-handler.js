@@ -211,49 +211,59 @@ class FormHandler {
 
     async handleFormSubmit(event) {
         event.preventDefault();
-        const form = event.target;
-        const formData = new FormData(form);
-        const submitButton = form.querySelector('button[type="submit"]');
         
-        // Validar todos os campos antes de enviar
-        const fields = form.querySelectorAll('input[required], select[required], textarea[required]');
-        let isFormValid = true;
-        
-        fields.forEach(field => {
-            if (!this.validateField(field)) {
-                isFormValid = false;
-            }
-        });
-        
-        if (!isFormValid) {
-            this.showFeedback(form, 'Por favor, preencha todos os campos obrigatórios corretamente.', 'error');
-            return;
-        }
-        
-        // Desabilitar botão para evitar múltiplos envios
-        const originalButtonText = submitButton.innerHTML;
-        submitButton.disabled = true;
-        submitButton.innerHTML = 'Enviando...';
-
         try {
-            // Se for o formulário de simulação, mostrar resultado
-            if (form.id === 'simulationForm') {
-                this.showSimulationResult(form, formData);
-            } else {
-                // Para outros formulários, simular envio
-                await this.sendFormData(form, formData);
-                // Mostrar mensagem de sucesso
-                this.showFeedback(form, 'Mensagem enviada com sucesso! Em breve entraremos em contato.', 'success');
-                form.reset();
+            const form = event.target;
+            const formData = new FormData(form);
+            const submitButton = form.querySelector('button[type="submit"]');
+            
+            // Validar todos os campos antes de enviar
+            const fields = form.querySelectorAll('input[required], select[required], textarea[required]');
+            let isFormValid = true;
+            
+            fields.forEach(field => {
+                if (!this.validateField(field)) {
+                    isFormValid = false;
+                }
+            });
+            
+            if (!isFormValid) {
+                this.showFeedback(form, 'Por favor, preencha todos os campos obrigatórios corretamente.', 'error');
+                return;
             }
             
+            // Desabilitar botão para evitar múltiplos envios
+            const originalButtonText = submitButton.innerHTML;
+            submitButton.disabled = true;
+            submitButton.innerHTML = 'Enviando...';
+
+            try {
+                // Se for o formulário de simulação, mostrar resultado
+                if (form.id === 'simulationForm') {
+                    this.showSimulationResult(form, formData);
+                } else {
+                    // Para outros formulários, simular envio
+                    await this.sendFormData(form, formData);
+                    // Mostrar mensagem de sucesso
+                    this.showFeedback(form, 'Mensagem enviada com sucesso! Em breve entraremos em contato.', 'success');
+                    form.reset();
+                }
+            } catch (error) {
+                console.error('Erro ao processar formulário:', error);
+                this.showFeedback(form, 'Erro ao processar sua solicitação. Por favor, tente novamente mais tarde.', 'error');
+            } finally {
+                // Reativar botão
+                if (submitButton) {
+                    submitButton.disabled = false;
+                    submitButton.innerHTML = originalButtonText;
+                }
+            }
         } catch (error) {
-            console.error('Erro ao processar formulário:', error);
-            this.showFeedback(form, 'Erro ao processar sua solicitação. Por favor, tente novamente mais tarde.', 'error');
-        } finally {
-            // Reativar botão
-            submitButton.disabled = false;
-            submitButton.innerHTML = originalButtonText;
+            console.error('Erro inesperado no envio do formulário:', error);
+            // Mostrar mensagem de erro genérica
+            if (event.target) {
+                this.showFeedback(event.target, 'Ocorreu um erro inesperado. Por favor, tente novamente.', 'error');
+            }
         }
     }
     
