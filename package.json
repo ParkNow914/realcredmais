@@ -11,7 +11,7 @@
     "frontend:build": "vite build",
     "prebuild": "node scripts/copy-assets.js",
     "build": "vite build",
-    "postbuild": "node scripts/fix-paths.js && node inline-critical.js",
+    "postbuild": "node scripts/copy-js.js && node scripts/fix-paths.js && node inline-critical.js",
     "images:webp": "node convert-to-webp.js",
     "deploy": "npm run build && npx wrangler pages deploy dist",
     "dev:all": "concurrently -n 'backend,frontend' -c 'bgBlue.bold,bgGreen.bold' \"npm run dev\" \"npm run frontend:dev\"",

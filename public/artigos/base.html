@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="pt-BR" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{TITLE}} - RealCred +</title>
+    <meta name="description" content="{{DESCRIPTION}}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="../styles.css">
+    <link rel="stylesheet" href="../styles/article.css">
+    <link rel="stylesheet" href="../styles/faq.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&family=Montserrat:wght@700;800;900&display=swap" rel="stylesheet">
+    <link rel="icon" type="image/jpeg" href="../assets/LOGO%202.jpeg">
+    <meta name="theme-color" content="#2563eb">
+</head>
+<body class="bg-gray-50 text-gray-800 font-sans antialiased leading-relaxed">
+    <a href="#main-content" class="skip-link sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:bg-blue-600 focus:text-white focus:px-4 focus:py-2 focus:rounded-lg focus:z-50">Pular para conteúdo principal</a>
+    
+    <!-- Back to top button -->
+    <button id="back-to-top" class="fixed bottom-8 right-8 bg-blue-600 text-white p-3 rounded-full shadow-lg opacity-0 invisible transition-all duration-300 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 z-40">
+        <i class="fas fa-arrow-up"></i>
+    </button>
+    
+    <!-- Header -->
+    <header class="header fixed w-full bg-white shadow-sm z-30 transition-all duration-300">
+        <nav class="nav max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-20">
+                <div class="flex-shrink-0">
+                    <a href="../index.html" class="flex items-center space-x-2">
+                        <img src="../assets/LOGO%202.jpeg" alt="RealCred + Logotipo" class="h-10 w-auto rounded-full">
+                        <span class="text-xl font-bold text-blue-600">RealCred +</span>
+                    </a>
+                </div>
+                
+                <!-- Desktop Navigation -->
+                <div class="hidden md:flex items-center space-x-8">
+                    <ul class="flex space-x-8">
+                        <li><a href="../index.html#sobre" class="text-gray-700 hover:text-blue-600 font-medium transition-colors duration-200">Sobre Nós</a></li>
+                        <li><a href="../index.html#servicos" class="text-gray-700 hover:text-blue-600 font-medium transition-colors duration-200">Serviços</a></li>
+                        <li><a href="../index.html#depoimentos" class="text-gray-700 hover:text-blue-600 font-medium transition-colors duration-200">Depoimentos</a></li>
+                        <li><a href="../index.html#contato" class="text-gray-700 hover:text-blue-600 font-medium transition-colors duration-200">Contato</a></li>
+                    </ul>
+                    <a href="../index.html#simulacao" class="ml-6 px-6 py-2.5 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition-colors duration-200 shadow-md hover:shadow-lg transform hover:-translate-y-0.5">
+                        Simule seu Crédito
+                    </a>
+                </div>
+                
+                <!-- Mobile menu button -->
+                <div class="md:hidden">
+                    <button class="mobile-menu-toggle p-2 rounded-md text-gray-700 hover:text-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500" aria-label="Abrir menu de navegação" aria-expanded="false">
+                        <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7" />
+                        </svg>
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Mobile Navigation -->
+            <div class="mobile-menu hidden md:hidden py-4 border-t border-gray-200 mt-2">
+                <ul class="space-y-2">
+                    <li><a href="../index.html#sobre" class="block px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-md">Sobre Nós</a></li>
+                    <li><a href="../index.html#servicos" class="block px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-md">Serviços</a></li>
+                    <li><a href="../index.html#depoimentos" class="block px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-md">Depoimentos</a></li>
+                    <li><a href="../index.html#contato" class="block px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-md">Contato</a></li>
+                    <li class="mt-4">
+                        <a href="../index.html#simulacao" class="block text-center px-4 py-2.5 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition-colors duration-200">
+                            Simule seu Crédito
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </nav>
+    </header>
+
+    <main id="main-content" class="pt-24 pb-16 px-4 sm:px-6 lg:px-8 max-w-4xl mx-auto">
+        <div class="mb-8">
+            <a href="../index.html#educacao-financeira" class="inline-flex items-center text-blue-600 hover:text-blue-800 font-medium transition-colors duration-200 group">
+                <svg class="w-5 h-5 mr-2 transition-transform duration-200 group-hover:-translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+                </svg>
+                Voltar para o blog
+            </a>
+        </div>
+        
+        <article class="bg-white rounded-xl shadow-md overflow-hidden">
+            <header class="px-6 pt-8 pb-6 sm:px-10 sm:pt-12 sm:pb-10">
+                <div class="flex flex-wrap gap-3 mb-4">
+                    <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-blue-100 text-blue-800">
+                        {{CATEGORY}}
+                    </span>
+                    <span class="inline-flex items-center text-sm text-gray-500">
+                        <i class="far fa-clock mr-1.5"></i>
+                        {{READ_TIME}} de leitura
+                    </span>
+                    <span class="inline-flex items-center text-sm text-gray-500">
+                        <i class="far fa-calendar-alt mr-1.5"></i>
+                        {{DATE}}
+                    </span>
+                </div>
+                <h1 class="text-3xl md:text-4xl font-bold text-gray-900 leading-tight mb-6">{{TITLE}}</h1>
+                <div class="flex items-center">
+                    <div class="flex-shrink-0 mr-4">
+                        <img class="h-12 w-12 rounded-full" src="../assets/team/author.jpg" alt="Autor do artigo">
+                    </div>
+                    <div>
+                        <p class="text-sm font-medium text-gray-900">Equipe RealCred +</p>
+                        <p class="text-sm text-gray-500">Especialistas em Crédito Consignado</p>
+                    </div>
+                </div>
+            </header>
+            
+            <div class="relative
+                <img src="{{IMAGE}}" alt="{{IMAGE_ALT}}" class="w-full h-auto max-h-96 object-cover">
+            </div>
+            
+            <div class="article-content px-6 py-8 sm:px-10 prose prose-lg max-w-none prose-headings:font-bold prose-headings:text-gray-900 prose-p:text-gray-700 prose-a:text-blue-600 hover:prose-a:text-blue-800 prose-strong:text-gray-900 prose-blockquote:border-l-4 prose-blockquote:border-blue-600 prose-blockquote:pl-4 prose-blockquote:italic prose-blockquote:text-gray-700 prose-ul:list-disc prose-ol:list-decimal prose-li:my-1.5 prose-img:rounded-lg prose-img:shadow-md">
+                {{CONTENT}}
+            </div>
+            
+            <footer class="px-6 py-6 sm:px-10 border-t border-gray-100 mt-8">
+                <div class="flex flex-wrap items-center justify-between">
+                    <div class="flex space-x-4 mb-4 sm:mb-0">
+                        <span class="text-gray-700 font-medium">Compartilhe:</span>
+                        <div class="flex space-x-3">
+                            <a href="#" class="text-gray-500 hover:text-blue-600 transition-colors duration-200" aria-label="Compartilhar no Facebook">
+                                <i class="fab fa-facebook-f text-lg"></i>
+                            </a>
+                            <a href="#" class="text-gray-500 hover:text-blue-400 transition-colors duration-200" aria-label="Compartilhar no Twitter">
+                                <i class="fab fa-twitter text-lg"></i>
+                            </a>
+                            <a href="#" class="text-gray-500 hover:text-pink-600 transition-colors duration-200" aria-label="Compartilhar no Instagram">
+                                <i class="fab fa-instagram text-lg"></i>
+                            </a>
+                            <a href="#" class="text-gray-500 hover:text-green-600 transition-colors duration-200" aria-label="Compartilhar no WhatsApp">
+                                <i class="fab fa-whatsapp text-lg"></i>
+                            </a>
+                        </div>
+                    </div>
+                    <a href="../index.html#contato" class="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors duration-200">
+                        Fale com um especialista
+                        <svg class="ml-2 -mr-1 w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                            <path fill-rule="evenodd" d="M10.293 5.293a1 1 0 011.414 0l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414-1.414L12.586 11H5a1 1 0 110-2h7.586l-2.293-2.293a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+                        </svg>
+                    </a>
+                </div>
+            </footer>
+        </article>
+        
+        <!-- Related Articles -->
+        <div class="mt-16">
+            <h2 class="text-2xl font-bold text-gray-900 mb-6">Artigos Relacionados</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {{RELATED_ARTICLES}}
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-gray-900 text-gray-300 pt-16 pb-8">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10">
+                <!-- Company Info -->
+                <div class="space-y-6">
+                    <div class="flex items-center space-x-3">
+                        <img src="../assets/LOGO%202.jpeg" alt="RealCred + Logotipo" class="h-12 w-12 rounded-full">
+                        <span class="text-2xl font-bold text-white">RealCred +</span>
+                    </div>
+                    <p class="text-gray-400">Especialistas em crédito consignado em Lorena, SP. Oferecendo as melhores taxas e condições para você realizar seus sonhos.</p>
+                    <div class="flex space-x-4">
+                        <a href="#" class="text-gray-400 hover:text-white transition-colors duration-200" aria-label="Instagram">
+                            <i class="fab fa-instagram text-xl"></i>
+                        </a>
+                        <a href="#" class="text-gray-400 hover:text-blue-600 transition-colors duration-200" aria-label="Facebook">
+                            <i class="fab fa-facebook-f text-xl"></i>
+                        </a>
+                        <a href="#" class="text-gray-400 hover:text-green-500 transition-colors duration-200" aria-label="WhatsApp">
+                            <i class="fab fa-whatsapp text-xl"></i>
+                        </a>
+                        <a href="#" class="text-gray-400 hover:text-blue-400 transition-colors duration-200" aria-label="LinkedIn">
+                            <i class="fab fa-linkedin-in text-xl"></i>
+                        </a>
+                    </div>
+                </div>
+                
+                <!-- Services -->
+                <div>
+                    <h4 class="text-white font-semibold text-lg mb-6 uppercase tracking-wider">Serviços</h4>
+                    <ul class="space-y-3">
+                        <li><a href="../index.html#servicos" class="text-gray-400 hover:text-white transition-colors duration-200 flex items-center">
+                            <i class="fas fa-chevron-right text-blue-500 text-xs mr-2"></i>
+                            Empréstimo INSS
+                        </a></li>
+                        <li><a href="../index.html#servicos" class="text-gray-400 hover:text-white transition-colors duration-200 flex items-center">
+                            <i class="fas fa-chevron-right text-blue-500 text-xs mr-2"></i>
+                            Servidores Públicos
+                        </a></li>
+                        <li><a href="../index.html#servicos" class="text-gray-400 hover:text-white transition-colors duration-200 flex items-center">
+                            <i class="fas fa-chevron-right text-blue-500 text-xs mr-2"></i>
+                            Militares
+                        </a></li>
+                        <li><a href="../index.html#servicos" class="text-gray-400 hover:text-white transition-colors duration-200 flex items-center">
+                            <i class="fas fa-chevron-right text-blue-500 text-xs mr-2"></i>
+                            Portabilidade
+                        </a></li>
+                        <li><a href="../index.html#servicos" class="text-gray-400 hover:text-white transition-colors duration-200 flex items-center">
+                            <i class="fas fa-chevron-right text-blue-500 text-xs mr-2"></i>
+                            Cartão de Crédito Consignado
+                        </a></li>
+                    </ul>
+                </div>
+                
+                <!-- Company -->
+                <div>
+                    <h4 class="text-white font-semibold text-lg mb-6 uppercase tracking-wider">Empresa</h4>
+                    <ul class="space-y-3">
+                        <li><a href="../index.html#sobre" class="text-gray-400 hover:text-white transition-colors duration-200 flex items-center">
+                            <i class="fas fa-chevron-right text-blue-500 text-xs mr-2"></i>
+                            Sobre Nós
+                        </a></li>
+                        <li><a href="../index.html#depoimentos" class="text-gray-400 hover:text-white transition-colors duration-200 flex items-center">
+                            <i class="fas fa-chevron-right text-blue-500 text-xs mr-2"></i>
+                            Depoimentos
+                        </a></li>
+                        <li><a href="../index.html#contato" class="text-gray-400 hover:text-white transition-colors duration-200 flex items-center">
+                            <i class="fas fa-chevron-right text-blue-500 text-xs mr-2"></i>
+                            Contato
+                        </a></li>
+                        <li><a href="../blog.html" class="text-gray-400 hover:text-white transition-colors duration-200 flex items-center">
+                            <i class="fas fa-chevron-right text-blue-500 text-xs mr-2"></i>
+                            Blog
+                        </a></li>
+                        <li><a href="../politica-de-privacidade.html" class="text-gray-400 hover:text-white transition-colors duration-200 flex items-center">
+                            <i class="fas fa-chevron-right text-blue-500 text-xs mr-2"></i>
+                            Política de Privacidade
+                        </a></li>
+                    </ul>
+                </div>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4>Contato</h4>
+                    <p>📍 R. Dr. José Machado Coelho de Castro, 238<br>
+                    Centro, Lorena - SP, 12600-050</p>
+                    <p>📞 <a href="https://wa.me/5512982827447" target="_blank" rel="noopener noreferrer">(12) 98282-7447</a></p>
+                    <p>✉️ <a href="mailto:realcredlorena@gmail.com">realcredlorena@gmail.com</a></p>
+                    <p>🏢 CNPJ: 35.473.133/0001-60</p>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2025 RealCred +. Todos os direitos reservados.</p>
+                <p>Empréstimos sujeitos à análise e aprovação. Taxas e condições podem variar conforme perfil do cliente.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="../scripts.js"></script>
+    <!-- Back to top button functionality -->
+    <script>
+        // Back to top button
+        const backToTopButton = document.getElementById('back-to-top');
+        
+        window.addEventListener('scroll', () => {
+            if (window.pageYOffset > 300) {
+                backToTopButton.classList.remove('opacity-0', 'invisible');
+                backToTopButton.classList.add('opacity-100', 'visible');
+            } else {
+                backToTopButton.classList.remove('opacity-100', 'visible');
+                backToTopButton.classList.add('opacity-0', 'invisible');
+            }
+        });
+        
+        backToTopButton.addEventListener('click', () => {
+            window.scrollTo({
+                top: 0,
+                behavior: 'smooth'
+            });
+        });
+        
+        // Mobile menu toggle
+        const mobileMenuButton = document.querySelector('.mobile-menu-toggle');
+        const mobileMenu = document.querySelector('.mobile-menu');
+        
+        mobileMenuButton.addEventListener('click', () => {
+            const isExpanded = mobileMenuButton.getAttribute('aria-expanded') === 'true';
+            mobileMenuButton.setAttribute('aria-expanded', !isExpanded);
+            mobileMenu.classList.toggle('hidden');
+            
+            // Toggle icon between menu and close
+            const menuIcon = mobileMenuButton.querySelector('svg');
+            if (!isExpanded) {
+                menuIcon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />';
+            } else {
+                menuIcon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7" />';
+            }
+        });
+        
+        // Close mobile menu when clicking on a link
+        document.querySelectorAll('.mobile-menu a').forEach(link => {
+            link.addEventListener('click', () => {
+                mobileMenu.classList.add('hidden');
+                mobileMenuButton.setAttribute('aria-expanded', 'false');
+                const menuIcon = mobileMenuButton.querySelector('svg');
+                menuIcon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7" />';
+            });
+        });
+        
+        // Add smooth scrolling to all links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                if (this.getAttribute('href') !== '#') {
+                    e.preventDefault();
+                    const targetId = this.getAttribute('href');
+                    const targetElement = document.querySelector(targetId);
+                    
+                    if (targetElement) {
+                        window.scrollTo({
+                            top: targetElement.offsetTop - 100,
+                            behavior: 'smooth'
+                        });
+                    }
+                }
+            });
+        });
+    </script>
+    
+    <script src="../js/main.js"></script>
+    <script src="../js/article.js"></script>
+</body>
+</html>

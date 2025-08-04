@@ -22,6 +22,10 @@ async function copyAssets() {
     // Copiar service worker para a pasta de build
     await fse.copy('sw.js', 'public/sw.js', { overwrite: true });
     
+    // Copiar arquivos JavaScript para a pasta dist (após o build do Vite)
+    await fse.ensureDir('dist/js');
+    await fse.copy('js', 'dist/js', { overwrite: true });
+    
     console.log('✅ Assets copiados com sucesso!');
   } catch (err) {
     console.error('❌ Erro ao copiar assets:', err);
