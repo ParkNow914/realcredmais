@@ -26,6 +26,7 @@
     --gray-700: #334155;
     --gray-800: #1e293b;
     --gray-900: #0f172a;
+    --navy-blue: #000080; /* Azul marinho */
     
     /* Gradientes modernos */
     --gradient-primary: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
@@ -135,11 +136,6 @@ body {
     -webkit-text-fill-color: transparent;
     background-clip: text;
     font-weight: 600;
-    color: var(--gray-800);
-    background: none;
-    -webkit-background-clip: initial;
-    -webkit-text-fill-color: initial;
-    background-clip: initial;
 }
 
 /* Botões modernos */
@@ -224,7 +220,7 @@ body {
     left: 0;
     right: 0;
     z-index: 1000;
-    background: rgba(255, 255, 255, 0.95);
+    background: var(--navy-blue);
     backdrop-filter: blur(10px);
     box-shadow: var(--shadow-sm);
     transition: all var(--transition-normal);
@@ -232,7 +228,7 @@ body {
 }
 
 .header.scrolled {
-    background: rgba(255, 255, 255, 0.98);
+    background: var(--navy-blue);
     box-shadow: var(--shadow-lg);
 }
 
@@ -286,7 +282,7 @@ body {
 }
 
 .nav-link {
-    color: var(--gray-700);
+    color: var(--white);
     text-decoration: none;
     font-weight: 500;
     transition: all var(--transition-fast);
@@ -309,7 +305,7 @@ body {
 }
 
 .nav-link:hover {
-    color: var(--primary);
+    color: var(--accent);
 }
 
 .nav-cta {
@@ -329,7 +325,7 @@ body {
     display: block;
     width: 25px;
     height: 3px;
-    background: var(--gray-700);
+    background: var(--white);
     margin: 5px 0;
     transition: all var(--transition-normal);
 }
