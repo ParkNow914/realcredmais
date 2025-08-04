@@ -1,7 +1,9 @@
 // Máscaras para campos de formulário
 document.addEventListener('DOMContentLoaded', function() {
+    console.log('Form masks loaded and initializing...');
     // Máscara para CPF
     const cpfInput = document.getElementById('cpf');
+    console.log('CPF input found:', !!cpfInput);
     if (cpfInput) {
         cpfInput.addEventListener('input', function(e) {
             let value = e.target.value.replace(/\D/g, '');
@@ -33,10 +35,34 @@ document.addEventListener('DOMContentLoaded', function() {
         cpfInput.addEventListener('blur', function(e) {
             validateCPF(e.target);
         });
+        
+        // Validação ao colar
+        cpfInput.addEventListener('paste', function(e) {
+            setTimeout(() => {
+                let value = e.target.value.replace(/\D/g, '');
+                if (value.length > 11) {
+                    value = value.substring(0, 11);
+                }
+                
+                let formattedValue = '';
+                for (let i = 0; i < value.length; i++) {
+                    if (i === 3 || i === 6) {
+                        formattedValue += '.';
+                    } else if (i === 9) {
+                        formattedValue += '-';
+                    }
+                    formattedValue += value[i];
+                }
+                
+                e.target.value = formattedValue;
+                validateCPF(e.target);
+            }, 10);
+        });
     }
 
     // Máscara para telefone
     const telefoneInput = document.getElementById('telefone');
+    console.log('Telefone input found:', !!telefoneInput);
     if (telefoneInput) {
         telefoneInput.addEventListener('input', function(e) {
             let value = e.target.value.replace(/\D/g, '');
@@ -67,10 +93,35 @@ document.addEventListener('DOMContentLoaded', function() {
         telefoneInput.addEventListener('blur', function(e) {
             validatePhone(e.target);
         });
+        
+        // Validação ao colar
+        telefoneInput.addEventListener('paste', function(e) {
+            setTimeout(() => {
+                let value = e.target.value.replace(/\D/g, '');
+                
+                if (value.length > 11) {
+                    value = value.substring(0, 11);
+                }
+                
+                if (value.length > 10) {
+                    value = value.replace(/(\d{2})(\d{5})(\d{0,4}).*/, '($1) $2-$3');
+                } else if (value.length > 5) {
+                    value = value.replace(/(\d{2})(\d{4})(\d{0,4})/, '($1) $2-$3');
+                } else if (value.length > 2) {
+                    value = value.replace(/(\d{2})(\d{0,5})/, '($1) $2');
+                } else if (value.length > 0) {
+                    value = value.replace(/^(\d*)/, '($1');
+                }
+                
+                e.target.value = value;
+                validatePhone(e.target);
+            }, 10);
+        });
     }
 
     // Máscara para valor monetário (melhorada)
     const valorInput = document.getElementById('valor');
+    console.log('Valor input found:', !!valorInput);
     if (valorInput) {
         valorInput.addEventListener('input', function(e) {
             let value = e.target.value.replace(/[^\d]/g, '');
@@ -100,10 +151,31 @@ document.addEventListener('DOMContentLoaded', function() {
         valorInput.addEventListener('blur', function(e) {
             validateMoney(e.target);
         });
+        
+        // Validação ao colar
+        valorInput.addEventListener('paste', function(e) {
+            setTimeout(() => {
+                let value = e.target.value.replace(/[^\d]/g, '');
+                if (value === '') {
+                    e.target.value = '';
+                    return;
+                }
+                
+                const number = parseInt(value);
+                const formatted = (number / 100).toLocaleString('pt-BR', {
+                    minimumFractionDigits: 2,
+                    maximumFractionDigits: 2
+                });
+                
+                e.target.value = formatted;
+                validateMoney(e.target);
+            }, 10);
+        });
     }
 
     // Máscara para salário (melhorada)
     const salarioInput = document.getElementById('salario');
+    console.log('Salario input found:', !!salarioInput);
     if (salarioInput) {
         salarioInput.addEventListener('input', function(e) {
             let value = e.target.value.replace(/[^\d]/g, '');
@@ -132,6 +204,26 @@ document.addEventListener('DOMContentLoaded', function() {
         // Validação ao sair do campo
         salarioInput.addEventListener('blur', function(e) {
             validateMoney(e.target);
+        });
+        
+        // Validação ao colar
+        salarioInput.addEventListener('paste', function(e) {
+            setTimeout(() => {
+                let value = e.target.value.replace(/[^\d]/g, '');
+                if (value === '') {
+                    e.target.value = '';
+                    return;
+                }
+                
+                const number = parseInt(value);
+                const formatted = (number / 100).toLocaleString('pt-BR', {
+                    minimumFractionDigits: 2,
+                    maximumFractionDigits: 2
+                });
+                
+                e.target.value = formatted;
+                validateMoney(e.target);
+            }, 10);
         });
     }
 
@@ -266,6 +358,24 @@ document.addEventListener('DOMContentLoaded', function() {
         return true;
     }
     
+    // Função para testar CPF válido (para debug)
+    function testCPF() {
+        const testCPFs = [
+            '111.444.777-35', // Válido
+            '123.456.789-09', // Inválido
+            '489.770.858-37'  // Válido (exemplo do usuário)
+        ];
+        
+        testCPFs.forEach(cpf => {
+            console.log(`CPF ${cpf}: ${isValidCPF(cpf) ? 'VÁLIDO' : 'INVÁLIDO'}`);
+        });
+    }
+    
+    // Executar teste se estiver em modo debug
+    if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+        setTimeout(testCPF, 1000);
+    }
+    
     // Função para mostrar erro no campo
     function showFieldError(input, message) {
         const errorId = input.id + '-error';
@@ -298,4 +408,6 @@ document.addEventListener('DOMContentLoaded', function() {
         input.classList.remove('error');
         input.classList.add('success');
     }
+    
+    console.log('Form masks initialization completed!');
 });
