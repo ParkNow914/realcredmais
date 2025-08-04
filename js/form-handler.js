@@ -226,7 +226,10 @@ class FormHandler {
     }
     
     isValidMoney(value) {
-        return /^\d{1,3}(\.\d{3})*,\d{2}$/.test(value) || /^\d+,\d{2}$/.test(value) || /^\d+$/.test(value);
+        // Remove formatação de moeda brasileira (R$ 1.234,56 -> 1234.56)
+        const cleanValue = value.replace(/[^\d,]/g, '').replace(',', '.');
+        const number = parseFloat(cleanValue);
+        return !isNaN(number) && number > 0;
     }
 
     async handleFormSubmit(event) {
@@ -277,7 +280,7 @@ class FormHandler {
             if (form.id === 'simulationForm') {
                 this.showSimulationResult(form, formData);
             } else {
-                // Para outros formulários, simular envio
+                // Para outros formulários, simular envio bem-sucedido
                 await this.sendFormData(form, formData);
                 // Mostrar mensagem de sucesso
                 this.showFeedback(form, 'Mensagem enviada com sucesso! Em breve entraremos em contato.', 'success');
@@ -299,36 +302,20 @@ class FormHandler {
         // Simular atraso de rede
         await new Promise(resolve => setTimeout(resolve, 1000));
         
-        // Se você quiser implementar o envio real para um backend no futuro,
-        // descomente e ajuste o código abaixo:
-        /*
-        try {
-            const response = await fetch('/api/lead', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(Object.fromEntries(formData))
-            });
-            
-            if (!response.ok) {
-                throw new Error('Erro ao enviar formulário');
-            }
-            
-            return await response.json();
-        } catch (error) {
-            console.error('Erro ao enviar dados:', error);
-            throw error;
-        }
-        */
+        // Simular envio bem-sucedido
+        console.log('Form data being sent:', Object.fromEntries(formData));
         
         // Por enquanto, apenas simulamos um envio bem-sucedido
         return { success: true };
     }
     
     showSimulationResult(form, formData) {
-        // Calcular valores da simulação
-        const valor = parseFloat(formData.get('valor').replace(/\./g, '').replace(',', '.'));
+        // Extrair e converter valores monetários
+        const valorStr = formData.get('valor').replace(/[^\d,]/g, '').replace(',', '.');
+        const salarioStr = formData.get('salario').replace(/[^\d,]/g, '').replace(',', '.');
+        
+        const valor = parseFloat(valorStr);
+        const salario = parseFloat(salarioStr);
         const prazo = parseInt(formData.get('prazo'));
         const categoria = formData.get('categoria');
         
@@ -342,11 +329,12 @@ class FormHandler {
             'fgts': 2.2
         };
         
-        const taxaMensal = taxhas[categoria] || 2.5; // Taxa padrão se a categoria não for encontrada
+        const taxaMensal = taxas[categoria] || 2.5; // Taxa padrão se a categoria não for encontrada
         const taxaMensalDecimal = taxaMensal / 100;
         
         // Cálculo da parcela (PMT)
         const parcela = this.calcularParcela(valor, taxaMensalDecimal, prazo);
+        const totalPagar = parcela * prazo;
         
         // Mostrar resultado
         const resultHtml = `
@@ -368,9 +356,13 @@ class FormHandler {
                     <span class="label">Valor da Parcela:</span>
                     <span class="value">${this.formatCurrency(parcela)}</span>
                 </div>
+                <div class="result-item">
+                    <span class="label">Total a Pagar:</span>
+                    <span class="value">${this.formatCurrency(totalPagar)}</span>
+                </div>
                 <div class="result-actions">
-                    <button type="button" class="btn btn-secondary" onclick="this.closest('.simulation-result').remove();">Nova Simulação</button>
-                    <a href="#contato" class="btn btn-primary">Falar com Consultor</a>
+                    <button type="button" class="btn btn-secondary" onclick="this.closest('.simulation-result').remove(); form.style.display = 'block';">Nova Simulação</button>
+                    <a href="https://wa.me/5512982827447" class="btn btn-primary" target="_blank" rel="noopener noreferrer">Falar com Consultor</a>
                 </div>
             </div>
         `;
@@ -498,11 +490,6 @@ class FormHandler {
             }, 5000);
         }
         
-        field.setAttribute('aria-describedby', errorElement.id);
-        
-        // Rola até o campo com erro
-        field.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        
         return feedbackElement;
     }
 } // Close the FormHandler class
@@ -511,3 +498,31 @@ class FormHandler {
 document.addEventListener('DOMContentLoaded', () => {
     new FormHandler();
 });
+
+// Função global para resetar simulação
+function resetSimulation() {
+    const simulationResult = document.querySelector('.simulation-result');
+    const simulationForm = document.getElementById('simulationForm');
+    
+    if (simulationResult) {
+        simulationResult.remove();
+    }
+    
+    if (simulationForm) {
+        simulationForm.style.display = 'block';
+        simulationForm.reset();
+        
+        // Limpar mensagens de erro
+        const errorMessages = simulationForm.querySelectorAll('.error-message');
+        errorMessages.forEach(error => {
+            error.textContent = '';
+            error.style.display = 'none';
+        });
+        
+        // Remover classes de erro dos campos
+        const errorFields = simulationForm.querySelectorAll('.error');
+        errorFields.forEach(field => {
+            field.classList.remove('error');
+        });
+    }
+}

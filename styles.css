@@ -113,6 +113,11 @@ body {
     margin-bottom: var(--spacing-4);
     line-height: 1.2;
     font-family: var(--font-family-display);
+    color: var(--gray-800);
+    background: none;
+    -webkit-background-clip: initial;
+    -webkit-text-fill-color: initial;
+    background-clip: initial;
 }
 
 .section-subtitle {
@@ -130,6 +135,11 @@ body {
     -webkit-text-fill-color: transparent;
     background-clip: text;
     font-weight: 600;
+    color: var(--gray-800);
+    background: none;
+    -webkit-background-clip: initial;
+    -webkit-text-fill-color: initial;
+    background-clip: initial;
 }
 
 /* Botões modernos */
@@ -208,7 +218,8 @@ body {
 
 /* Header moderno */
 .header {
-    position: fixed;
+    /* position: fixed; */
+    position: static;
     top: 0;
     left: 0;
     right: 0;
@@ -261,6 +272,11 @@ body {
     -webkit-text-fill-color: transparent;
     background-clip: text;
     font-family: var(--font-family-display);
+    color: var(--gray-800);
+    background: none;
+    -webkit-background-clip: initial;
+    -webkit-text-fill-color: initial;
+    background-clip: initial;
 }
 
 .nav-menu {
@@ -2605,10 +2621,12 @@ textarea:focus {
 }
 
 .comparison-header .comparison-item {
-    padding: var(--spacing-4);
-    font-weight: 600;
-    text-align: center;
-    border-right: 1px solid rgba(255, 255, 255, 0.2);
+    color: var(--gray-800) !important;
+    background: none !important;
+    -webkit-background-clip: initial !important;
+    -webkit-text-fill-color: initial !important;
+    background-clip: initial !important;
+    font-weight: 700;
 }
 
 .comparison-header .comparison-item:last-child {

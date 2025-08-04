@@ -24,31 +24,6 @@ document.addEventListener('DOMContentLoaded', function() {
             
             // Atualiza o valor do campo
             e.target.value = formattedValue;
-            
-            // Dispara o evento de validação
-            const event = new Event('blur');
-            e.target.dispatchEvent(event);
-        });
-        
-        // Validação ao sair do campo
-        cpfInput.addEventListener('blur', function(e) {
-            const value = e.target.value.replace(/\D/g, '');
-            if (value.length === 11) {
-                const formHandler = new FormHandler();
-                if (!formHandler.isValidCPF(e.target.value)) {
-                    const errorElement = document.getElementById('cpf-error') || e.target.nextElementSibling;
-                    if (errorElement && errorElement.classList.contains('error-message')) {
-                        errorElement.textContent = 'CPF inválido';
-                        errorElement.style.display = 'block';
-                    }
-                } else {
-                    const errorElement = document.getElementById('cpf-error') || e.target.nextElementSibling;
-                    if (errorElement && errorElement.classList.contains('error-message')) {
-                        errorElement.textContent = '';
-                        errorElement.style.display = 'none';
-                    }
-                }
-            }
         });
     }
 
@@ -64,8 +39,10 @@ document.addEventListener('DOMContentLoaded', function() {
             }
             
             // Formatar telefone: (00) 00000-0000
-            if (value.length > 6) {
+            if (value.length > 10) {
                 value = value.replace(/(\d{2})(\d{5})(\d{0,4}).*/, '($1) $2-$3');
+            } else if (value.length > 5) {
+                value = value.replace(/(\d{2})(\d{4})(\d{0,4})/, '($1) $2-$3');
             } else if (value.length > 2) {
                 value = value.replace(/(\d{2})(\d{0,5})/, '($1) $2');
             } else if (value.length > 0) {
@@ -76,45 +53,106 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    // Máscara para valor monetário
+    // Máscara para valor monetário (melhorada)
     const valorInput = document.getElementById('valor');
     if (valorInput) {
         valorInput.addEventListener('input', function(e) {
-            let value = e.target.value.replace(/[^\d,]/g, '');
+            let value = e.target.value.replace(/[^\d]/g, '');
             
-            // Garantir que há apenas uma vírgula
-            const parts = value.split(',');
-            if (parts.length > 2) {
-                value = parts[0] + ',' + parts.slice(1).join('');
+            // Se não há valor, não faz nada
+            if (value === '') {
+                e.target.value = '';
+                return;
             }
             
-            // Limitar a 2 casas decimais
-            if (parts[1] && parts[1].length > 2) {
-                value = parts[0] + ',' + parts[1].substring(0, 2);
-            }
+            // Converte para número
+            const number = parseInt(value);
             
-            e.target.value = value;
+            // Formata como moeda brasileira
+            const formatted = (number / 100).toLocaleString('pt-BR', {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2
+            });
+            
+            e.target.value = formatted;
         });
     }
 
-    // Máscara para salário
+    // Máscara para salário (melhorada)
     const salarioInput = document.getElementById('salario');
     if (salarioInput) {
         salarioInput.addEventListener('input', function(e) {
-            let value = e.target.value.replace(/[^\d,]/g, '');
+            let value = e.target.value.replace(/[^\d]/g, '');
             
-            // Garantir que há apenas uma vírgula
-            const parts = value.split(',');
-            if (parts.length > 2) {
-                value = parts[0] + ',' + parts.slice(1).join('');
+            // Se não há valor, não faz nada
+            if (value === '') {
+                e.target.value = '';
+                return;
             }
             
-            // Limitar a 2 casas decimais
-            if (parts[1] && parts[1].length > 2) {
-                value = parts[0] + ',' + parts[1].substring(0, 2);
-            }
+            // Converte para número
+            const number = parseInt(value);
             
-            e.target.value = value;
+            // Formata como moeda brasileira
+            const formatted = (number / 100).toLocaleString('pt-BR', {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2
+            });
+            
+            e.target.value = formatted;
         });
+    }
+
+    // Validação para nome completo
+    const nomeInput = document.getElementById('nome');
+    if (nomeInput) {
+        nomeInput.addEventListener('blur', function(e) {
+            const value = e.target.value.trim();
+            const errorElement = document.getElementById('nome-error');
+            
+            if (!value) {
+                if (errorElement) {
+                    errorElement.textContent = 'Nome completo é obrigatório';
+                    errorElement.style.display = 'block';
+                }
+            } else if (value.split(' ').length < 2) {
+                if (errorElement) {
+                    errorElement.textContent = 'Digite seu nome completo';
+                    errorElement.style.display = 'block';
+                }
+            } else {
+                if (errorElement) {
+                    errorElement.textContent = '';
+                    errorElement.style.display = 'none';
+                }
+            }
+        });
+    }
+
+    // Validação para email
+    const emailInput = document.getElementById('email');
+    if (emailInput) {
+        emailInput.addEventListener('blur', function(e) {
+            const value = e.target.value.trim();
+            const errorElement = document.getElementById('email-error');
+            
+            if (value && !isValidEmail(value)) {
+                if (errorElement) {
+                    errorElement.textContent = 'Digite um email válido';
+                    errorElement.style.display = 'block';
+                }
+            } else {
+                if (errorElement) {
+                    errorElement.textContent = '';
+                    errorElement.style.display = 'none';
+                }
+            }
+        });
+    }
+
+    // Função para validar email
+    function isValidEmail(email) {
+        const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        return re.test(email);
     }
 });
