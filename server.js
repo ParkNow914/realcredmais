@@ -120,10 +120,10 @@ const isValidPhone = (phone) => {
 
 // Configure nodemailer transporter
 const transporter = nodemailer.createTransport({
-  service: 'gmail',
+  service: process.env.EMAIL_SERVICE || 'gmail',
   auth: {
-    user: process.env.GMAIL_USER,
-    pass: process.env.GMAIL_PASS
+    user: process.env.EMAIL_USER,
+    pass: process.env.EMAIL_PASS
   }
 });
 
@@ -270,7 +270,7 @@ app.post('/api/lead', async (req, res) => {
 
     // Send email
     const mailOptions = {
-      from: `"RealCred" <${process.env.GMAIL_USER}>`,
+      from: process.env.EMAIL_FROM || `"RealCred" <${process.env.EMAIL_USER}>`,
       to: process.env.LEAD_RECEIVER,
       subject: 'Novo Lead - Simulação de Empréstimo',
       html: emailTemplate
@@ -310,8 +310,8 @@ app.post('/api/contact', async (req, res) => {
   try {
     // Enviar email
     const mailOptions = {
-      from: `Contato Site RealCred <${process.env.GMAIL_USER}>`,
-      to: process.env.CONTACT_RECEIVER || process.env.GMAIL_USER,
+      from: process.env.EMAIL_FROM || `"Contato Site RealCred" <${process.env.EMAIL_USER}>`,
+      to: process.env.CONTACT_RECEIVER || process.env.EMAIL_USER,
       subject: `Novo Contato: ${assunto}`,
       text: `Novo contato recebido através do site:
 

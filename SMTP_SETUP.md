@@ -10,8 +10,10 @@ Copie o arquivo `.env.example` para `.env` e configure as seguintes variáveis:
 
 ```bash
 # Configuração SMTP Gmail
-GMAIL_USER=seu-email@gmail.com
-GMAIL_PASS=sua-senha-de-app
+EMAIL_SERVICE=gmail
+EMAIL_USER=seu-email@gmail.com
+EMAIL_PASS=sua-senha-de-app
+EMAIL_FROM="RealCred+ <seu-email@gmail.com>"
 
 # Emails de destino
 LEAD_RECEIVER=leads@seudominio.com
@@ -32,7 +34,7 @@ Para usar o Gmail como servidor SMTP:
    - Selecione "Email" e "Outro (nome personalizado)"
    - Digite "RealCred" como nome
    - Copie a senha gerada (16 caracteres)
-3. **Usar a senha de app** no campo `GMAIL_PASS`
+3. **Usar a senha de app** no campo `EMAIL_PASS`
 
 ### 3. Configurar emails de destino
 
