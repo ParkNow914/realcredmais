@@ -148,7 +148,7 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         }
 
-        contactForm.addEventListener('submit', function(e) {
+        contactForm.addEventListener('submit', async function(e) {
             e.preventDefault();
             
             // Validar campos obrigatórios
@@ -204,19 +204,41 @@ document.addEventListener('DOMContentLoaded', function() {
             
             // Se o formulário for válido, enviar
             if (isValid) {
-                // Simular envio
                 const submitButton = contactForm.querySelector('button[type="submit"]');
                 const originalText = submitButton.innerHTML;
                 submitButton.disabled = true;
                 submitButton.innerHTML = 'Enviando...';
                 
-                // Simular atraso de envio
-                setTimeout(() => {
-                    showSuccess('Mensagem enviada com sucesso! Em breve entraremos em contato.');
+                try {
+                    // Preparar dados do formulário
+                    const formData = new FormData(contactForm);
+                    const formDataObj = Object.fromEntries(formData);
+                    
+                    // Enviar para o backend
+                    const response = await fetch('/api/contact', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify(formDataObj)
+                    });
+                    
+                    const result = await response.json();
+                    
+                    if (!response.ok) {
+                        throw new Error(result.message || 'Erro ao enviar formulário');
+                    }
+                    
+                    showSuccess(result.message || 'Mensagem enviada com sucesso! Em breve entraremos em contato.');
                     contactForm.reset();
+                    
+                } catch (error) {
+                    console.error('Erro ao enviar formulário:', error);
+                    showError(document.getElementById('contactMensagem'), 'Erro ao enviar mensagem. Por favor, tente novamente.');
+                } finally {
                     submitButton.disabled = false;
                     submitButton.innerHTML = originalText;
-                }, 1000);
+                }
             }
         });
     }
