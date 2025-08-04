@@ -280,15 +280,15 @@ class FormHandler {
             if (form.id === 'simulationForm') {
                 this.showSimulationResult(form, formData);
             } else {
-                // Para outros formulários, simular envio bem-sucedido
-                await this.sendFormData(form, formData);
-                // Mostrar mensagem de sucesso
-                this.showFeedback(form, 'Mensagem enviada com sucesso! Em breve entraremos em contato.', 'success');
+                // Para outros formulários, enviar dados para o servidor
+                const result = await this.sendFormData(form, formData);
+                // Mostrar mensagem de sucesso do servidor
+                this.showFeedback(form, result.message || 'Mensagem enviada com sucesso! Em breve entraremos em contato.', 'success');
                 form.reset();
             }
         } catch (error) {
             console.error('Erro ao processar formulário:', error);
-            this.showFeedback(form, 'Erro ao processar sua solicitação. Por favor, tente novamente mais tarde.', 'error');
+            this.showFeedback(form, error.message || 'Erro ao processar sua solicitação. Por favor, tente novamente mais tarde.', 'error');
         } finally {
             // Reativar botão
             if (submitButton) {
@@ -299,14 +299,35 @@ class FormHandler {
     }
     
     async sendFormData(form, formData) {
-        // Simular atraso de rede
-        await new Promise(resolve => setTimeout(resolve, 1000));
+        const formDataObj = Object.fromEntries(formData);
+        console.log('Form data being sent:', formDataObj);
         
-        // Simular envio bem-sucedido
-        console.log('Form data being sent:', Object.fromEntries(formData));
+        // Determinar qual endpoint usar baseado no ID do formulário
+        let endpoint = '/api/lead'; // padrão para simulação
+        if (form.id === 'contactForm') {
+            endpoint = '/api/contact';
+        }
         
-        // Por enquanto, apenas simulamos um envio bem-sucedido
-        return { success: true };
+        try {
+            const response = await fetch(endpoint, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(formDataObj)
+            });
+            
+            const result = await response.json();
+            
+            if (!response.ok) {
+                throw new Error(result.message || 'Erro ao enviar formulário');
+            }
+            
+            return result;
+        } catch (error) {
+            console.error('Erro ao enviar formulário:', error);
+            throw error;
+        }
     }
     
     showSimulationResult(form, formData) {

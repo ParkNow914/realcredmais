@@ -179,12 +179,6 @@ app.post('/api/lead', async (req, res) => {
     // Here you would typically save the lead to a database
     console.log('Novo lead recebido:', { nome, email, telefone, categoria, salario, valor, prazo, cpf });
 
-    // Send success response
-    return res.status(200).json({
-      success: true,
-      message: 'Solicitação recebida com sucesso! Entraremos em contato em breve.'
-    });
-
     // Format values - handle both string with comma and dot, and number inputs
     const formatCurrency = (value) => {
       if (typeof value === 'number') return value;
@@ -228,7 +222,7 @@ app.post('/api/lead', async (req, res) => {
           
           <div class="info">
             <div class="info-label">CPF:</div>
-            <div class="info-value">${cpf.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, '$1.$2.$3-$4')}</div>
+            <div class="info-value">${cpf ? cpf.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, '$1.$2.$3-$4') : 'Não informado'}</div>
           </div>
           
           ${email ? `
