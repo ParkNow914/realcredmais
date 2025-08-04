@@ -3534,3 +3534,34 @@ textarea:focus {
     font-size: 0.92rem;
   }
 }
+
+/* Estados dos campos de formulário */
+.form-group input.error,
+.form-group select.error,
+.form-group textarea.error {
+    border-color: #ef4444 !important;
+    box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1) !important;
+}
+
+.form-group input.success,
+.form-group select.success,
+.form-group textarea.success {
+    border-color: #10b981 !important;
+    box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1) !important;
+}
+
+.error-message {
+    color: #ef4444;
+    font-size: 12px;
+    margin-top: 4px;
+    display: block;
+}
+
+.success-message {
+    background: #10b981;
+    color: white;
+    padding: 12px 16px;
+    border-radius: 8px;
+    margin-bottom: 16px;
+    font-weight: 500;
+}
