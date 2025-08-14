@@ -11,7 +11,7 @@ async function copyJavaScriptFiles() {
     // Copiar arquivos JavaScript para a pasta dist
     await fse.ensureDir('dist/js');
     await fse.copy('js', 'dist/js', { overwrite: true });
-    
+
     console.log('✅ Arquivos JavaScript copiados para dist/js com sucesso!');
   } catch (err) {
     console.error('❌ Erro ao copiar arquivos JavaScript:', err);
@@ -20,4 +20,4 @@ async function copyJavaScriptFiles() {
 }
 
 // Executa a função principal
-copyJavaScriptFiles().catch(console.error); 
+copyJavaScriptFiles().catch(console.error);

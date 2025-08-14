@@ -11,12 +11,12 @@ import bodyParser from 'body-parser';
 
 // Valid categories
 const CATEGORIAS_VALIDAS = [
-  'inss',               // Aposentado/Pensionista INSS
-  'servidor',           // Servidor Público
-  'militar',            // Militar
-  'clt',                // CLT
-  'credito-pessoal',    // Crédito Pessoal
-  'fgts'                // Saque Aniversário FGTS
+  'inss', // Aposentado/Pensionista INSS
+  'servidor', // Servidor Público
+  'militar', // Militar
+  'clt', // CLT
+  'credito-pessoal', // Crédito Pessoal
+  'fgts', // Saque Aniversário FGTS
 ];
 
 dotenv.config();
@@ -30,46 +30,50 @@ app.use(express.urlencoded({ extended: true }));
 
 // Log all incoming requests for debugging
 app.use((req, res, next) => {
-    console.log(`[${new Date().toISOString()}] ${req.method} ${req.url}`);
-    if (Object.keys(req.body).length > 0) {
-        console.log('Request body:', req.body);
-    }
-    next();
+  console.log(`[${new Date().toISOString()}] ${req.method} ${req.url}`);
+  if (Object.keys(req.body).length > 0) {
+    console.log('Request body:', req.body);
+  }
+  next();
 });
 
 // Para usar __dirname em ES modules
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-
-
 // Parse JSON bodies
 app.use(express.json());
 
 // Configuração de CORS dinâmica baseada em ambiente
-const allowedOrigins = process.env.ALLOWED_ORIGINS 
-    ? process.env.ALLOWED_ORIGINS.split(',').map(origin => origin.trim())
-    : ['http://localhost:3000', 'http://localhost:3001', 'http://127.0.0.1:3000', 'http://127.0.0.1:3002'];
+const allowedOrigins = process.env.ALLOWED_ORIGINS
+  ? process.env.ALLOWED_ORIGINS.split(',').map((origin) => origin.trim())
+  : [
+      'http://localhost:3000',
+      'http://localhost:3001',
+      'http://127.0.0.1:3000',
+      'http://127.0.0.1:3002',
+    ];
 
 // CORS configuration
 const corsOptions = {
-    origin: (origin, callback) => {
-        // Permite requisições sem origem (como mobile apps ou curl)
-        if (!origin) return callback(null, true);
-        
-        if (allowedOrigins.indexOf(origin) === -1) {
-            const msg = 'A política de CORS para este site não permite acesso a partir da origem especificada.';
-            return callback(new Error(msg), false);
-        }
-        return callback(null, true);
-    },
-    methods: ['GET', 'POST', 'OPTIONS', 'PUT', 'PATCH', 'DELETE'],
-    allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept', 'Origin'],
-    exposedHeaders: ['Content-Length', 'X-Foo', 'X-Bar'],
-    credentials: true,
-    maxAge: 86400, // 24 horas
-    preflightContinue: false,
-    optionsSuccessStatus: 204
+  origin: (origin, callback) => {
+    // Permite requisições sem origem (como mobile apps ou curl)
+    if (!origin) return callback(null, true);
+
+    if (allowedOrigins.indexOf(origin) === -1) {
+      const msg =
+        'A política de CORS para este site não permite acesso a partir da origem especificada.';
+      return callback(new Error(msg), false);
+    }
+    return callback(null, true);
+  },
+  methods: ['GET', 'POST', 'OPTIONS', 'PUT', 'PATCH', 'DELETE'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept', 'Origin'],
+  exposedHeaders: ['Content-Length', 'X-Foo', 'X-Bar'],
+  credentials: true,
+  maxAge: 86400, // 24 horas
+  preflightContinue: false,
+  optionsSuccessStatus: 204,
 };
 
 // Apply CORS with the specified options
@@ -80,14 +84,19 @@ app.options('*', cors(corsOptions));
 
 // Basic security headers
 app.use((req, res, next) => {
-    res.setHeader('X-Frame-Options', 'DENY');
-    res.setHeader('X-Content-Type-Options', 'nosniff');
-    res.setHeader('X-DNS-Prefetch-Control', 'off');
-    res.setHeader('Referrer-Policy', 'strict-origin-when-cross-origin');
-    next();
+  res.setHeader('X-Frame-Options', 'DENY');
+  res.setHeader('X-Content-Type-Options', 'nosniff');
+  res.setHeader('X-DNS-Prefetch-Control', 'off');
+  res.setHeader('Referrer-Policy', 'strict-origin-when-cross-origin');
+  next();
 });
 
-const limiter = rateLimit({ windowMs: 15 * 60 * 1000, max: 100, standardHeaders: true, legacyHeaders: false });
+const limiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 100,
+  standardHeaders: true,
+  legacyHeaders: false,
+});
 app.use(limiter);
 app.use(xssClean());
 app.use(mongoSanitize());
@@ -123,14 +132,14 @@ const transporter = nodemailer.createTransport({
   service: process.env.EMAIL_SERVICE || 'gmail',
   auth: {
     user: process.env.EMAIL_USER,
-    pass: process.env.EMAIL_PASS
-  }
+    pass: process.env.EMAIL_PASS,
+  },
 });
 
 // API endpoint for lead submission
 app.post('/api/lead', async (req, res) => {
   console.log('Received lead request:', req.body);
-  
+
   try {
     const { nome, email, telefone, categoria, salario, valor, prazo, cpf } = req.body;
 
@@ -142,18 +151,21 @@ app.post('/api/lead', async (req, res) => {
       return res.status(400).json({
         success: false,
         message: 'Por favor, preencha todos os campos obrigatórios.',
-        field: !nome ? 'nome' : !telefone ? 'telefone' : 'categoria'
+        field: !nome ? 'nome' : !telefone ? 'telefone' : 'categoria',
       });
     }
 
     // Validate category
     if (!CATEGORIAS_VALIDAS.includes(categoria)) {
-      console.error(`Invalid category received: ${categoria}. Valid categories are:`, CATEGORIAS_VALIDAS);
+      console.error(
+        `Invalid category received: ${categoria}. Valid categories are:`,
+        CATEGORIAS_VALIDAS
+      );
       return res.status(400).json({
         success: false,
         message: 'Categoria selecionada não é válida.',
         field: 'categoria',
-        validCategories: CATEGORIAS_VALIDAS
+        validCategories: CATEGORIAS_VALIDAS,
       });
     }
 
@@ -163,7 +175,7 @@ app.post('/api/lead', async (req, res) => {
       return res.status(400).json({
         success: false,
         message: 'Formato de telefone inválido. Use (99) 99999-9999.',
-        field: 'telefone'
+        field: 'telefone',
       });
     }
 
@@ -172,12 +184,21 @@ app.post('/api/lead', async (req, res) => {
       return res.status(400).json({
         success: false,
         message: 'Formato de e-mail inválido.',
-        field: 'email'
+        field: 'email',
       });
     }
 
     // Here you would typically save the lead to a database
-    console.log('Novo lead recebido:', { nome, email, telefone, categoria, salario, valor, prazo, cpf });
+    console.log('Novo lead recebido:', {
+      nome,
+      email,
+      telefone,
+      categoria,
+      salario,
+      valor,
+      prazo,
+      cpf,
+    });
 
     // Format values - handle both string with comma and dot, and number inputs
     const formatCurrency = (value) => {
@@ -225,19 +246,27 @@ app.post('/api/lead', async (req, res) => {
             <div class="info-value">${cpf ? cpf.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, '$1.$2.$3-$4') : 'Não informado'}</div>
           </div>
           
-          ${email ? `
+          ${
+            email
+              ? `
           <div class="info">
             <div class="info-label">E-mail:</div>
             <div class="info-value">${email}</div>
           </div>
-          ` : ''}
+          `
+              : ''
+          }
           
-          ${telefone ? `
+          ${
+            telefone
+              ? `
           <div class="info">
             <div class="info-label">Telefone:</div>
             <div class="info-value">${telefone}</div>
           </div>
-          ` : ''}
+          `
+              : ''
+          }
           
           <div class="info">
             <div class="info-label">Categoria:</div>
@@ -273,24 +302,23 @@ app.post('/api/lead', async (req, res) => {
       from: process.env.EMAIL_FROM || `"RealCred" <${process.env.EMAIL_USER}>`,
       to: process.env.LEAD_RECEIVER,
       subject: 'Novo Lead - Simulação de Empréstimo',
-      html: emailTemplate
+      html: emailTemplate,
     };
-    
+
     console.log('Sending email to:', process.env.LEAD_RECEIVER);
 
     await transporter.sendMail(mailOptions);
-    
+
     console.log('Email sent successfully');
     return res.status(200).json({
       success: true,
-      message: 'Solicitação enviada com sucesso! Entraremos em contato em breve.'
+      message: 'Solicitação enviada com sucesso! Entraremos em contato em breve.',
     });
-    
   } catch (error) {
     console.error('Error processing lead:', error);
     return res.status(500).json({
       success: false,
-      message: 'Erro interno do servidor. Por favor, tente novamente mais tarde.'
+      message: 'Erro interno do servidor. Por favor, tente novamente mais tarde.',
     });
   }
 });
@@ -303,7 +331,7 @@ app.post('/api/contact', async (req, res) => {
   if (!nome || !email || !telefone || !assunto || !mensagem) {
     return res.status(400).json({
       success: false,
-      message: 'Por favor, preencha todos os campos obrigatórios.'
+      message: 'Por favor, preencha todos os campos obrigatórios.',
     });
   }
 
@@ -321,26 +349,24 @@ Telefone: ${telefone}
 Assunto: ${assunto}
 Mensagem: ${mensagem}
 
-Data/Hora: ${new Date().toLocaleString('pt-BR')}`
+Data/Hora: ${new Date().toLocaleString('pt-BR')}`,
     };
 
     await transporter.sendMail(mailOptions);
-    
+
     res.json({
       success: true,
-      message: 'Mensagem enviada com sucesso! Entraremos em contato em breve.'
+      message: 'Mensagem enviada com sucesso! Entraremos em contato em breve.',
     });
   } catch (error) {
     console.error('Error processing contact form:', error);
     res.status(500).json({
       success: false,
-      message: 'Ocorreu um erro ao processar sua mensagem. Por favor, tente novamente mais tarde.'
+      message: 'Ocorreu um erro ao processar sua mensagem. Por favor, tente novamente mais tarde.',
     });
   }
 });
 
-
-
 app.listen(PORT, () => {
-    console.log(`Server rodando em http://localhost:${PORT}`);
+  console.log(`Server rodando em http://localhost:${PORT}`);
 });

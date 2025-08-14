@@ -14,25 +14,25 @@ export default defineConfig({
     hmr: {
       host: 'localhost',
       protocol: 'ws',
-      port: 3001
+      port: 3001,
     },
     proxy: {
       '/api': {
         target: 'http://127.0.0.1:3002',
         changeOrigin: true,
         secure: false,
-        rewrite: (path) => path.replace(/^\/api/, '')
+        rewrite: (path) => path.replace(/^\/api/, ''),
       },
       '/lead': {
         target: 'http://127.0.0.1:3002',
         changeOrigin: true,
-        secure: false
-      }
+        secure: false,
+      },
     },
     fs: {
       // Allow serving files from one level up from the package root
-      allow: ['..']
-    }
+      allow: ['..'],
+    },
   },
   build: {
     outDir: 'dist',

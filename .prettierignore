@@ -1,0 +1,14 @@
+# Diretórios e dependências
+node_modules/
+dist/
+build/
+coverage/
+.husky/
+.git/
+.vscode/
+
+# Binários e ativos
+assets/**/*.{png,jpg,jpeg,gif,webp,ico,pdf,zip,woff,woff2,ttf,otf}
+
+# Outros
+package-lock.json

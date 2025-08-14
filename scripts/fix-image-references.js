@@ -14,7 +14,7 @@ const FILES_TO_PROCESS = [
   'artigos/base.html',
   'scripts.js',
   'sw.js',
-  'server.js'
+  'server.js',
 ];
 
 // Mapeamento de correções
@@ -22,11 +22,11 @@ const IMAGE_REPLACEMENTS = {
   // Corrige caminhos com espaços
   'assets/LOGO%202.jpeg': 'assets/LOGO%202.jpeg', // Mantém o mesmo, mas padroniza a referência
   'assets/LOGO 2.jpeg': 'assets/LOGO%202.jpeg',
-  
+
   // Garante que os caminhos estão corretos
   '/assets/images/': 'assets/images/',
   'assets/images//': 'assets/images/',
-  
+
   // Imagens específicas
   'assets/images/realcred_logo.png': 'assets/images/realcred_logo.png',
   'assets/images/realcred_logo.webp': 'assets/images/realcred_logo.webp',
@@ -49,7 +49,7 @@ const IMAGE_REPLACEMENTS = {
   'assets/images/creditopessoalvsconsignado.png': 'assets/images/creditopessoalvsconsignado.png',
   'assets/images/fgtsvaleapena.png': 'assets/images/fgtsvaleapena.png',
   'assets/images/testimonials_template.png': 'assets/images/testimonials_template.png',
-  'assets/images/testimonials_template.webp': 'assets/images/testimonials_template.webp'
+  'assets/images/testimonials_template.webp': 'assets/images/testimonials_template.webp',
 };
 
 // Função para processar um arquivo
@@ -90,12 +90,12 @@ async function processFile(filePath) {
 // Função principal assíncrona
 async function main() {
   console.log('🚀 Iniciando correção de referências de imagens...\n');
-  
+
   // Processa todos os arquivos em sequência
   for (const file of FILES_TO_PROCESS) {
     await processFile(file);
   }
-  
+
   console.log('\n✅ Todas as referências de imagens foram verificadas!');
 }
 

@@ -1,140 +1,136 @@
 // Service Worker para RealCred + PWA
 const CACHE_NAME = 'realcred-v1.0.0';
 const urlsToCache = [
-    '/',
-    '/index.html',
-    '/css/form-styles.css',
-    '/js/contact-form.js',
-    '/js/form-handler.js',
-    '/js/form-masks.js',
-    '/assets/images/realcred_logo.png',
-    '/assets/images/realcred_logo.webp',
-    '/assets/images/happy_people1.jpg',
-    '/assets/images/happy_people1.webp',
-    '/assets/images/happy_people2.jpg',
-    '/assets/images/happy_people2.webp',
-    '/assets/images/security_icon1.png',
-    '/assets/images/security_icon1.webp',
-    '/assets/images/security_icon2.png',
-    '/assets/images/security_icon2.webp',
-    '/assets/images/financial_icon1.png',
-    '/assets/images/financial_icon1.webp',
-    '/assets/images/financial_icon2.png',
-    '/assets/images/loan_icon1.png',
-    '/assets/images/loan_icon1.webp',
-    '/assets/images/loan_icon2.png',
-    'https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap',
-    'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css'
+  '/',
+  '/index.html',
+  '/css/form-styles.css',
+  '/js/contact-form.js',
+  '/js/form-handler.js',
+  '/js/form-masks.js',
+  '/assets/images/realcred_logo.png',
+  '/assets/images/realcred_logo.webp',
+  '/assets/images/happy_people1.jpg',
+  '/assets/images/happy_people1.webp',
+  '/assets/images/happy_people2.jpg',
+  '/assets/images/happy_people2.webp',
+  '/assets/images/security_icon1.png',
+  '/assets/images/security_icon1.webp',
+  '/assets/images/security_icon2.png',
+  '/assets/images/security_icon2.webp',
+  '/assets/images/financial_icon1.png',
+  '/assets/images/financial_icon1.webp',
+  '/assets/images/financial_icon2.png',
+  '/assets/images/loan_icon1.png',
+  '/assets/images/loan_icon1.webp',
+  '/assets/images/loan_icon2.png',
+  'https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap',
+  'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css',
 ];
 
 // Install event
-self.addEventListener('install', function(event) {
-    event.waitUntil(
-        caches.open(CACHE_NAME)
-            .then(function(cache) {
-                console.log('Cache opened');
-                return cache.addAll(urlsToCache);
-            })
-    );
+self.addEventListener('install', function (event) {
+  event.waitUntil(
+    caches.open(CACHE_NAME).then(function (cache) {
+      console.log('Cache opened');
+      return cache.addAll(urlsToCache);
+    })
+  );
 });
 
 // Fetch event with better error handling
-self.addEventListener('fetch', function(event) {
-    // Skip non-GET requests
-    if (event.request.method !== 'GET') return;
+self.addEventListener('fetch', function (event) {
+  // Skip non-GET requests
+  if (event.request.method !== 'GET') return;
 
-    // Skip non-http/https requests
-    if (!event.request.url.startsWith('http')) return;
+  // Skip non-http/https requests
+  if (!event.request.url.startsWith('http')) return;
 
-    event.respondWith(
-        caches.match(event.request)
-            .then(function(response) {
-                // Return cached version if found
-                if (response) {
-                    return response;
-                }
-                
-                // Otherwise, try to fetch from network
-                return fetch(event.request)
-                    .then(function(networkResponse) {
-                        // Check if we received a valid response
-                        if (!networkResponse || networkResponse.status !== 200 || networkResponse.type !== 'basic') {
-                            return networkResponse;
-                        }
+  event.respondWith(
+    caches.match(event.request).then(function (response) {
+      // Return cached version if found
+      if (response) {
+        return response;
+      }
 
-                        // Clone the response
-                        const responseToCache = networkResponse.clone();
+      // Otherwise, try to fetch from network
+      return fetch(event.request)
+        .then(function (networkResponse) {
+          // Check if we received a valid response
+          if (
+            !networkResponse ||
+            networkResponse.status !== 200 ||
+            networkResponse.type !== 'basic'
+          ) {
+            return networkResponse;
+          }
 
-                        // Add to cache for future use
-                        caches.open(CACHE_NAME)
-                            .then(function(cache) {
-                                cache.put(event.request, responseToCache);
-                            });
+          // Clone the response
+          const responseToCache = networkResponse.clone();
 
-                        return networkResponse;
-                    })
-                    .catch(function(error) {
-                        console.error('Fetch failed; returning offline page', error);
-                        // You could return a custom offline page here if desired
-                    });
-            })
-    );
+          // Add to cache for future use
+          caches.open(CACHE_NAME).then(function (cache) {
+            cache.put(event.request, responseToCache);
+          });
+
+          return networkResponse;
+        })
+        .catch(function (error) {
+          console.error('Fetch failed; returning offline page', error);
+          // You could return a custom offline page here if desired
+        });
+    })
+  );
 });
 
 // Activate event
-self.addEventListener('activate', function(event) {
-    event.waitUntil(
-        caches.keys().then(function(cacheNames) {
-            return Promise.all(
-                cacheNames.map(function(cacheName) {
-                    if (cacheName !== CACHE_NAME) {
-                        console.log('Deleting old cache:', cacheName);
-                        return caches.delete(cacheName);
-                    }
-                })
-            );
+self.addEventListener('activate', function (event) {
+  event.waitUntil(
+    caches.keys().then(function (cacheNames) {
+      return Promise.all(
+        cacheNames.map(function (cacheName) {
+          if (cacheName !== CACHE_NAME) {
+            console.log('Deleting old cache:', cacheName);
+            return caches.delete(cacheName);
+          }
         })
-    );
+      );
+    })
+  );
 });
 
 // Push notification event
-self.addEventListener('push', function(event) {
-    const options = {
-        body: event.data ? event.data.text() : 'Nova oferta disponível!',
+self.addEventListener('push', function (event) {
+  const options = {
+    body: event.data ? event.data.text() : 'Nova oferta disponível!',
+    icon: '/assets/images/realcred_logo.png',
+    badge: '/assets/images/realcred_logo.png',
+    vibrate: [100, 50, 100],
+    data: {
+      dateOfArrival: Date.now(),
+      primaryKey: 1,
+    },
+    actions: [
+      {
+        action: 'explore',
+        title: 'Ver Oferta',
         icon: '/assets/images/realcred_logo.png',
-        badge: '/assets/images/realcred_logo.png',
-        vibrate: [100, 50, 100],
-        data: {
-            dateOfArrival: Date.now(),
-            primaryKey: 1
-        },
-        actions: [
-            {
-                action: 'explore',
-                title: 'Ver Oferta',
-                icon: '/assets/images/realcred_logo.png'
-            },
-            {
-                action: 'close',
-                title: 'Fechar',
-                icon: '/assets/images/realcred_logo.png'
-            }
-        ]
-    };
+      },
+      {
+        action: 'close',
+        title: 'Fechar',
+        icon: '/assets/images/realcred_logo.png',
+      },
+    ],
+  };
 
-    event.waitUntil(
-        self.registration.showNotification('RealCred +', options)
-    );
+  event.waitUntil(self.registration.showNotification('RealCred +', options));
 });
 
 // Notification click event
-self.addEventListener('notificationclick', function(event) {
-    event.notification.close();
+self.addEventListener('notificationclick', function (event) {
+  event.notification.close();
 
-    if (event.action === 'explore') {
-        event.waitUntil(
-            clients.openWindow('/')
-        );
-    }
+  if (event.action === 'explore') {
+    event.waitUntil(clients.openWindow('/'));
+  }
 });
-
