@@ -13,14 +13,16 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&family=Montserrat:wght@700;800;900&display=swap" rel="stylesheet">
     <link rel="icon" type="image/jpeg" href="../assets/LOGO%202.jpeg">
-    <meta name="theme-color" content="#2563eb">
+    <meta name="color-scheme" content="light dark">
+    <meta name="theme-color" media="(prefers-color-scheme: light)" content="#2563eb">
+    <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#0b1f4d">
 </head>
 <body class="bg-gray-50 text-gray-800 font-sans antialiased leading-relaxed">
     <a href="#main-content" class="skip-link sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:bg-blue-600 focus:text-white focus:px-4 focus:py-2 focus:rounded-lg focus:z-50">Pular para conteúdo principal</a>
     
     <!-- Back to top button -->
-    <button id="back-to-top" class="fixed bottom-8 right-8 bg-blue-600 text-white p-3 rounded-full shadow-lg opacity-0 invisible transition-all duration-300 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 z-40">
-        <i class="fas fa-arrow-up"></i>
+    <button id="back-to-top" type="button" class="fixed bottom-8 right-8 bg-blue-600 text-white p-3 rounded-full shadow-lg opacity-0 invisible transition-all duration-300 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 z-40" aria-label="Voltar ao topo" title="Voltar ao topo">
+        <i class="fas fa-arrow-up" aria-hidden="true"></i>
     </button>
     
     <!-- Header -->
@@ -74,7 +76,7 @@
         </nav>
     </header>
 
-    <main id="main-content" class="pt-24 pb-16 px-4 sm:px-6 lg:px-8 max-w-4xl mx-auto">
+    <main id="main-content" tabindex="-1" class="pt-24 pb-16 px-4 sm:px-6 lg:px-8 max-w-4xl mx-auto">
         <div class="mb-8">
             <a href="../index.html#educacao-financeira" class="inline-flex items-center text-blue-600 hover:text-blue-800 font-medium transition-colors duration-200 group">
                 <svg class="w-5 h-5 mr-2 transition-transform duration-200 group-hover:-translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
@@ -111,7 +113,7 @@
                 </div>
             </header>
             
-            <div class="relative
+            <div class="relative">
                 <img src="{{IMAGE}}" alt="{{IMAGE_ALT}}" class="w-full h-auto max-h-96 object-cover">
             </div>
             

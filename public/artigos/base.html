@@ -13,14 +13,16 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&family=Montserrat:wght@700;800;900&display=swap" rel="stylesheet">
     <link rel="icon" type="image/jpeg" href="../assets/LOGO%202.jpeg">
-    <meta name="theme-color" content="#2563eb">
+    <meta name="color-scheme" content="light dark">
+    <meta name="theme-color" media="(prefers-color-scheme: light)" content="#2563eb">
+    <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#0b1f4d">
 </head>
 <body class="bg-gray-50 text-gray-800 font-sans antialiased leading-relaxed">
     <a href="#main-content" class="skip-link sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:bg-blue-600 focus:text-white focus:px-4 focus:py-2 focus:rounded-lg focus:z-50">Pular para conteúdo principal</a>
     
     <!-- Back to top button -->
-    <button id="back-to-top" class="fixed bottom-8 right-8 bg-blue-600 text-white p-3 rounded-full shadow-lg opacity-0 invisible transition-all duration-300 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 z-40">
-        <i class="fas fa-arrow-up"></i>
+    <button id="back-to-top" type="button" class="fixed bottom-8 right-8 bg-blue-600 text-white p-3 rounded-full shadow-lg opacity-0 invisible transition-all duration-300 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 z-40" aria-label="Voltar ao topo" title="Voltar ao topo">
+        <i class="fas fa-arrow-up" aria-hidden="true"></i>
     </button>
     
     <!-- Header -->
@@ -111,11 +113,11 @@
                 </div>
             </header>
             
-            <div class="relative
+            <div class="relative">
                 <img src="{{IMAGE}}" alt="{{IMAGE_ALT}}" class="w-full h-auto max-h-96 object-cover">
             </div>
             
-            <div class="article-content px-6 py-8 sm:px-10 prose prose-lg max-w-none prose-headings:font-bold prose-headings:text-gray-900 prose-p:text-gray-700 prose-a:text-blue-600 hover:prose-a:text-blue-800 prose-strong:text-gray-900 prose-blockquote:border-l-4 prose-blockquote:border-blue-600 prose-blockquote:pl-4 prose-blockquote:italic prose-blockquote:text-gray-700 prose-ul:list-disc prose-ol:list-decimal prose-li:my-1.5 prose-img:rounded-lg prose-img:shadow-md">
+            <div id="main-content" class="article-content px-6 py-8 sm:px-10 prose prose-lg max-w-none prose-headings:font-bold prose-headings:text-gray-900 prose-p:text-gray-700 prose-a:text-blue-600 hover:prose-a:text-blue-800 prose-strong:text-gray-900 prose-blockquote:border-l-4 prose-blockquote:border-blue-600 prose-blockquote:pl-4 prose-blockquote:italic prose-blockquote:text-gray-700 prose-ul:list-disc prose-ol:list-decimal prose-li:my-1.5 prose-img:rounded-lg prose-img:shadow-md">
                 {{CONTENT}}
             </div>
             
