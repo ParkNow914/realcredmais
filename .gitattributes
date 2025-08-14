@@ -1,0 +1,25 @@
+# Enforce consistent line endings
+# Normalize all text files to LF in repo and working tree
+* text=auto eol=lf
+
+# Windows scripts should use CRLF
+*.bat text eol=crlf
+*.cmd text eol=crlf
+*.ps1 text eol=crlf
+
+# Unix shell scripts
+*.sh text eol=lf
+
+# Treat common binary assets as binary (no EOL conversion)
+*.png -text
+*.jpg -text
+*.jpeg -text
+*.gif -text
+*.webp -text
+*.ico -text
+*.pdf -text
+*.zip -text
+*.woff -text
+*.woff2 -text
+*.ttf -text
+*.otf -text
