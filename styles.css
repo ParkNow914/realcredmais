@@ -580,6 +580,60 @@ body {
   font-weight: bold;
 }
 
+/* Loan Comparator Section */
+.loan-comparator {
+  padding: var(--spacing-20) 0;
+  background: var(--gray-50);
+}
+
+.comparator-container {
+  overflow-x: auto;
+}
+
+.comparison-table {
+  display: block;
+  min-width: 720px;
+  background: var(--white);
+  border-radius: var(--border-radius-xl);
+  box-shadow: var(--shadow-md);
+  border: 1px solid var(--gray-200);
+}
+
+.comparison-header,
+.comparison-row {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+}
+
+.comparison-item {
+  padding: 1rem 1.25rem;
+  color: var(--gray-800);
+  background: var(--white);
+  border-bottom: 1px solid var(--gray-200);
+}
+
+.comparison-header .comparison-item {
+  background: #f8fafc;
+  font-weight: 600;
+  color: #1e293b;
+}
+
+.comparison-item.feature {
+  font-weight: 600;
+  color: #1e293b;
+}
+
+.comparison-header .comparison-item:not(:last-child),
+.comparison-row .comparison-item:not(:last-child) {
+  border-right: 1px solid var(--gray-200);
+}
+
+@media (max-width: 768px) {
+  .comparison-table {
+    min-width: 640px;
+  }
+}
+
 /* Open Banking Section moderno */
 .openbanking {
   padding: var(--spacing-16) 0;
