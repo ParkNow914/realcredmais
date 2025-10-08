@@ -124,7 +124,7 @@ document.addEventListener('DOMContentLoaded', function () {
   console.log('Valor input found:', !!valorInput);
   if (valorInput) {
     valorInput.addEventListener('input', function (e) {
-      let value = e.target.value.replace(/[^\d]/g, '');
+      const value = e.target.value.replace(/[^\d]/g, '');
 
       // Se não há valor, não faz nada
       if (value === '') {
@@ -155,7 +155,7 @@ document.addEventListener('DOMContentLoaded', function () {
     // Validação ao colar
     valorInput.addEventListener('paste', function (e) {
       setTimeout(() => {
-        let value = e.target.value.replace(/[^\d]/g, '');
+        const value = e.target.value.replace(/[^\d]/g, '');
         if (value === '') {
           e.target.value = '';
           return;
@@ -178,7 +178,7 @@ document.addEventListener('DOMContentLoaded', function () {
   console.log('Salario input found:', !!salarioInput);
   if (salarioInput) {
     salarioInput.addEventListener('input', function (e) {
-      let value = e.target.value.replace(/[^\d]/g, '');
+      const value = e.target.value.replace(/[^\d]/g, '');
 
       // Se não há valor, não faz nada
       if (value === '') {
@@ -209,7 +209,7 @@ document.addEventListener('DOMContentLoaded', function () {
     // Validação ao colar
     salarioInput.addEventListener('paste', function (e) {
       setTimeout(() => {
-        let value = e.target.value.replace(/[^\d]/g, '');
+        const value = e.target.value.replace(/[^\d]/g, '');
         if (value === '') {
           e.target.value = '';
           return;

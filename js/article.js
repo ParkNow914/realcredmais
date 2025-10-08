@@ -4,7 +4,6 @@ document.addEventListener('DOMContentLoaded', function () {
 
   faqQuestions.forEach((question) => {
     question.addEventListener('click', () => {
-      const faqItem = question.parentElement;
       const answer = question.nextElementSibling;
 
       // Toggle active class on question

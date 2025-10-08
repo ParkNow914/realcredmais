@@ -47,7 +47,6 @@ class FormHandler {
     if (!field.required) return true;
 
     const value = field.value.trim();
-    const errorId = `${field.id}-error`;
     let isValid = true;
     let errorMessage = '';
 
@@ -279,7 +278,7 @@ class FormHandler {
       .replace(',', '.');
 
     const valor = parseFloat(valorStr);
-    const salario = parseFloat(salarioStr);
+    const salario = parseFloat(salarioStr); // eslint-disable-line no-unused-vars
     const prazo = parseInt(formData.get('prazo'));
     const categoria = formData.get('categoria');
 

@@ -445,7 +445,7 @@ class CreditSimulator {
     }
 
     const config = CREDIT_CONFIG[data.categoria];
-    let taxa = config.taxaMaxima; // Taxa padrão é a máxima da categoria
+    const taxa = config.taxaMaxima; // Taxa padrão é a máxima da categoria
 
     // Validações específicas por categoria
     if (data.valor < config.valorMinimo || data.valor > config.valorMaximo) {
@@ -638,8 +638,8 @@ class CreditSimulator {
     this.resultDiv.scrollIntoView({ behavior: 'smooth', block: 'center' });
 
     // Rastrear evento de simulação concluída
-    if (window.gtag) {
-      gtag('event', 'simulation_complete', {
+    if (typeof window.gtag !== 'undefined') {
+      window.gtag('event', 'simulation_complete', {
         event_category: 'engagement',
         event_label: 'Simulação concluída',
         value: result.valorSolicitado,
@@ -1169,7 +1169,7 @@ class ServerValidation {
 
       // Log para analytics
       this.trackFormSubmission(form.id, 'success');
-    } catch (error) {
+    } catch {
       event.preventDefault();
       this.showValidationError('Erro interno. Tente novamente em alguns instantes.');
       this.trackFormSubmission(form.id, 'error');
@@ -1305,8 +1305,8 @@ class ServerValidation {
 
   trackFormSubmission(formId, status) {
     // Integração com Google Analytics
-    if (typeof gtag !== 'undefined') {
-      gtag('event', 'form_submission', {
+    if (typeof window.gtag !== 'undefined') {
+      window.gtag('event', 'form_submission', {
         form_id: formId,
         status: status,
         timestamp: new Date().toISOString(),
@@ -1336,7 +1336,7 @@ class GoogleAnalytics {
     // Configurar gtag
     window.dataLayer = window.dataLayer || [];
     function gtag() {
-      dataLayer.push(arguments);
+      window.dataLayer.push(arguments);
     }
     window.gtag = gtag;
     gtag('js', new Date());
@@ -1347,8 +1347,8 @@ class GoogleAnalytics {
   }
 
   trackPageView() {
-    if (typeof gtag !== 'undefined') {
-      gtag('event', 'page_view', {
+    if (typeof window.gtag !== 'undefined') {
+      window.gtag('event', 'page_view', {
         page_title: document.title,
         page_location: window.location.href,
         content_group1: 'Landing Page',
@@ -1390,8 +1390,8 @@ class GoogleAnalytics {
   }
 
   trackEvent(eventName, parameters = {}) {
-    if (typeof gtag !== 'undefined') {
-      gtag('event', eventName, {
+    if (typeof window.gtag !== 'undefined') {
+      window.gtag('event', eventName, {
         ...parameters,
         timestamp: new Date().toISOString(),
       });
@@ -1753,7 +1753,7 @@ function simularEmprestimo() {
     const formData = new FormData(form);
 
     const categoria = formData.get('categoria');
-    const salario = parseCurrency(formData.get('salario') || '0');
+    const salario = parseCurrency(formData.get('salario') || '0'); // eslint-disable-line no-unused-vars
     const valor = parseCurrency(formData.get('valor') || '0');
     const prazo = parseInt(formData.get('prazo') || '12');
 
@@ -1769,8 +1769,12 @@ function simularEmprestimo() {
       exibirResultadoFGTS(resultado);
     } else {
       // Simulação tradicional de consignado
-      resultado = calcularConsignado(categoria, salario, valor, prazo);
-      exibirResultadoConsignado(resultado);
+      // TODO: Implement calcularConsignado and exibirResultadoConsignado functions
+      // resultado = calcularConsignado(categoria, salario, valor, prazo);
+      // exibirResultadoConsignado(resultado);
+      throw new Error(
+        'Simulação de consignado tradicional não implementada. Use o formulário principal.'
+      );
     }
 
     // Mostrar seção de resultados
@@ -2527,8 +2531,8 @@ function calculatePortability() {
     document.getElementById('portabilityResult').style.display = 'block';
 
     // Track event
-    if (typeof gtag !== 'undefined') {
-      gtag('event', 'portability_calculation', {
+    if (typeof window.gtag !== 'undefined') {
+      window.gtag('event', 'portability_calculation', {
         event_category: 'engagement',
         event_label: 'calculator_used',
         value: resultado.economiaTotal,
@@ -2554,8 +2558,8 @@ function playVideo(videoId) {
   alert(videoMessages[videoId] || 'Vídeo não encontrado');
 
   // Track video play
-  if (typeof gtag !== 'undefined') {
-    gtag('event', 'video_play', {
+  if (typeof window.gtag !== 'undefined') {
+    window.gtag('event', 'video_play', {
       event_category: 'engagement',
       event_label: videoId,
       value: 1,
@@ -2663,8 +2667,8 @@ class ABTestManager {
 
   trackConversion(testName, eventName) {
     const variant = this.variants[testName]?.current;
-    if (variant && typeof gtag !== 'undefined') {
-      gtag('event', 'ab_test_conversion', {
+    if (variant && typeof window.gtag !== 'undefined') {
+      window.gtag('event', 'ab_test_conversion', {
         event_category: 'ab_testing',
         event_label: `${testName}_${variant}`,
         custom_parameter_1: eventName,
@@ -2760,12 +2764,15 @@ function simularEmprestimoEnhanced() {
     simularEmprestimo();
 
     // Send to CRM with lead score
-    CRMIntegration.sendLead({
-      ...leadData,
-      leadScore: leadScore,
-      leadQuality: leadQuality,
-      timestamp: new Date().toISOString(),
-    });
+    // TODO: Implement CRMIntegration class
+    if (typeof window.CRMIntegration !== 'undefined') {
+      window.CRMIntegration.sendLead({
+        ...leadData,
+        leadScore: leadScore,
+        leadQuality: leadQuality,
+        timestamp: new Date().toISOString(),
+      });
+    }
 
     // Track conversion for A/B tests
     window.abTestManager.trackConversion('hero_cta_color', 'simulation_completed');
@@ -3092,7 +3099,7 @@ function initTestimonialsCarousel() {
   });
 
   function nextSlide() {
-    let next = (current + 1) % cards.length;
+    const next = (current + 1) % cards.length;
     showSlide(next);
   }
   function resetInterval() {
