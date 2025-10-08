@@ -12,7 +12,7 @@ const distDir = path.resolve('dist');
     inlineFonts: false,
   });
   const indexPath = path.join(distDir, 'index.html');
-  let html = await readFile(indexPath, 'utf8');
+  const html = await readFile(indexPath, 'utf8');
   const processed = await critters.process(html);
   await writeFile(indexPath, processed);
   console.log('Critical CSS inlined into dist/index.html');

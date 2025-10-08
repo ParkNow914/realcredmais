@@ -7,7 +7,6 @@ import mongoSanitize from 'express-mongo-sanitize';
 import cors from 'cors';
 import path from 'path';
 import { fileURLToPath } from 'url';
-import bodyParser from 'body-parser';
 
 // Valid categories
 const CATEGORIAS_VALIDAS = [
@@ -120,11 +119,6 @@ app.get('/', (req, res) => {
 const isValidEmail = (email) => {
   const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   return re.test(email);
-};
-
-const isValidPhone = (phone) => {
-  const re = /^\(?[1-9]{2}\)?\s?(?:[2-8]|9[1-9])[0-9]{3}\-?[0-9]{4}$/;
-  return re.test(phone);
 };
 
 // Configure nodemailer transporter

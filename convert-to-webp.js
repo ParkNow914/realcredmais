@@ -3,7 +3,6 @@ import fs from 'fs/promises';
 import sharp from 'sharp';
 
 const IMG_DIR = path.resolve('assets/images');
-const OUTPUT_DIR = IMG_DIR; // Salva ao lado do original
 
 async function processDir(dir) {
   const entries = await fs.readdir(dir, { withFileTypes: true });
