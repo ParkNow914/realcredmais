@@ -1169,7 +1169,7 @@ class ServerValidation {
 
       // Log para analytics
       this.trackFormSubmission(form.id, 'success');
-    } catch (error) {
+    } catch {
       event.preventDefault();
       this.showValidationError('Erro interno. Tente novamente em alguns instantes.');
       this.trackFormSubmission(form.id, 'error');
@@ -1753,7 +1753,7 @@ function simularEmprestimo() {
     const formData = new FormData(form);
 
     const categoria = formData.get('categoria');
-    const salario = parseCurrency(formData.get('salario') || '0');
+    const salario = parseCurrency(formData.get('salario') || '0'); // eslint-disable-line no-unused-vars
     const valor = parseCurrency(formData.get('valor') || '0');
     const prazo = parseInt(formData.get('prazo') || '12');
 

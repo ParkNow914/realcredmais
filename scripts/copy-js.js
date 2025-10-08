@@ -1,9 +1,5 @@
 import { fileURLToPath } from 'url';
 import fse from 'fs-extra';
-import path from 'path';
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
 
 async function copyJavaScriptFiles() {
   try {

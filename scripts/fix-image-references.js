@@ -58,7 +58,7 @@ async function processFile(filePath) {
     const fullPath = path.join(PROJECT_ROOT, filePath);
     try {
       await fs.access(fullPath);
-    } catch (error) {
+    } catch {
       console.log(`Arquivo não encontrado: ${filePath}`);
       return;
     }
