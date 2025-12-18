@@ -408,6 +408,65 @@ app.get('/api/chat/health', (req, res) => {
   res.json({ success: true, configured });
 });
 
+// Admin route to view metrics (protected by basic auth)
+app.get('/admin/chat-metrics', (req, res) => {
+  const user = process.env.ADMIN_USER;
+  const pass = process.env.ADMIN_PASS;
+  const auth = req.headers.authorization;
+  if (!user || !pass) return res.status(403).send('Admin not configured');
+  if (!auth || !auth.startsWith('Basic ')) {
+    res.setHeader('WWW-Authenticate', 'Basic realm="Admin"');
+    return res.status(401).send('Authentication required');
+  }
+  const creds = Buffer.from(auth.split(' ')[1], 'base64').toString();
+  const [u, p] = creds.split(':');
+  if (u !== user || p !== pass) return res.status(403).send('Forbidden');
+
+  // Serve a simple HTML table of metrics
+  try {
+    const { getMetrics } = await import('./db/metrics.js');
+    const rows = getMetrics(500);
+    const htmlRows = rows
+      .map(
+        (r) => `
+      <tr>
+        <td>${r.id}</td>
+        <td>${r.timestamp}</td>
+        <td>${r.model}</td>
+        <td>${r.prompt_tokens}</td>
+        <td>${r.completion_tokens}</td>
+        <td>${r.estimated_cost_usd || ''}</td>
+        <td>${r.ip || ''}</td>
+        <td>${r.user_agent || ''}</td>
+        <td>${r.streaming ? 'yes' : 'no'}</td>
+      </tr>`
+      )
+      .join('\n');
+
+    const html = `
+      <html>
+        <head>
+          <title>Chat Metrics</title>
+          <style>table{border-collapse:collapse;width:100%}td,th{border:1px solid #ddd;padding:8px}</style>
+        </head>
+        <body>
+          <h1>Chat Metrics</h1>
+          <table>
+            <thead>
+              <tr><th>ID</th><th>Timestamp</th><th>Model</th><th>Prompt</th><th>Completion</th><th>Cost</th><th>IP</th><th>UserAgent</th><th>Streaming</th></tr>
+            </thead>
+            <tbody>${htmlRows}</tbody>
+          </table>
+        </body>
+      </html>
+    `;
+    res.send(html);
+  } catch (e) {
+    console.error('Error rendering admin metrics:', e.message);
+    res.status(500).send('Internal server error');
+  }
+});
+
 // Chat endpoint with optional streaming
 app.post('/api/chat', chatLimiter, async (req, res) => {
   try {
@@ -498,6 +557,14 @@ app.post('/api/chat', chatLimiter, async (req, res) => {
       };
       await appendFile(path.join(__dirname, 'logs', 'chat_metrics.log'), JSON.stringify(logEntry) + '\n');
 
+      // persist to DB if available
+      try {
+        const { insertMetric } = await import('./db/metrics.js');
+        insertMetric({ timestamp: logEntry.timestamp, model: logEntry.model, ip: logEntry.ip, userAgent: logEntry.userAgent, streaming: 1 });
+      } catch (e) {
+        console.warn('DB metrics insert failed', e.message);
+      }
+
       return;
     }
 
@@ -525,6 +592,42 @@ app.post('/api/chat', chatLimiter, async (req, res) => {
     // Log metrics (if available)
     try {
       const usage = data.usage || {};
+      // if fallback is configured and openai fails, try fallback
+    } catch (e) {
+      console.warn('Failed to parse usage:', e.message);
+    }
+
+    // If OpenAI didn't return a usable message and a fallback service is configured, try it
+    if ((!assistantMessage || assistantMessage.trim() === '') && process.env.FALLBACK_API_URL) {
+      try {
+        const fallbackRes = await fetch(process.env.FALLBACK_API_URL, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: process.env.FALLBACK_API_KEY ? `Bearer ${process.env.FALLBACK_API_KEY}` : undefined,
+          },
+          body: JSON.stringify({ message: message || (messages && messages[messages.length - 1] && messages[messages.length - 1].content) || '' }),
+        });
+        if (fallbackRes.ok) {
+          const fallbackData = await fallbackRes.json();
+          if (fallbackData && fallbackData.reply) {
+            // Log fallback as a metric too
+            const logEntry = { timestamp: new Date().toISOString(), model: 'fallback', ip: req.ip };
+            await appendFile(path.join(__dirname, 'logs', 'chat_metrics.log'), JSON.stringify(logEntry) + '\n');
+            try {
+              const { insertMetric } = await import('./db/metrics.js');
+              insertMetric({ timestamp: logEntry.timestamp, model: 'fallback', ip: req.ip, userAgent: req.headers['user-agent'] || '' });
+            } catch (e) {
+              console.warn('Failed to persist fallback metric:', e.message);
+            }
+
+            return res.json({ success: true, reply: fallbackData.reply, fallback: true });
+          }
+        }
+      } catch (e) {
+        console.warn('Fallback call failed:', e.message);
+      }
+    }
       const prices = {
         'gpt-3.5-turbo': parseFloat(process.env.OPENAI_PRICE_GPT35 || '0.002'), // USD per 1k tokens
         'gpt-4': parseFloat(process.env.OPENAI_PRICE_GPT4 || '0.06'),
@@ -542,6 +645,23 @@ app.post('/api/chat', chatLimiter, async (req, res) => {
         userAgent: req.headers['user-agent'] || '',
       };
       await appendFile(path.join(__dirname, 'logs', 'chat_metrics.log'), JSON.stringify(logEntry) + '\n');
+
+      // persist metrics to DB
+      try {
+        const { insertMetric } = await import('./db/metrics.js');
+        insertMetric({
+          timestamp: logEntry.timestamp,
+          model,
+          prompt_tokens: usage.prompt_tokens,
+          completion_tokens: usage.completion_tokens,
+          estimated_cost_usd: estimatedCost,
+          ip: req.ip,
+          userAgent: req.headers['user-agent'] || '',
+          streaming: 0,
+        });
+      } catch (e) {
+        console.warn('Failed to persist metrics to DB:', e.message);
+      }
     } catch (e) {
       console.warn('Failed to log chat metrics:', e.message);
     }

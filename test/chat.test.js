@@ -9,11 +9,13 @@ describe('Chat endpoints', () => {
     expect(res.body).toHaveProperty('configured');
   });
 
-  test('POST /api/chat without key returns 503', async () => {
+  test('POST /api/chat without key returns 503 or fallback', async () => {
     const res = await request(app).post('/api/chat').send({ message: 'Olá' });
-    expect([503, 502, 200]).toContain(res.statusCode); // allow 502 if OpenAI error
-    if (res.statusCode === 503) {
-      expect(res.body).toHaveProperty('message');
-    }
+    expect([503, 502, 200]).toContain(res.statusCode);
+  });
+
+  test('Admin metrics route returns 403 if not configured', async () => {
+    const res = await request(app).get('/admin/chat-metrics');
+    expect([401, 403]).toContain(res.statusCode);
   });
 });

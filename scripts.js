@@ -1194,11 +1194,20 @@ class FinancialChatbot {
       const raw = localStorage.getItem('realcred_chat_conversation_v1');
       if (!raw) return;
       const parsed = JSON.parse(raw);
+      // Support multiple historical formats: array of messages, or { conversation: [...] }, or { messages: [...] }
       if (Array.isArray(parsed)) {
         this.conversation = parsed;
+      } else if (parsed && Array.isArray(parsed.conversation)) {
+        this.conversation = parsed.conversation;
+      } else if (parsed && Array.isArray(parsed.messages)) {
+        this.conversation = parsed.messages;
+      } else {
+        console.warn('Unsupported conversation format in storage, resetting to default.');
+        this.conversation = this.conversation || [];
       }
     } catch (e) {
       console.warn('Could not load conversation from storage:', e.message);
+      this.conversation = this.conversation || [];
     }
   }
 
@@ -1206,7 +1215,20 @@ class FinancialChatbot {
     const messagesContainer = document.getElementById('chatbot-messages');
     if (!messagesContainer) return;
     messagesContainer.innerHTML = '';
+
+    // Defensive: ensure conversation is an array (handle corrupted/old storage)
+    if (!Array.isArray(this.conversation)) {
+      if (this.conversation && Array.isArray(this.conversation.conversation)) {
+        this.conversation = this.conversation.conversation;
+      } else if (this.conversation && Array.isArray(this.conversation.messages)) {
+        this.conversation = this.conversation.messages;
+      } else {
+        this.conversation = [];
+      }
+    }
+
     for (const msg of this.conversation) {
+      if (!msg || !msg.role) continue;
       if (msg.role === 'user') {
         const div = document.createElement('div');
         div.className = 'user-message';
