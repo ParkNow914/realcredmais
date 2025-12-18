@@ -90,12 +90,18 @@ self.addEventListener('fetch', function (event) {
         })
         .catch(function (error) {
           console.warn('Fetch failed for:', event.request.url, error);
-          // For navigation requests, show offline page
+          // For navigation requests, show offline page (or a minimal fallback HTML)
           if (isNavigationRequest) {
-            return caches.match(OFFLINE_URL);
+            return caches.match(OFFLINE_URL).then(function (resp) {
+              return resp || new Response('<h1>Offline</h1>', {
+                headers: { 'Content-Type': 'text/html' },
+                status: 503,
+                statusText: 'Service Unavailable'
+              });
+            });
           }
-          // Return cached version or nothing
-          return cachedResponse;
+          // Return cached version if available, otherwise a 504 Service Unavailable response
+          return Promise.resolve(cachedResponse || new Response(null, { status: 504, statusText: 'Gateway Timeout' }));
         });
 
       // Return cached version immediately if available, otherwise wait for network
