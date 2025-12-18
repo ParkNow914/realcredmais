@@ -2033,13 +2033,15 @@ class WhatsAppIntegration {
     const bodyObserver = new MutationObserver((mutations, obs) => {
       const chatbotContainer = document.getElementById('chatbot-container');
       if (chatbotContainer) {
-        // remove floating widget if it exists
+        // remove any floating widget if it exists (inline in chatbot header is preferred)
         const float = document.querySelector('.whatsapp-widget');
-        if (float && !chatbotContainer.querySelector('.whatsapp-inline')) {
+        if (float) {
           float.remove();
         }
         // attach inline button if not already attached
-        this.attachToChatbot(chatbotContainer);
+        if (!chatbotContainer.querySelector('.whatsapp-inline')) {
+          this.attachToChatbot(chatbotContainer);
+        }
         obs.disconnect();
       }
     });
@@ -2052,6 +2054,11 @@ class WhatsAppIntegration {
     const chatbotContainer = document.getElementById('chatbot-container');
     if (chatbotContainer) {
       this.attachToChatbot(chatbotContainer);
+      return;
+    }
+
+    // Don't create another floating widget if one already exists or if an inline button was already added
+    if (document.querySelector('.whatsapp-widget') || document.querySelector('.whatsapp-inline')) {
       return;
     }
 
@@ -2087,6 +2094,9 @@ class WhatsAppIntegration {
         document.body.appendChild(widget);
         return;
       }
+
+      // If an inline WhatsApp button already exists in the header, do not add another
+      if (header.querySelector('.whatsapp-inline')) return;
 
       // Criar botão pequeno e acessível dentro do header do chatbot
       const waBtn = document.createElement('button');
