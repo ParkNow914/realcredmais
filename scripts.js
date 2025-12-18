@@ -2028,6 +2028,22 @@ class WhatsAppIntegration {
   init() {
     this.createWidget();
     this.setupEventListeners();
+    // Observe for late insertion of the chatbot so we can attach inline WA button
+    // and remove the floating widget to avoid duplicate icons
+    const bodyObserver = new MutationObserver((mutations, obs) => {
+      const chatbotContainer = document.getElementById('chatbot-container');
+      if (chatbotContainer) {
+        // remove floating widget if it exists
+        const float = document.querySelector('.whatsapp-widget');
+        if (float && !chatbotContainer.querySelector('.whatsapp-inline')) {
+          float.remove();
+        }
+        // attach inline button if not already attached
+        this.attachToChatbot(chatbotContainer);
+        obs.disconnect();
+      }
+    });
+    bodyObserver.observe(document.body, { childList: true, subtree: true });
   }
 
   createWidget() {
@@ -2092,6 +2108,9 @@ class WhatsAppIntegration {
       } else {
         header.appendChild(waBtn);
       }
+      // Esconder o toggle principal para evitar dois ícones no canto
+      const toggle = document.getElementById('chatbot-toggle');
+      if (toggle) toggle.style.display = 'none';
     } catch (e) {
       // Em caso de erro, fallback para widget flutuante
       const widget = document.createElement('div');
@@ -2104,6 +2123,9 @@ class WhatsAppIntegration {
               <div class="whatsapp-tooltip">Fale conosco no WhatsApp</div>
             </button>
         `;
+      // If chatbot toggle exists (chat present), hide it to prevent duplicate icons
+      const toggle = document.getElementById('chatbot-toggle');
+      if (toggle) toggle.style.display = 'none';
       document.body.appendChild(widget);
     }
   }
