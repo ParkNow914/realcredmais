@@ -2633,6 +2633,10 @@ html {
 }
 
 .chatbot-close:hover {
+  transform: scale(1.05);
+  box-shadow: var(--shadow-2xl);
+}
+
 /* Botão inline do WhatsApp dentro do header do chatbot (evita 2 ícones) */
 .chatbot-header .whatsapp-inline {
   background: linear-gradient(135deg, #25d366 0%, #128c4a 100%);
@@ -2655,12 +2659,44 @@ html {
 }
 
 /* Se por algum motivo o widget flutuante for criado e o inline existir, escondemos o flutuante */
-.whatsapp-widget { /* mantém o estilo para fallback, mas esconda quando inline estiver presente */
+.whatsapp-widget {
   display: none;
 }
-  background: rgba(255, 255, 255, 0.2);
-  transform: rotate(90deg);
+
+/* SVG icon sizing and color adjustments */
+.chat-toggle-icon,
+.chat-header-icon {
+  width: 22px;
+  height: 22px;
+  color: white;
 }
+
+.chat-header-icon {
+  margin-right: 8px;
+  vertical-align: middle;
+}
+
+.chatbot-header h4 {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.whatsapp-inline .wa-svg {
+  width: 18px;
+  height: 18px;
+  color: white;
+}
+
+.whatsapp-btn .wa-float-svg {
+  width: 22px;
+  height: 22px;
+  color: white;
+}
+
+/* Make sure svg icons inherit proper fill color */
+.icon { display: inline-block; vertical-align: middle; }
+.icon path { fill: currentColor; }
 
 .chatbot-messages {
   flex: 1;

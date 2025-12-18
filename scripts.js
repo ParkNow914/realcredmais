@@ -1006,7 +1006,12 @@ class FinancialChatbot {
     const chatbotHTML = `
             <div class="chatbot-container" id="chatbot-container">
                 <div class="chatbot-header">
-                    <h4>💬 Assistente RealCred +</h4>
+                    <h4>
+                      <svg class="icon chat-header-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                        <path fill="currentColor" d="M21 6a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h3v3l4-3h6a2 2 0 0 0 2-2V6z"/>
+                      </svg>
+                      Assistente RealCred +
+                    </h4>
                     <button class="chatbot-close" id="chatbot-close">×</button>
                 </div>
                 <div class="chatbot-messages" id="chatbot-messages">
@@ -1025,8 +1030,10 @@ class FinancialChatbot {
                     <button id="chatbot-send">Enviar</button>
                 </div>
             </div>
-            <div class="chatbot-toggle" id="chatbot-toggle">
-                💬
+            <div class="chatbot-toggle" id="chatbot-toggle" aria-label="Abrir assistente">
+              <svg class="icon chat-toggle-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                <path fill="currentColor" d="M21 6a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h3v3l4-3h6a2 2 0 0 0 2-2V6z"/>
+              </svg>
             </div>
         `;
 
@@ -2035,11 +2042,13 @@ class WhatsAppIntegration {
     const widget = document.createElement('div');
     widget.className = 'whatsapp-widget';
     widget.innerHTML = `
-            <button class="whatsapp-btn" onclick="whatsAppManager.openChat()" aria-label="Falar no WhatsApp">
-                💬
-                <div class="whatsapp-tooltip">Fale conosco no WhatsApp</div>
-            </button>
-        `;
+        <button class="whatsapp-btn" onclick="whatsAppManager.openChat()" aria-label="Falar no WhatsApp">
+          <svg class="icon wa-float-svg" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <path fill="currentColor" d="M20.52 3.48A11.94 11.94 0 0 0 12.01.5C6.07.5 1.02 5.55 1.02 11.5c0 2.03.53 4.02 1.54 5.76L.03 23.5l6.55-2.16c1.66.9 3.57 1.36 5.43 1.36h.02c5.95 0 10.99-5.05 10.99-11S26.47 3.5 20.52 3.48zm-1.72 15.65c-.41 1.17-1.47 1.2-2.02 1.27-.53.07-1.17.08-2.64-.56-3.43-1.5-5.64-5.02-5.86-5.35-.23-.33-1.82-2.34-1.82-3.55 0-1.21.64-1.8.87-2.05.23-.25.51-.33.68-.33.17 0 .33 0 .48.01.15.01.35-.06.54.37.18.43.6 1.48.65 1.59.05.11.08.24.02.38-.07.14-.1.24-.2.37-.09.13-.22.28-.33.41-.11.13-.22.28.01.54.23.25 1.05 1.72 2.27 2.81 1.56 1.34 2.88 1.74 3.31 1.93.43.18.67.15.92-.09.25-.24 1-1.16 1.28-1.57.28-.41.55-.34.92-.2.37.14 2.34 1.1 2.74 1.3.41.21.68.33.78.52.1.19.1 1.1-.31 2.27z"/>
+          </svg>
+          <div class="whatsapp-tooltip">Fale conosco no WhatsApp</div>
+        </button>
+      `;
 
     document.body.appendChild(widget);
   }
@@ -2065,7 +2074,13 @@ class WhatsAppIntegration {
       const waBtn = document.createElement('button');
       waBtn.className = 'whatsapp-inline';
       waBtn.setAttribute('aria-label', 'Falar no WhatsApp');
-      waBtn.innerHTML = `<span class="wa-icon">💬</span>`;
+      waBtn.innerHTML = `
+        <span class="wa-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" class="icon wa-svg">
+            <path fill="currentColor" d="M20.52 3.48A11.94 11.94 0 0 0 12.01.5C6.07.5 1.02 5.55 1.02 11.5c0 2.03.53 4.02 1.54 5.76L.03 23.5l6.55-2.16c1.66.9 3.57 1.36 5.43 1.36h.02c5.95 0 10.99-5.05 10.99-11S26.47 3.5 20.52 3.48zm-1.72 15.65c-.41 1.17-1.47 1.2-2.02 1.27-.53.07-1.17.08-2.64-.56-3.43-1.5-5.64-5.02-5.86-5.35-.23-.33-1.82-2.34-1.82-3.55 0-1.21.64-1.8.87-2.05.23-.25.51-.33.68-.33.17 0 .33 0 .48.01.15.01.35-.06.54.37.18.43.6 1.48.65 1.59.05.11.08.24.02.38-.07.14-.1.24-.2.37-.09.13-.22.28-.33.41-.11.13-.22.28.01.54.23.25 1.05 1.72 2.27 2.81 1.56 1.34 2.88 1.74 3.31 1.93.43.18.67.15.92-.09.25-.24 1-1.16 1.28-1.57.28-.41.55-.34.92-.2.37.14 2.34 1.1 2.74 1.3.41.21.68.33.78.52.1.19.1 1.1-.31 2.27z"/>
+          </svg>
+        </span>
+      `;
       waBtn.addEventListener('click', () => this.openChat());
 
       // Inserir antes do botão de fechar para manter layout consistente
