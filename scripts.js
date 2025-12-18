@@ -2108,9 +2108,9 @@ class WhatsAppIntegration {
       } else {
         header.appendChild(waBtn);
       }
-      // Esconder o toggle principal para evitar dois ícones no canto
+      // Garantir que o toggle do chatbot esteja visível (restaurar se previamente escondido)
       const toggle = document.getElementById('chatbot-toggle');
-      if (toggle) toggle.style.display = 'none';
+      if (toggle) toggle.style.display = '';
     } catch (e) {
       // Em caso de erro, fallback para widget flutuante
       const widget = document.createElement('div');
@@ -2123,9 +2123,6 @@ class WhatsAppIntegration {
               <div class="whatsapp-tooltip">Fale conosco no WhatsApp</div>
             </button>
         `;
-      // If chatbot toggle exists (chat present), hide it to prevent duplicate icons
-      const toggle = document.getElementById('chatbot-toggle');
-      if (toggle) toggle.style.display = 'none';
       document.body.appendChild(widget);
     }
   }
