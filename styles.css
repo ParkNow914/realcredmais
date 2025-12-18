@@ -863,6 +863,45 @@ body {
   }
 }
 
+/* Mobile-friendly comparator: stack rows to avoid horizontal overflow */
+@media (max-width: 768px) {
+  .comparison-table {
+    min-width: auto;
+    width: 100%;
+    border-radius: var(--border-radius-lg);
+  }
+
+  /* hide the wide header and present each row as a stacked card */
+  .comparison-header {
+    display: none;
+  }
+
+  .comparison-row {
+    display: block;
+    border-top: 1px solid var(--gray-100);
+  }
+
+  .comparison-row .comparison-item {
+    display: block;
+    padding: var(--spacing-4) var(--spacing-5);
+    border-right: none;
+    border-bottom: 1px solid var(--gray-50);
+  }
+
+  /* Keep the feature label prominent */
+  .comparison-row .comparison-item.feature {
+    background: transparent;
+    font-weight: 700;
+    color: var(--gray-900);
+    padding-top: var(--spacing-5);
+  }
+
+  /* For the value cells, prepend the column label for clarity */
+  .comparison-row .comparison-item:nth-child(2)::before { content: "Consignado INSS: "; font-weight:600; color:var(--gray-700); display:block; margin-bottom:0.35rem; }
+  .comparison-row .comparison-item:nth-child(3)::before { content: "Crédito Pessoal: "; font-weight:600; color:var(--gray-700); display:block; margin-bottom:0.35rem; }
+  .comparison-row .comparison-item:nth-child(4)::before { content: "Saque FGTS: "; font-weight:600; color:var(--gray-700); display:block; margin-bottom:0.35rem; }
+}
+
 /* Open Banking Section PREMIUM 2025 */
 .openbanking {
   padding: var(--spacing-24) 0;
@@ -3467,6 +3506,11 @@ html {
   align-items: center;
   position: relative;
   z-index: 1;
+}
+
+/* Prevent decorative pseudo-elements or negative offsets from causing horizontal scroll on mobile */
+.blog-section {
+  overflow: hidden;
 }
 
 .blog-section .section-header {
