@@ -940,32 +940,32 @@ const mobileMenuStyles = `
             transition: all var(--transition-normal);
             z-index: 999;
         }
-        
+
         .nav-menu.active {
             transform: translateY(0);
             opacity: 1;
             visibility: visible;
         }
-        
+
         .nav-menu li {
             margin-bottom: var(--spacing-4);
         }
-        
+
         .nav-link {
             display: block;
             padding: var(--spacing-3);
             text-align: center;
             border-bottom: 1px solid var(--gray-200);
         }
-        
+
         .mobile-menu-toggle.active span:nth-child(1) {
             transform: rotate(45deg) translate(5px, 5px);
         }
-        
+
         .mobile-menu-toggle.active span:nth-child(2) {
             opacity: 0;
         }
-        
+
         .mobile-menu-toggle.active span:nth-child(3) {
             transform: rotate(-45deg) translate(7px, -6px);
         }
@@ -1469,9 +1469,9 @@ class LGPDCompliance {
                     <div class="cookie-text">
                         <h4>🍪 Política de Cookies</h4>
                         <p>
-                            Utilizamos cookies para melhorar sua experiência, personalizar conteúdo e analisar nosso tráfego. 
-                            Ao continuar navegando, você concorda com nossa 
-                            <a href="#privacy-policy" class="cookie-link">Política de Privacidade</a> e 
+                            Utilizamos cookies para melhorar sua experiência, personalizar conteúdo e analisar nosso tráfego.
+                            Ao continuar navegando, você concorda com nossa
+                            <a href="#privacy-policy" class="cookie-link">Política de Privacidade</a> e
                             <a href="#terms" class="cookie-link">Termos de Uso</a>.
                         </p>
                     </div>
@@ -1481,7 +1481,7 @@ class LGPDCompliance {
                     </div>
                 </div>
             </div>
-            
+
             <div class="cookie-settings-modal" id="cookie-settings-modal" style="display: none;">
                 <div class="modal-content">
                     <div class="modal-header">
@@ -1499,7 +1499,7 @@ class LGPDCompliance {
                             </div>
                             <p>Necessários para o funcionamento básico do site. Não podem ser desabilitados.</p>
                         </div>
-                        
+
                         <div class="cookie-category">
                             <div class="category-header">
                                 <h4>Cookies de Análise</h4>
@@ -1510,7 +1510,7 @@ class LGPDCompliance {
                             </div>
                             <p>Nos ajudam a entender como você usa nosso site para melhorarmos a experiência.</p>
                         </div>
-                        
+
                         <div class="cookie-category">
                             <div class="category-header">
                                 <h4>Cookies de Marketing</h4>
@@ -2054,7 +2054,7 @@ class WhatsAppIntegration {
 
   sendSimulationData(simulationData) {
     const message = `Olá! Fiz uma simulação no site da RealCred + e gostaria de mais informações:
-        
+
 📊 *Dados da Simulação:*
 • Modalidade: ${simulationData.categoria}
 • Valor: ${formatCurrency(simulationData.valor)}
@@ -2494,6 +2494,32 @@ document.addEventListener('DOMContentLoaded', function () {
 document.addEventListener('DOMContentLoaded', function () {
   const portabilityForm = document.getElementById('portabilityForm');
   if (portabilityForm) {
+    // Máscaras para os campos de valor
+    const parcelaAtualInput = document.getElementById('parcelaAtual');
+    const taxaAtualInput = document.getElementById('taxaAtual');
+
+    if (parcelaAtualInput) {
+      parcelaAtualInput.addEventListener('input', function(e) {
+        let value = e.target.value.replace(/[^\d]/g, '');
+        if (value === '') {
+          e.target.value = '';
+          return;
+        }
+        const number = parseInt(value);
+        e.target.value = (number / 100).toLocaleString('pt-BR', {
+          minimumFractionDigits: 2,
+          maximumFractionDigits: 2,
+        });
+      });
+    }
+
+    if (taxaAtualInput) {
+      taxaAtualInput.addEventListener('input', function(e) {
+        let value = e.target.value.replace(/[^\d,]/g, '');
+        e.target.value = value;
+      });
+    }
+
     portabilityForm.addEventListener('submit', function (e) {
       e.preventDefault();
       calculatePortability();
@@ -2502,44 +2528,77 @@ document.addEventListener('DOMContentLoaded', function () {
 });
 
 function calculatePortability() {
-  const formData = new FormData(document.getElementById('portabilityForm'));
+  const parcelaAtualRaw = document.getElementById('parcelaAtual').value;
+  const taxaAtualRaw = document.getElementById('taxaAtual').value;
+  const prazoRestante = parseInt(document.getElementById('prazoRestante').value);
+  const categoria = document.getElementById('categoriaPort').value;
 
-  const valorAtual = parseFloat(formData.get('valorAtual'));
-  const parcelaAtual = parseFloat(formData.get('parcelaAtual'));
-  const prazoRestante = parseInt(formData.get('prazoRestante'));
-  const taxaAtual = parseFloat(formData.get('taxaAtual'));
+  // Parse valores
+  const parcelaAtual = parseFloat(parcelaAtualRaw.replace(/\./g, '').replace(',', '.'));
+  const taxaAtual = parseFloat(taxaAtualRaw.replace(',', '.'));
+
+  // Validações
+  if (!parcelaAtual || parcelaAtual <= 0) {
+    alert('Por favor, informe o valor da parcela atual.');
+    return;
+  }
+  if (!taxaAtual || taxaAtual <= 0) {
+    alert('Por favor, informe a taxa atual.');
+    return;
+  }
+  if (!prazoRestante || prazoRestante <= 0) {
+    alert('Por favor, informe o prazo restante.');
+    return;
+  }
 
   try {
-    const resultado = PortabilityCalculator.calcular(
-      valorAtual,
-      parcelaAtual,
-      prazoRestante,
-      taxaAtual
-    );
+    // Obter configuração da categoria selecionada
+    const config = CREDIT_CONFIG[categoria] || CREDIT_CONFIG.inss;
+    const novaTaxa = config.taxaMaxima;
+
+    // Se a taxa atual já é menor ou igual à nossa, não faz sentido a portabilidade
+    if (taxaAtual <= novaTaxa) {
+      alert('Sua taxa atual já é melhor ou igual à nossa taxa de ' + novaTaxa + '% a.m. A portabilidade não traria benefícios.');
+      return;
+    }
+
+    // Calcular saldo devedor usando a fórmula de valor presente de anuidade
+    const taxaAtualDecimal = taxaAtual / 100;
+    const saldoDevedor = parcelaAtual * ((Math.pow(1 + taxaAtualDecimal, prazoRestante) - 1) / (taxaAtualDecimal * Math.pow(1 + taxaAtualDecimal, prazoRestante)));
+
+    // Calcular nova parcela com taxa RealCred+
+    const novaTaxaDecimal = novaTaxa / 100;
+    const novaParcela = (saldoDevedor * (novaTaxaDecimal * Math.pow(1 + novaTaxaDecimal, prazoRestante))) / (Math.pow(1 + novaTaxaDecimal, prazoRestante) - 1);
+
+    // Calcular economia
+    const economiaMensal = parcelaAtual - novaParcela;
+    const economiaTotal = economiaMensal * prazoRestante;
 
     // Exibir resultados
-    document.getElementById('saldo-devedor').textContent = formatCurrency(resultado.saldoDevedor);
-    document.getElementById('parcela-atual-result').textContent = formatCurrency(
-      resultado.parcelaAtual
-    );
-    document.getElementById('nova-parcela').textContent = formatCurrency(resultado.novaParcela);
-    document.getElementById('economia-mensal').textContent = formatCurrency(
-      resultado.economiaMensal
-    );
-    document.getElementById('economia-total').textContent = formatCurrency(resultado.economiaTotal);
+    document.getElementById('economiaMensal').textContent = formatCurrency(economiaMensal);
+    document.getElementById('economiaTotal').textContent = formatCurrency(economiaTotal);
+    document.getElementById('novaParcela').textContent = formatCurrency(novaParcela);
+    document.getElementById('novaTaxa').textContent = novaTaxa.toFixed(2).replace('.', ',') + '% a.m.';
 
-    document.getElementById('portabilityResult').style.display = 'block';
+    // Mostrar resultado
+    const resultDiv = document.getElementById('portabilityResult');
+    resultDiv.style.display = 'block';
+    resultDiv.classList.remove('hidden');
+
+    // Scroll suave para o resultado
+    resultDiv.scrollIntoView({ behavior: 'smooth', block: 'center' });
 
     // Track event
     if (typeof window.gtag !== 'undefined') {
       window.gtag('event', 'portability_calculation', {
         event_category: 'engagement',
-        event_label: 'calculator_used',
-        value: resultado.economiaTotal,
+        event_label: categoria,
+        value: Math.round(economiaTotal),
       });
     }
   } catch (error) {
-    alert('Erro no cálculo: ' + error.message);
+    console.error('Erro no cálculo:', error);
+    alert('Erro no cálculo. Por favor, verifique os valores informados.');
   }
 }
 
@@ -2850,7 +2909,7 @@ if (simulationForm) {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ nome, categoria, salario, valor, prazo })
       });
-      
+
       if (response.ok) {
         showFeedback(leadFeedback, 'Simulação enviada com sucesso! Em breve entraremos em contato.', 'success');
         simulationForm.reset();
@@ -3179,3 +3238,279 @@ function initRipple() {
   });
 }
 document.addEventListener('DOMContentLoaded', initRipple);
+
+// ========================================
+// PWA INSTALL PROMPT
+// ========================================
+class PWAInstallPrompt {
+  constructor() {
+    this.deferredPrompt = null;
+    this.installBanner = null;
+    this.init();
+  }
+
+  init() {
+    // Captura o evento beforeinstallprompt
+    window.addEventListener('beforeinstallprompt', (e) => {
+      e.preventDefault();
+      this.deferredPrompt = e;
+
+      // Verifica se já foi rejeitado recentemente
+      const lastRejected = localStorage.getItem('pwa-install-rejected');
+      if (lastRejected) {
+        const daysSinceRejection = (Date.now() - parseInt(lastRejected)) / (1000 * 60 * 60 * 24);
+        if (daysSinceRejection < 7) return; // Espera 7 dias antes de mostrar novamente
+      }
+
+      // Mostra o banner após 30 segundos de navegação
+      setTimeout(() => this.showInstallBanner(), 30000);
+    });
+
+    // Monitora se o app foi instalado
+    window.addEventListener('appinstalled', () => {
+      console.log('RealCred+ PWA instalado com sucesso!');
+      this.hideInstallBanner();
+      this.deferredPrompt = null;
+
+      // Analytics
+      if (typeof gtag !== 'undefined') {
+        gtag('event', 'pwa_installed', {
+          event_category: 'PWA',
+          event_label: 'App Installed'
+        });
+      }
+    });
+  }
+
+  showInstallBanner() {
+    if (!this.deferredPrompt || this.installBanner) return;
+
+    this.installBanner = document.createElement('div');
+    this.installBanner.className = 'pwa-install-banner';
+    this.installBanner.innerHTML = `
+      <div class="pwa-install-content">
+        <img src="/assets/images/realcred_logo.webp" alt="RealCred+" class="pwa-install-logo">
+        <div class="pwa-install-text">
+          <strong>Instale o RealCred+</strong>
+          <span>Acesso rápido às melhores taxas de crédito!</span>
+        </div>
+        <div class="pwa-install-buttons">
+          <button class="pwa-install-btn" id="pwaInstallBtn">Instalar</button>
+          <button class="pwa-dismiss-btn" id="pwaDismissBtn">Agora não</button>
+        </div>
+      </div>
+    `;
+
+    // Adiciona estilos inline (para não depender de CSS externo)
+    this.installBanner.style.cssText = `
+      position: fixed;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: linear-gradient(135deg, #002060 0%, #2563eb 100%);
+      color: white;
+      padding: 16px 24px;
+      border-radius: 16px;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+      z-index: 10000;
+      max-width: 90vw;
+      animation: slideUp 0.5s ease-out;
+    `;
+
+    document.body.appendChild(this.installBanner);
+
+    // Event listeners
+    document.getElementById('pwaInstallBtn').addEventListener('click', () => this.installApp());
+    document.getElementById('pwaDismissBtn').addEventListener('click', () => this.dismissBanner());
+
+    // Adiciona animação CSS
+    const style = document.createElement('style');
+    style.textContent = `
+      @keyframes slideUp {
+        from { transform: translateX(-50%) translateY(100%); opacity: 0; }
+        to { transform: translateX(-50%) translateY(0); opacity: 1; }
+      }
+      .pwa-install-content {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        flex-wrap: wrap;
+      }
+      .pwa-install-logo {
+        width: 48px;
+        height: 48px;
+        border-radius: 12px;
+      }
+      .pwa-install-text {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+      }
+      .pwa-install-text strong { font-size: 16px; }
+      .pwa-install-text span { font-size: 13px; opacity: 0.9; }
+      .pwa-install-buttons { display: flex; gap: 8px; margin-left: auto; }
+      .pwa-install-btn {
+        background: #fff;
+        color: #002060;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 25px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: transform 0.2s;
+      }
+      .pwa-install-btn:hover { transform: scale(1.05); }
+      .pwa-dismiss-btn {
+        background: transparent;
+        color: white;
+        border: 1px solid rgba(255,255,255,0.3);
+        padding: 10px 16px;
+        border-radius: 25px;
+        cursor: pointer;
+      }
+      @media (max-width: 600px) {
+        .pwa-install-content { justify-content: center; text-align: center; }
+        .pwa-install-buttons { width: 100%; justify-content: center; }
+      }
+    `;
+    document.head.appendChild(style);
+  }
+
+  async installApp() {
+    if (!this.deferredPrompt) return;
+
+    this.deferredPrompt.prompt();
+    const { outcome } = await this.deferredPrompt.userChoice;
+
+    console.log('PWA install outcome:', outcome);
+
+    if (outcome === 'dismissed') {
+      localStorage.setItem('pwa-install-rejected', Date.now().toString());
+    }
+
+    this.hideInstallBanner();
+    this.deferredPrompt = null;
+  }
+
+  dismissBanner() {
+    localStorage.setItem('pwa-install-rejected', Date.now().toString());
+    this.hideInstallBanner();
+  }
+
+  hideInstallBanner() {
+    if (this.installBanner) {
+      this.installBanner.style.animation = 'slideUp 0.3s ease-out reverse';
+      setTimeout(() => {
+        this.installBanner.remove();
+        this.installBanner = null;
+      }, 300);
+    }
+  }
+}
+
+// Inicializa o prompt de instalação PWA
+document.addEventListener('DOMContentLoaded', () => {
+  new PWAInstallPrompt();
+});
+
+// ========================================
+// NEWSLETTER SIGNUP (Future Enhancement)
+// ========================================
+class NewsletterSignup {
+  constructor() {
+    this.init();
+  }
+
+  init() {
+    // Procura por formulários de newsletter
+    const newsletterForms = document.querySelectorAll('.newsletter-form, #newsletterForm');
+
+    newsletterForms.forEach(form => {
+      form.addEventListener('submit', (e) => this.handleSubmit(e, form));
+    });
+  }
+
+  async handleSubmit(e, form) {
+    e.preventDefault();
+
+    const emailInput = form.querySelector('input[type="email"]');
+    const submitBtn = form.querySelector('button[type="submit"]');
+
+    if (!emailInput || !emailInput.value) return;
+
+    const email = emailInput.value.trim();
+
+    // Validação básica de email
+    if (!this.isValidEmail(email)) {
+      this.showMessage(form, 'Por favor, insira um email válido.', 'error');
+      return;
+    }
+
+    // Feedback visual
+    const originalText = submitBtn.textContent;
+    submitBtn.disabled = true;
+    submitBtn.textContent = 'Cadastrando...';
+
+    try {
+      // Simula envio (substituir por API real quando disponível)
+      await this.submitToAPI(email);
+
+      this.showMessage(form, 'Obrigado! Você receberá nossas novidades.', 'success');
+      emailInput.value = '';
+
+      // Analytics
+      if (typeof gtag !== 'undefined') {
+        gtag('event', 'newsletter_signup', {
+          event_category: 'Newsletter',
+          event_label: email.split('@')[1] // Apenas domínio por privacidade
+        });
+      }
+    } catch (error) {
+      console.error('Newsletter signup error:', error);
+      this.showMessage(form, 'Erro ao cadastrar. Tente novamente.', 'error');
+    } finally {
+      submitBtn.disabled = false;
+      submitBtn.textContent = originalText;
+    }
+  }
+
+  isValidEmail(email) {
+    const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return re.test(email);
+  }
+
+  async submitToAPI(email) {
+    // TODO: Implementar integração com serviço de newsletter
+    // Por enquanto, apenas simula um delay
+    return new Promise((resolve) => setTimeout(resolve, 1000));
+  }
+
+  showMessage(form, message, type) {
+    // Remove mensagem anterior se existir
+    const existingMsg = form.querySelector('.newsletter-message');
+    if (existingMsg) existingMsg.remove();
+
+    const msgEl = document.createElement('div');
+    msgEl.className = `newsletter-message newsletter-${type}`;
+    msgEl.textContent = message;
+    msgEl.style.cssText = `
+      padding: 10px;
+      margin-top: 10px;
+      border-radius: 8px;
+      font-size: 14px;
+      background: ${type === 'success' ? '#10b981' : '#ef4444'};
+      color: white;
+    `;
+
+    form.appendChild(msgEl);
+
+    // Remove após 5 segundos
+    setTimeout(() => msgEl.remove(), 5000);
+  }
+}
+
+// Inicializa newsletter signup
+document.addEventListener('DOMContentLoaded', () => {
+  new NewsletterSignup();
+});
+

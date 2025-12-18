@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sem Conexão | RealCred+</title>
+  <meta name="robots" content="noindex, nofollow">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(135deg, #002060 0%, #0047AB 50%, #2563eb 100%);
+      color: white;
+      padding: 20px;
+    }
+
+    .offline-container {
+      text-align: center;
+      max-width: 500px;
+    }
+
+    .offline-icon {
+      font-size: 80px;
+      margin-bottom: 24px;
+      animation: pulse 2s ease-in-out infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); opacity: 1; }
+      50% { transform: scale(1.1); opacity: 0.8; }
+    }
+
+    h1 {
+      font-size: 2rem;
+      margin-bottom: 16px;
+      font-weight: 700;
+    }
+
+    p {
+      font-size: 1.1rem;
+      opacity: 0.9;
+      line-height: 1.6;
+      margin-bottom: 24px;
+    }
+
+    .retry-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: white;
+      color: #002060;
+      border: none;
+      padding: 14px 32px;
+      border-radius: 50px;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      text-decoration: none;
+    }
+
+    .retry-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+    }
+
+    .contact-info {
+      margin-top: 40px;
+      padding-top: 24px;
+      border-top: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .contact-info h3 {
+      font-size: 1rem;
+      font-weight: 500;
+      margin-bottom: 12px;
+      opacity: 0.8;
+    }
+
+    .whatsapp-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      color: white;
+      text-decoration: none;
+      font-weight: 500;
+      padding: 10px 20px;
+      background: #25D366;
+      border-radius: 50px;
+      transition: all 0.3s ease;
+    }
+
+    .whatsapp-link:hover {
+      background: #128C7E;
+      transform: translateY(-2px);
+    }
+
+    .logo {
+      margin-bottom: 32px;
+    }
+
+    .logo img {
+      width: 120px;
+      height: auto;
+    }
+  </style>
+</head>
+<body>
+  <div class="offline-container">
+    <div class="logo">
+      <svg width="120" height="40" viewBox="0 0 120 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <text x="0" y="30" font-family="Inter, sans-serif" font-size="24" font-weight="700" fill="white">RealCred+</text>
+      </svg>
+    </div>
+
+    <div class="offline-icon">📡</div>
+
+    <h1>Você está offline</h1>
+
+    <p>
+      Parece que você perdeu a conexão com a internet.
+      Verifique sua conexão e tente novamente.
+    </p>
+
+    <button class="retry-btn" onclick="window.location.reload()">
+      🔄 Tentar novamente
+    </button>
+
+    <div class="contact-info">
+      <h3>Precisa falar conosco?</h3>
+      <a href="https://wa.me/5512991234567" class="whatsapp-link" target="_blank" rel="noopener">
+        📱 WhatsApp: (12) 99123-4567
+      </a>
+    </div>
+  </div>
+
+  <script>
+    // Check for online status and redirect
+    window.addEventListener('online', function() {
+      window.location.reload();
+    });
+  </script>
+</body>
+</html>

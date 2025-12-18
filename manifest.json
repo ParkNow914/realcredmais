@@ -1,8 +1,8 @@
 {
   "name": "RealCred + | Empréstimos Consignados",
   "short_name": "RealCred+",
-  "description": "Especialista em empréstimos consignados INSS, crédito pessoal e antecipação saque aniversário FGTS",
-  "start_url": "/",
+  "description": "Especialista em empréstimos consignados INSS, crédito pessoal e antecipação saque aniversário FGTS em Lorena-SP",
+  "start_url": "/?source=pwa",
   "display": "standalone",
   "background_color": "#002060",
   "theme_color": "#2563eb",
@@ -12,18 +12,46 @@
       "src": "/assets/images/realcred_logo.png",
       "sizes": "192x192",
       "type": "image/png",
-      "purpose": "any maskable"
+      "purpose": "any"
     },
     {
       "src": "/assets/images/realcred_logo.png",
       "sizes": "512x512",
       "type": "image/png",
-      "purpose": "any maskable"
+      "purpose": "maskable"
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "/assets/images/happy_people1.webp",
+      "sizes": "640x480",
+      "type": "image/webp",
+      "form_factor": "wide",
+      "label": "RealCred+ - Empréstimos Consignados"
     }
   ],
   "categories": ["finance", "business"],
   "lang": "pt-BR",
   "dir": "ltr",
   "scope": "/",
-  "prefer_related_applications": false
+  "id": "realcredplus-pwa",
+  "prefer_related_applications": false,
+  "shortcuts": [
+    {
+      "name": "Simular Empréstimo",
+      "short_name": "Simular",
+      "description": "Faça uma simulação de empréstimo consignado",
+      "url": "/?source=pwa#simulacao",
+      "icons": [{ "src": "/assets/images/loan_icon1.png", "sizes": "96x96", "type": "image/png" }]
+    },
+    {
+      "name": "Entrar em Contato",
+      "short_name": "Contato",
+      "description": "Fale conosco sobre empréstimos",
+      "url": "/?source=pwa#contato",
+      "icons": [{ "src": "/assets/images/realcred_logo.png", "sizes": "96x96", "type": "image/png" }]
+    }
+  ],
+  "related_applications": [],
+  "handle_links": "preferred"
 }

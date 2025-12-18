@@ -36,5 +36,37 @@
         <changefreq>monthly</changefreq>
         <priority>0.8</priority>
     </url>
+    <!-- Artigos do Blog - Educação Financeira -->
+    <url>
+        <loc>https://realcredplus.com.br/artigos/como-sair-das-dividas-2025.html</loc>
+        <lastmod>2025-07-08</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.8</priority>
+    </url>
+    <url>
+        <loc>https://realcredplus.com.br/artigos/emprestimo-consignado-vs-credito-pessoal.html</loc>
+        <lastmod>2025-07-08</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.8</priority>
+    </url>
+    <url>
+        <loc>https://realcredplus.com.br/artigos/saque-aniversario-fgts-2025.html</loc>
+        <lastmod>2025-07-08</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.8</priority>
+    </url>
+    <!-- Páginas Legais -->
+    <url>
+        <loc>https://realcredplus.com.br/privacy-policy.html</loc>
+        <lastmod>2025-07-08</lastmod>
+        <changefreq>yearly</changefreq>
+        <priority>0.5</priority>
+    </url>
+    <url>
+        <loc>https://realcredplus.com.br/terms-of-use.html</loc>
+        <lastmod>2025-07-08</lastmod>
+        <changefreq>yearly</changefreq>
+        <priority>0.5</priority>
+    </url>
 </urlset>
 

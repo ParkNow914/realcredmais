@@ -13,6 +13,26 @@
       content="empréstimo consignado, INSS, servidor público, militar, Lorena SP, crédito consignado, financiamento, portabilidade crédito, empréstimo aposentado, empréstimo pensionista, taxa baixa empréstimo, crédito rápido, simulação empréstimo, margem consignável, Open Banking"
     />
     <meta name="author" content="RealCred +" />
+
+    <!-- SEO Extras -->
+    <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
+    <meta name="googlebot" content="index, follow" />
+    <link rel="canonical" href="https://realcredplus.com.br/" />
+    <meta name="geo.region" content="BR-SP" />
+    <meta name="geo.placename" content="Lorena" />
+    <meta name="geo.position" content="-22.7309;-45.1253" />
+    <meta name="ICBM" content="-22.7309, -45.1253" />
+
+    <!-- PWA Meta Tags -->
+    <meta name="theme-color" content="#2563eb" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="RealCred+" />
+    <meta name="application-name" content="RealCred+" />
+    <meta name="msapplication-TileColor" content="#002060" />
+    <meta name="msapplication-config" content="/browserconfig.xml" />
+    <link rel="manifest" href="/manifest.json" />
     <meta
       property="og:title"
       content="RealCred + | Empréstimos Consignados INSS, Servidores e Militares - Lorena, SP"
@@ -55,6 +75,17 @@
     <link rel="dns-prefetch" href="//www.google.com" />
     <link rel="dns-prefetch" href="//wa.me" />
     <link rel="dns-prefetch" href="//images.unsplash.com" />
+    <link rel="dns-prefetch" href="//www.googletagmanager.com" />
+    <link rel="dns-prefetch" href="//www.google-analytics.com" />
+
+    <!-- Preload Critical Assets -->
+    <link rel="preload" href="/assets/LOGO%202.jpeg" as="image" />
+    <link rel="preload" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;900&family=Inter:wght@300;400;500;600;700&display=swap" as="style" />
+
+    <!-- Apple Touch Icons -->
+    <link rel="apple-touch-icon" sizes="180x180" href="/assets/images/realcred_logo.png" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/assets/images/realcred_logo.png" />
+    <link rel="icon" type="image/png" sizes="16x16" href="/assets/images/realcred_logo.png" />
   </head>
   <body>
     <a href="#main-content" class="skip-link">Pular para conteúdo principal</a>
@@ -374,6 +405,11 @@
               <div class="simulation-progress-bar" id="simulationProgressBar"></div>
             </div>
             <form class="simulation-form" id="simulationForm" method="POST" novalidate>
+              <!-- Honeypot anti-spam (campo oculto que bots preenchem) -->
+              <div class="honeypot-field" aria-hidden="true">
+                <label for="company_name">Nome da Empresa</label>
+                <input type="text" id="company_name" name="company_name" tabindex="-1" autocomplete="off">
+              </div>
               <div id="form-messages"></div>
               <div class="form-group">
                 <label for="nome">Nome Completo</label>
@@ -511,6 +547,72 @@
         </div>
       </section>
 
+      <!-- Calculadora de Portabilidade -->
+      <section id="portabilidade" class="portability-section">
+        <div class="container">
+          <div class="section-header">
+            <h2 class="section-title animated-gradient">Calculadora de Portabilidade</h2>
+            <p class="section-subtitle">Descubra quanto você pode economizar transferindo seu empréstimo</p>
+          </div>
+          <div class="portability-calculator">
+            <form id="portabilityForm" class="portability-form" novalidate>
+              <div class="form-row">
+                <div class="form-group">
+                  <label for="parcelaAtual">Parcela Atual (R$)</label>
+                  <input type="text" id="parcelaAtual" name="parcelaAtual" placeholder="0,00" required>
+                </div>
+                <div class="form-group">
+                  <label for="taxaAtual">Taxa Atual (% a.m.)</label>
+                  <input type="text" id="taxaAtual" name="taxaAtual" placeholder="2,50" required>
+                </div>
+              </div>
+              <div class="form-row">
+                <div class="form-group">
+                  <label for="prazoRestante">Prazo Restante (meses)</label>
+                  <input type="number" id="prazoRestante" name="prazoRestante" min="1" max="96" placeholder="48" required>
+                </div>
+                <div class="form-group">
+                  <label for="categoriaPort">Categoria</label>
+                  <select id="categoriaPort" name="categoriaPort" required>
+                    <option value="inss">Aposentado/Pensionista INSS</option>
+                    <option value="servidor">Servidor Público</option>
+                    <option value="militar">Militar</option>
+                  </select>
+                </div>
+              </div>
+              <button type="submit" class="btn btn-primary btn-large">Calcular Economia</button>
+            </form>
+            <div id="portabilityResult" class="portability-result hidden">
+              <h3>Resultado da Portabilidade</h3>
+              <div class="result-grid">
+                <div class="result-card highlight">
+                  <span class="result-label">Economia Mensal</span>
+                  <span class="result-value" id="economiaMensal">R$ 0,00</span>
+                </div>
+                <div class="result-card highlight-success">
+                  <span class="result-label">Economia Total</span>
+                  <span class="result-value" id="economiaTotal">R$ 0,00</span>
+                </div>
+                <div class="result-card">
+                  <span class="result-label">Nova Parcela</span>
+                  <span class="result-value" id="novaParcela">R$ 0,00</span>
+                </div>
+                <div class="result-card">
+                  <span class="result-label">Nova Taxa</span>
+                  <span class="result-value" id="novaTaxa">0,00% a.m.</span>
+                </div>
+              </div>
+              <div class="result-actions">
+                <a href="https://wa.me/5512982827447?text=Olá! Tenho interesse em fazer a portabilidade do meu empréstimo."
+                   class="btn btn-whatsapp" target="_blank" rel="noopener noreferrer">
+                  <i class="fab fa-whatsapp"></i> Solicitar Portabilidade
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
       <!-- Depoimentos -->
       <section id="depoimentos" class="testimonials">
         <div class="container">
@@ -636,6 +738,11 @@
             </div>
             <div class="contact-form-container">
               <form class="contact-form" id="contactForm" novalidate>
+                <!-- Honeypot anti-spam (campo oculto que bots preenchem) -->
+                <div class="honeypot-field" aria-hidden="true">
+                  <label for="website_url">Website URL</label>
+                  <input type="text" id="website_url" name="website_url" tabindex="-1" autocomplete="off">
+                </div>
                 <div class="form-group">
                   <label for="contactNome">Nome Completo</label>
                   <input
@@ -702,12 +809,13 @@
           </div>
           <div class="map-container">
             <iframe
-              src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3667.8234567890123!2d-45.1234567!3d-22.7234567!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2sR.%20Dr.%20Jos%C3%A9%20Machado%20Coelho%20de%20Castro%2C%20238%20-%20Centro%2C%20Lorena%20-%20SP%2C%2012600-050!5e0!3m2!1spt-BR!2sbr!4v1234567890123!5m2!1spt-BR!2sbr"
+              src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3667.5!2d-45.1253!3d-22.7309!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x94cc4a8c5b8b8b8b%3A0x1234567890abcdef!2sR.%20Dr.%20Jos%C3%A9%20Machado%20Coelho%20de%20Castro%2C%20238%20-%20Centro%2C%20Lorena%20-%20SP%2C%2012600-050!5e0!3m2!1spt-BR!2sbr!4v1701705600000!5m2!1spt-BR!2sbr"
               width="100%"
               height="400"
+              style="border:0;"
               allowfullscreen=""
               loading="lazy"
-              referrerpolicy="strict-origin-when-cross-origin"
+              referrerpolicy="no-referrer-when-downgrade"
               title="Localização da RealCred + em Lorena, SP"
             >
             </iframe>
@@ -1230,20 +1338,26 @@
   }
 </script>
 
-<!-- Google Analytics 4 -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=GA_MEASUREMENT_ID"></script>
+<!-- Google Analytics 4 - Configure seu ID em: https://analytics.google.com -->
+<!-- IMPORTANTE: Substitua 'G-XXXXXXXXXX' pelo seu ID real do Google Analytics 4 -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
 <script>
   window.dataLayer = window.dataLayer || [];
   function gtag() {
     dataLayer.push(arguments);
   }
   gtag('js', new Date());
-  gtag('config', 'GA_MEASUREMENT_ID', {
+
+  // Configuração do GA4 - Substitua G-XXXXXXXXXX pelo seu ID real
+  const GA_MEASUREMENT_ID = 'G-XXXXXXXXXX';
+
+  gtag('config', GA_MEASUREMENT_ID, {
     page_title: 'RealCred + | Empréstimos Consignados',
     page_location: window.location.href,
+    send_page_view: true,
     custom_map: {
-      custom_parameter_1: 'loan_type',
-      custom_parameter_2: 'user_category',
+      dimension1: 'loan_type',
+      dimension2: 'user_category',
     },
   });
 

@@ -44,13 +44,19 @@ const __dirname = path.dirname(__filename);
 app.use(express.json());
 
 // Configuração de CORS dinâmica baseada em ambiente
+const isDevelopment = process.env.NODE_ENV !== 'production';
+
 const allowedOrigins = process.env.ALLOWED_ORIGINS
   ? process.env.ALLOWED_ORIGINS.split(',').map((origin) => origin.trim())
   : [
       'http://localhost:3000',
       'http://localhost:3001',
+      'http://localhost:3002',
       'http://127.0.0.1:3000',
+      'http://127.0.0.1:3001',
       'http://127.0.0.1:3002',
+      'https://realcredplus.com.br',
+      'https://www.realcredplus.com.br',
     ];
 
 // CORS configuration
@@ -58,6 +64,9 @@ const corsOptions = {
   origin: (origin, callback) => {
     // Permite requisições sem origem (como mobile apps ou curl)
     if (!origin) return callback(null, true);
+
+    // Em desenvolvimento, permite qualquer origem
+    if (isDevelopment) return callback(null, true);
 
     if (allowedOrigins.indexOf(origin) === -1) {
       const msg =
@@ -135,6 +144,15 @@ app.post('/api/lead', async (req, res) => {
   console.log('Received lead request:', req.body);
 
   try {
+    // Honeypot anti-spam check
+    if (req.body.company_name || req.body.website_url) {
+      console.log('Honeypot triggered - spam detected');
+      return res.status(400).json({
+        success: false,
+        message: 'Erro ao processar solicitação.',
+      });
+    }
+
     const { nome, email, telefone, categoria, salario, valor, prazo, cpf } = req.body;
 
     // Log the received data for debugging
@@ -228,18 +246,18 @@ app.post('/api/lead', async (req, res) => {
           <h1>Novo Lead - Simulação de Empréstimo</h1>
           <img src="https://realcredplus.com.br/assets/LOGO%202.jpeg" alt="RealCred +" style="max-width: 200px; margin: 20px auto; display: block;">
         </div>
-        
+
         <div class="content">
           <div class="info">
             <div class="info-label">Nome Completo:</div>
             <div class="info-value">${nome}</div>
           </div>
-          
+
           <div class="info">
             <div class="info-label">CPF:</div>
             <div class="info-value">${cpf ? cpf.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, '$1.$2.$3-$4') : 'Não informado'}</div>
           </div>
-          
+
           ${
             email
               ? `
@@ -250,7 +268,7 @@ app.post('/api/lead', async (req, res) => {
           `
               : ''
           }
-          
+
           ${
             telefone
               ? `
@@ -261,28 +279,28 @@ app.post('/api/lead', async (req, res) => {
           `
               : ''
           }
-          
+
           <div class="info">
             <div class="info-label">Categoria:</div>
             <div class="info-value">${categoria.charAt(0).toUpperCase() + categoria.slice(1)}</div>
           </div>
-          
+
           <div class="info">
             <div class="info-label">Salário/Benefício Líquido:</div>
             <div class="info-value">R$ ${formattedSalario.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</div>
           </div>
-          
+
           <div class="info">
             <div class="info-label">Valor Desejado:</div>
             <div class="info-value">R$ ${formattedValor.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</div>
           </div>
-          
+
           <div class="info">
             <div class="info-label">Prazo:</div>
             <div class="info-value">${formattedPrazo} meses</div>
           </div>
         </div>
-        
+
         <div class="footer">
           <div class="timestamp">Data/Hora: ${new Date().toLocaleString('pt-BR')}</div>
           <div>Sistema de Leads - RealCred +</div>

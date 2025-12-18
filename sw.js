@@ -1,9 +1,15 @@
 // Service Worker para RealCred + PWA
-const CACHE_NAME = 'realcred-v1.0.0';
+const CACHE_NAME = 'realcred-v1.1.0';
+const OFFLINE_URL = '/offline.html';
+
+// URLs essenciais para cache - apenas arquivos que existem
 const urlsToCache = [
   '/',
   '/index.html',
-  '/css/form-styles.css',
+  '/offline.html',
+  '/styles.css',
+  '/scripts.js',
+  '/manifest.json',
   '/js/contact-form.js',
   '/js/form-handler.js',
   '/js/form-masks.js',
@@ -20,24 +26,34 @@ const urlsToCache = [
   '/assets/images/financial_icon1.png',
   '/assets/images/financial_icon1.webp',
   '/assets/images/financial_icon2.png',
+  '/assets/images/financial_icon2.webp',
   '/assets/images/loan_icon1.png',
   '/assets/images/loan_icon1.webp',
   '/assets/images/loan_icon2.png',
-  'https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap',
-  'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css',
+  '/assets/images/loan_icon2.webp',
 ];
 
-// Install event
+// Install event - Cache essencial com fallback gracioso
 self.addEventListener('install', function (event) {
   event.waitUntil(
     caches.open(CACHE_NAME).then(function (cache) {
-      console.log('Cache opened');
-      return cache.addAll(urlsToCache);
+      console.log('RealCred+ Cache opened');
+      // Cache individual para evitar falha total se um arquivo não existir
+      return Promise.allSettled(
+        urlsToCache.map(url =>
+          cache.add(url).catch(err => {
+            console.warn(`Falha ao cachear ${url}:`, err);
+            return Promise.resolve();
+          })
+        )
+      );
     })
   );
+  // Ativa imediatamente o novo service worker
+  self.skipWaiting();
 });
 
-// Fetch event with better error handling
+// Fetch event with better error handling - Stale While Revalidate strategy
 self.addEventListener('fetch', function (event) {
   // Skip non-GET requests
   if (event.request.method !== 'GET') return;
@@ -45,55 +61,64 @@ self.addEventListener('fetch', function (event) {
   // Skip non-http/https requests
   if (!event.request.url.startsWith('http')) return;
 
-  event.respondWith(
-    caches.match(event.request).then(function (response) {
-      // Return cached version if found
-      if (response) {
-        return response;
-      }
+  // Skip requests to external domains (except fonts/CDN)
+  const url = new URL(event.request.url);
+  const isExternal = url.origin !== self.location.origin;
+  const isAllowedExternal = url.hostname.includes('fonts.googleapis.com') ||
+                            url.hostname.includes('fonts.gstatic.com') ||
+                            url.hostname.includes('cdnjs.cloudflare.com');
 
-      // Otherwise, try to fetch from network
-      return fetch(event.request)
+  if (isExternal && !isAllowedExternal) return;
+
+  // Check if this is a navigation request
+  const isNavigationRequest = event.request.mode === 'navigate';
+
+  event.respondWith(
+    caches.match(event.request).then(function (cachedResponse) {
+      // Fetch from network in parallel
+      const fetchPromise = fetch(event.request)
         .then(function (networkResponse) {
           // Check if we received a valid response
-          if (
-            !networkResponse ||
-            networkResponse.status !== 200 ||
-            networkResponse.type !== 'basic'
-          ) {
-            return networkResponse;
+          if (networkResponse && networkResponse.status === 200) {
+            // Clone and cache the response
+            const responseToCache = networkResponse.clone();
+            caches.open(CACHE_NAME).then(function (cache) {
+              cache.put(event.request, responseToCache);
+            });
           }
-
-          // Clone the response
-          const responseToCache = networkResponse.clone();
-
-          // Add to cache for future use
-          caches.open(CACHE_NAME).then(function (cache) {
-            cache.put(event.request, responseToCache);
-          });
-
           return networkResponse;
         })
         .catch(function (error) {
-          console.error('Fetch failed; returning offline page', error);
-          // You could return a custom offline page here if desired
+          console.warn('Fetch failed for:', event.request.url, error);
+          // For navigation requests, show offline page
+          if (isNavigationRequest) {
+            return caches.match(OFFLINE_URL);
+          }
+          // Return cached version or nothing
+          return cachedResponse;
         });
+
+      // Return cached version immediately if available, otherwise wait for network
+      return cachedResponse || fetchPromise;
     })
   );
 });
 
-// Activate event
+// Activate event - Limpa caches antigos e assume controle
 self.addEventListener('activate', function (event) {
   event.waitUntil(
     caches.keys().then(function (cacheNames) {
       return Promise.all(
         cacheNames.map(function (cacheName) {
           if (cacheName !== CACHE_NAME) {
-            console.log('Deleting old cache:', cacheName);
+            console.log('Deletando cache antigo:', cacheName);
             return caches.delete(cacheName);
           }
         })
       );
+    }).then(() => {
+      // Assume controle imediato de todas as abas
+      return self.clients.claim();
     })
   );
 });
