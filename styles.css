@@ -2633,6 +2633,31 @@ html {
 }
 
 .chatbot-close:hover {
+/* Botão inline do WhatsApp dentro do header do chatbot (evita 2 ícones) */
+.chatbot-header .whatsapp-inline {
+  background: linear-gradient(135deg, #25d366 0%, #128c4a 100%);
+  color: white;
+  border: none;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-left: 8px;
+  cursor: pointer;
+  font-size: 18px;
+  box-shadow: var(--shadow-lg);
+}
+
+.chatbot-header .whatsapp-inline:hover {
+  transform: scale(1.06);
+}
+
+/* Se por algum motivo o widget flutuante for criado e o inline existir, escondemos o flutuante */
+.whatsapp-widget { /* mantém o estilo para fallback, mas esconda quando inline estiver presente */
+  display: none;
+}
   background: rgba(255, 255, 255, 0.2);
   transform: rotate(90deg);
 }

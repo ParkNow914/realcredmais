@@ -2024,6 +2024,14 @@ class WhatsAppIntegration {
   }
 
   createWidget() {
+    // Se o chatbot já existe, anexamos um botão pequeno dentro do header do chatbot
+    // para evitar ter dois ícones lado a lado.
+    const chatbotContainer = document.getElementById('chatbot-container');
+    if (chatbotContainer) {
+      this.attachToChatbot(chatbotContainer);
+      return;
+    }
+
     const widget = document.createElement('div');
     widget.className = 'whatsapp-widget';
     widget.innerHTML = `
@@ -2034,6 +2042,51 @@ class WhatsAppIntegration {
         `;
 
     document.body.appendChild(widget);
+  }
+
+  attachToChatbot(container) {
+    try {
+      const header = container.querySelector('.chatbot-header');
+      if (!header) {
+        // fallback: criar widget flutuante se header não existir
+        const widget = document.createElement('div');
+        widget.className = 'whatsapp-widget';
+        widget.innerHTML = `
+            <button class="whatsapp-btn" onclick="whatsAppManager.openChat()" aria-label="Falar no WhatsApp">
+                💬
+                <div class="whatsapp-tooltip">Fale conosco no WhatsApp</div>
+            </button>
+        `;
+        document.body.appendChild(widget);
+        return;
+      }
+
+      // Criar botão pequeno e acessível dentro do header do chatbot
+      const waBtn = document.createElement('button');
+      waBtn.className = 'whatsapp-inline';
+      waBtn.setAttribute('aria-label', 'Falar no WhatsApp');
+      waBtn.innerHTML = `<span class="wa-icon">💬</span>`;
+      waBtn.addEventListener('click', () => this.openChat());
+
+      // Inserir antes do botão de fechar para manter layout consistente
+      const closeBtn = header.querySelector('.chatbot-close');
+      if (closeBtn) {
+        header.insertBefore(waBtn, closeBtn);
+      } else {
+        header.appendChild(waBtn);
+      }
+    } catch (e) {
+      // Em caso de erro, fallback para widget flutuante
+      const widget = document.createElement('div');
+      widget.className = 'whatsapp-widget';
+      widget.innerHTML = `
+            <button class="whatsapp-btn" onclick="whatsAppManager.openChat()" aria-label="Falar no WhatsApp">
+                💬
+                <div class="whatsapp-tooltip">Fale conosco no WhatsApp</div>
+            </button>
+        `;
+      document.body.appendChild(widget);
+    }
   }
 
   setupEventListeners() {
