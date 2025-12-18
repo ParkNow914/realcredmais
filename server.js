@@ -7,6 +7,9 @@ import mongoSanitize from 'express-mongo-sanitize';
 import cors from 'cors';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import fs from 'fs';
+import { promisify } from 'util';
+const appendFile = promisify(fs.appendFile);
 
 // Valid categories
 const CATEGORIAS_VALIDAS = [
@@ -86,6 +89,15 @@ const corsOptions = {
 
 // Apply CORS with the specified options
 app.use(cors(corsOptions));
+
+// Ensure logs directory exists
+try {
+  if (!fs.existsSync(path.join(__dirname, 'logs'))) {
+    fs.mkdirSync(path.join(__dirname, 'logs'));
+  }
+} catch (e) {
+  console.warn('Could not create logs directory:', e.message);
+}
 
 // Handle preflight requests
 app.options('*', cors(corsOptions));
@@ -390,9 +402,16 @@ Data/Hora: ${new Date().toLocaleString('pt-BR')}`,
 });
 
 // Chat proxy to OpenAI Chat Completions API
+// Health check for chat service
+app.get('/api/chat/health', (req, res) => {
+  const configured = Boolean(process.env.OPENAI_API_KEY);
+  res.json({ success: true, configured });
+});
+
+// Chat endpoint with optional streaming
 app.post('/api/chat', chatLimiter, async (req, res) => {
   try {
-    const { messages, message } = req.body;
+    const { messages, message, stream } = req.body;
 
     const apiKey = process.env.OPENAI_API_KEY;
     if (!apiKey) {
@@ -415,19 +434,81 @@ app.post('/api/chat', chatLimiter, async (req, res) => {
 
     const model = process.env.OPENAI_MODEL || 'gpt-3.5-turbo';
 
-    // Call OpenAI Chat Completions
+    // If streaming requested, proxy and stream deltas
+    if (stream) {
+      const openaiRes = await fetch('https://api.openai.com/v1/chat/completions', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${apiKey}`,
+        },
+        body: JSON.stringify({ model, messages: chatMessages, stream: true, temperature: 0.2, max_tokens: 800 }),
+      });
+
+      if (!openaiRes.ok) {
+        const errText = await openaiRes.text();
+        console.error('OpenAI stream error:', errText);
+        return res.status(502).json({ success: false, message: 'OpenAI returned an error', details: errText });
+      }
+
+      res.setHeader('Content-Type', 'text/plain; charset=utf-8');
+      const reader = openaiRes.body.getReader();
+      const decoder = new TextDecoder('utf-8');
+
+      let done = false;
+      while (!done) {
+        const { value, done: readerDone } = await reader.read();
+        if (value) {
+          const chunk = decoder.decode(value, { stream: true });
+          // OpenAI stream uses lines beginning with 'data: '
+          const parts = chunk.split(/\n/);
+          for (const part of parts) {
+            if (!part.trim()) continue;
+            if (part.startsWith('data: ')) {
+              const data = part.replace(/^data:\s*/, '').trim();
+              if (data === '[DONE]') {
+                done = true;
+                break;
+              }
+              try {
+                const parsed = JSON.parse(data);
+                const delta = parsed.choices && parsed.choices[0] && parsed.choices[0].delta && parsed.choices[0].delta.content;
+                if (delta) {
+                  // forward raw delta text to client
+                  res.write(delta);
+                }
+              } catch (e) {
+                // ignore JSON parse errors on partial chunks
+              }
+            }
+          }
+        }
+        if (readerDone) break;
+      }
+
+      res.end();
+
+      // Log streaming event
+      const logEntry = {
+        timestamp: new Date().toISOString(),
+        model,
+        streaming: true,
+        ip: req.ip,
+        userAgent: req.headers['user-agent'] || '',
+      };
+      await appendFile(path.join(__dirname, 'logs', 'chat_metrics.log'), JSON.stringify(logEntry) + '\n');
+
+      return;
+    }
+
+    // Non-stream: normal chat completion
     const response = await fetch('https://api.openai.com/v1/chat/completions', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
         Authorization: `Bearer ${apiKey}`,
       },
-      body: JSON.stringify({
-        model,
-        messages: chatMessages,
-        temperature: 0.2,
-        max_tokens: 800,
-      }),
+      body: JSON.stringify({ model, messages: chatMessages, temperature: 0.2, max_tokens: 800 }),
     });
 
     if (!response.ok) {
@@ -441,6 +522,30 @@ app.post('/api/chat', chatLimiter, async (req, res) => {
       ? data.choices[0].message.content
       : '';
 
+    // Log metrics (if available)
+    try {
+      const usage = data.usage || {};
+      const prices = {
+        'gpt-3.5-turbo': parseFloat(process.env.OPENAI_PRICE_GPT35 || '0.002'), // USD per 1k tokens
+        'gpt-4': parseFloat(process.env.OPENAI_PRICE_GPT4 || '0.06'),
+      };
+      const pricePerThousand = prices[model] || prices['gpt-3.5-turbo'];
+      const totalTokens = (usage.prompt_tokens || 0) + (usage.completion_tokens || 0);
+      const estimatedCost = (totalTokens / 1000) * pricePerThousand;
+
+      const logEntry = {
+        timestamp: new Date().toISOString(),
+        model,
+        usage,
+        estimatedCostUSD: estimatedCost,
+        ip: req.ip,
+        userAgent: req.headers['user-agent'] || '',
+      };
+      await appendFile(path.join(__dirname, 'logs', 'chat_metrics.log'), JSON.stringify(logEntry) + '\n');
+    } catch (e) {
+      console.warn('Failed to log chat metrics:', e.message);
+    }
+
     return res.json({ success: true, reply: assistantMessage });
   } catch (error) {
     console.error('Error in /api/chat:', error);
@@ -448,6 +553,11 @@ app.post('/api/chat', chatLimiter, async (req, res) => {
   }
 });
 
-app.listen(PORT, () => {
-  console.log(`Server rodando em http://localhost:${PORT}`);
-});
+// Only listen when not in test environment
+if (process.env.NODE_ENV !== 'test') {
+  app.listen(PORT, () => {
+    console.log(`Server rodando em http://localhost:${PORT}`);
+  });
+}
+
+export default app;

@@ -1057,6 +1057,27 @@ class FinancialChatbot {
     const send = document.getElementById('chatbot-send');
     const quickBtns = document.querySelectorAll('.quick-btn');
 
+    // Load persisted conversation (if any)
+    this.loadConversationFromStorage();
+    this.renderConversation();
+
+    // Check AI health and show banner if unavailable
+    fetch('/api/chat/health')
+      .then((r) => r.json())
+      .then((data) => {
+        if (!data || !data.configured) {
+          this.showAIUnavailableBanner();
+          input.disabled = true;
+          if (send) send.disabled = true;
+        }
+      })
+      .catch(() => {
+        // network error - show banner
+        this.showAIUnavailableBanner();
+        input.disabled = true;
+        if (send) send.disabled = true;
+      });
+
     // Toggle chatbot
     toggle.addEventListener('click', () => {
       container.classList.toggle('active');
@@ -1083,7 +1104,7 @@ class FinancialChatbot {
     });
   }
 
-  async sendMessage(optionalMessage = null) {
+  async sendMessage(optionalMessage = null, useStream = true) {
     const input = document.getElementById('chatbot-input');
     const message = optionalMessage || input.value.trim();
 
@@ -1092,6 +1113,7 @@ class FinancialChatbot {
     // Append user message to UI and conversation
     this.addUserMessage(message);
     this.conversation.push({ role: 'user', content: message });
+    this.saveConversationToStorage();
 
     // Clear input
     input.value = '';
@@ -1106,21 +1128,41 @@ class FinancialChatbot {
       const resp = await fetch('/api/chat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ messages: this.conversation }),
+        body: JSON.stringify({ messages: this.conversation, stream: useStream }),
       });
 
-      const data = await resp.json();
-      if (!data || !data.success) {
-        const errMsg = (data && data.message) || 'Desculpe, não foi possível acessar o serviço de IA no momento.';
-        this.replaceBotLoading(loadingEl, errMsg);
+      if (!resp.ok) {
+        const err = await resp.json().catch(() => ({ message: 'Serviço indisponível.' }));
+        this.replaceBotLoading(loadingEl, err.message || 'Erro ao contatar o servidor.');
         return;
       }
 
-      const reply = data.reply || 'Desculpe, não encontrei uma resposta.';
+      if (useStream && resp.body && resp.body.getReader) {
+        const reader = resp.body.getReader();
+        const decoder = new TextDecoder();
+        let done = false;
+        let accumulated = '';
+        while (!done) {
+          const { value, done: readerDone } = await reader.read();
+          if (value) {
+            const chunk = decoder.decode(value, { stream: true });
+            accumulated += chunk;
+            loadingEl.textContent = accumulated;
+          }
+          if (readerDone) break;
+        }
 
-      // Append assistant reply to conversation and UI
-      this.conversation.push({ role: 'assistant', content: reply });
-      this.replaceBotLoading(loadingEl, reply);
+        this.conversation.push({ role: 'assistant', content: accumulated });
+        this.saveConversationToStorage();
+        this.replaceBotLoading(loadingEl, accumulated);
+      } else {
+        // Fallback JSON response
+        const data = await resp.json();
+        const reply = data.reply || 'Desculpe, não encontrei uma resposta.';
+        this.conversation.push({ role: 'assistant', content: reply });
+        this.saveConversationToStorage();
+        this.replaceBotLoading(loadingEl, reply);
+      }
     } catch (error) {
       console.error('Error contacting /api/chat:', error);
       this.replaceBotLoading(loadingEl, 'Ocorreu um erro ao contatar o servidor de IA. Tente novamente mais tarde.');
@@ -1139,6 +1181,47 @@ class FinancialChatbot {
     messagesContainer.scrollTop = messagesContainer.scrollHeight;
   }
 
+  saveConversationToStorage() {
+    try {
+      localStorage.setItem('realcred_chat_conversation_v1', JSON.stringify(this.conversation));
+    } catch (e) {
+      console.warn('Could not save conversation to storage:', e.message);
+    }
+  }
+
+  loadConversationFromStorage() {
+    try {
+      const raw = localStorage.getItem('realcred_chat_conversation_v1');
+      if (!raw) return;
+      const parsed = JSON.parse(raw);
+      if (Array.isArray(parsed)) {
+        this.conversation = parsed;
+      }
+    } catch (e) {
+      console.warn('Could not load conversation from storage:', e.message);
+    }
+  }
+
+  renderConversation() {
+    const messagesContainer = document.getElementById('chatbot-messages');
+    if (!messagesContainer) return;
+    messagesContainer.innerHTML = '';
+    for (const msg of this.conversation) {
+      if (msg.role === 'user') {
+        const div = document.createElement('div');
+        div.className = 'user-message';
+        div.textContent = msg.content;
+        messagesContainer.appendChild(div);
+      } else if (msg.role === 'assistant') {
+        const div = document.createElement('div');
+        div.className = 'bot-message';
+        div.textContent = msg.content;
+        messagesContainer.appendChild(div);
+      }
+    }
+    messagesContainer.scrollTop = messagesContainer.scrollHeight;
+  }
+
   addBotMessage(message) {
     const messagesContainer = document.getElementById('chatbot-messages');
     const messageDiv = document.createElement('div');
@@ -1146,6 +1229,22 @@ class FinancialChatbot {
     messageDiv.textContent = message;
     messagesContainer.appendChild(messageDiv);
     messagesContainer.scrollTop = messagesContainer.scrollHeight;
+  }
+
+  showAIUnavailableBanner() {
+    const header = document.querySelector('.chatbot-header');
+    if (!header) return;
+    if (header.querySelector('.chatbot-ai-off')) return; // already shown
+    const banner = document.createElement('div');
+    banner.className = 'chatbot-ai-off';
+    banner.style.background = '#ffe9e9';
+    banner.style.color = '#7a1f1f';
+    banner.style.padding = '8px 12px';
+    banner.style.borderRadius = '8px';
+    banner.style.marginLeft = '8px';
+    banner.style.fontSize = '13px';
+    banner.textContent = 'Assistente (IA) indisponível no momento. Por favor, use o WhatsApp ou tente novamente mais tarde.';
+    header.appendChild(banner);
   }
 
   addBotLoading() {
