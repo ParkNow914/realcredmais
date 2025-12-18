@@ -5,6 +5,12 @@
   box-sizing: border-box;
 }
 
+/* Evita scrollbar horizontal causada por elementos que ultrapassam a largura da viewport */
+html, body {
+  overflow-x: hidden;
+  max-width: 100%;
+}
+
 /* Honeypot anti-spam - ocultar campos para bots */
 .honeypot-field {
   position: absolute;
