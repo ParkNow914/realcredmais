@@ -74,6 +74,16 @@ Sistema de simulação de empréstimo consignado com integração de envio de e-
 | `RATE_LIMIT_WINDOW_MS`| Janela de tempo para limite de taxa (ms)    | `900000` (15 minutos)       |
 | `RATE_LIMIT_MAX`     | Número máximo de requisições por janela      | `100`                       |
 | `ALLOWED_ORIGINS`    | URLs permitidas para CORS (separadas por vírgula) | `http://localhost:3000,https://realcredmais.com.br` |
+| `OPENAI_API_KEY`     | Chave da OpenAI usada para o ChatGPT (guarde em segredo!) | `sk-xxxxxxxxxxxxxxxx` |
+| `OPENAI_MODEL`       | Modelo a ser usado para chat completions     | `gpt-3.5-turbo` |
+
+### Instruções para habilitar o ChatGPT no chatbot
+1. Gere sua chave na OpenAI (ou use uma chave Always Free se aplicável) e adicione em `.env` como `OPENAI_API_KEY`.
+2. Reinicie o servidor (`npm start` ou `npm run dev`).
+3. O chatbot usará o endpoint `/api/chat` para enviar mensagens ao OpenAI de forma segura (a chave não fica exposta no navegador).
+
+> Segurança: Nunca exponha sua chave `OPENAI_API_KEY` no frontend — sempre mantenha no servidor (.env) e evite commitar o `.env` no controle de versão.
+
 
 ## 📦 Estrutura do Projeto
 

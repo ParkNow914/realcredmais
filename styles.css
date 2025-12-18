@@ -2806,6 +2806,32 @@ html {
   border: 1px solid var(--gray-100);
 }
 
+/* Loading state for bot replies */
+.bot-loading {
+  opacity: 0.95;
+  color: var(--gray-700);
+}
+
+.bot-loading .loader {
+  display: inline-block;
+  width: 36px;
+  height: 12px;
+  text-align: left;
+  font-weight: 700;
+}
+
+.bot-loading .loader::after {
+  content: '...';
+  animation: dots 1s steps(4, end) infinite;
+}
+
+@keyframes dots {
+  0% { content: ''; }
+  40% { content: '.'; }
+  70% { content: '..'; }
+  100% { content: '...'; }
+}}
+
 .user-message {
   background: var(--gradient-primary);
   color: white;

@@ -106,6 +106,16 @@ const limiter = rateLimit({
   legacyHeaders: false,
 });
 app.use(limiter);
+
+// Chat-specific rate limiter to prevent abuse of OpenAI API (e.g., 20 reqs per minute)
+const chatLimiter = rateLimit({
+  windowMs: 60 * 1000, // 1 minute
+  max: parseInt(process.env.CHAT_RATE_LIMIT_MAX || '20', 10),
+  standardHeaders: true,
+  legacyHeaders: false,
+});
+// Apply local middleware to /api/chat later when route is defined.
+
 app.use(xssClean());
 app.use(mongoSanitize());
 
@@ -376,6 +386,65 @@ Data/Hora: ${new Date().toLocaleString('pt-BR')}`,
       success: false,
       message: 'Ocorreu um erro ao processar sua mensagem. Por favor, tente novamente mais tarde.',
     });
+  }
+});
+
+// Chat proxy to OpenAI Chat Completions API
+app.post('/api/chat', chatLimiter, async (req, res) => {
+  try {
+    const { messages, message } = req.body;
+
+    const apiKey = process.env.OPENAI_API_KEY;
+    if (!apiKey) {
+      return res.status(503).json({ success: false, message: 'OpenAI API key not configured on server.' });
+    }
+
+    // Accept either an array of messages or a single message string
+    let chatMessages = [];
+    if (Array.isArray(messages) && messages.length > 0) {
+      chatMessages = messages;
+    } else if (message) {
+      // Default system prompt in Portuguese
+      chatMessages = [
+        { role: 'system', content: 'Você é o assistente virtual da RealCred +, responda de forma clara e objetiva em Português.' },
+        { role: 'user', content: message },
+      ];
+    } else {
+      return res.status(400).json({ success: false, message: 'Invalid request: no message provided.' });
+    }
+
+    const model = process.env.OPENAI_MODEL || 'gpt-3.5-turbo';
+
+    // Call OpenAI Chat Completions
+    const response = await fetch('https://api.openai.com/v1/chat/completions', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${apiKey}`,
+      },
+      body: JSON.stringify({
+        model,
+        messages: chatMessages,
+        temperature: 0.2,
+        max_tokens: 800,
+      }),
+    });
+
+    if (!response.ok) {
+      const errText = await response.text();
+      console.error('OpenAI error:', errText);
+      return res.status(502).json({ success: false, message: 'OpenAI returned an error', details: errText });
+    }
+
+    const data = await response.json();
+    const assistantMessage = data.choices && data.choices[0] && data.choices[0].message && data.choices[0].message.content
+      ? data.choices[0].message.content
+      : '';
+
+    return res.json({ success: true, reply: assistantMessage });
+  } catch (error) {
+    console.error('Error in /api/chat:', error);
+    return res.status(500).json({ success: false, message: 'Internal server error' });
   }
 });
 

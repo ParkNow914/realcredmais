@@ -982,6 +982,15 @@ class FinancialChatbot {
   constructor() {
     this.createChatbotUI();
     this.initChatbot();
+
+    // Conversational context stored server-side as messages array sent to OpenAI
+    this.conversation = [
+      { role: 'system', content: 'Você é o assistente virtual da RealCred +. Responda de forma clara, objetiva e em Português com foco em empréstimos consignados e serviços financeiros.' },
+    ];
+
+    // Push the initial assistant greeting so it becomes part of context
+    this.conversation.push({ role: 'assistant', content: 'Olá! Sou o assistente virtual da RealCred +. Como posso ajudar com seu empréstimo consignado?' });
+
     this.faq = {
       'empréstimo consignado':
         'O empréstimo consignado é uma modalidade de crédito onde as parcelas são descontadas diretamente do salário ou benefício. É mais seguro para o banco, por isso tem taxas menores.',
@@ -1068,25 +1077,57 @@ class FinancialChatbot {
     quickBtns.forEach((btn) => {
       btn.addEventListener('click', () => {
         const question = btn.dataset.question;
-        this.addUserMessage(btn.textContent);
-        this.respondToQuestion(question);
+        // Use the chat API for full answers but still show the user message
+        this.sendMessage(question);
       });
     });
   }
 
-  sendMessage() {
+  async sendMessage(optionalMessage = null) {
     const input = document.getElementById('chatbot-input');
-    const message = input.value.trim();
+    const message = optionalMessage || input.value.trim();
 
     if (!message) return;
 
+    // Append user message to UI and conversation
     this.addUserMessage(message);
+    this.conversation.push({ role: 'user', content: message });
+
+    // Clear input
     input.value = '';
 
-    // Simular delay de resposta
-    setTimeout(() => {
-      this.respondToQuestion(message.toLowerCase());
-    }, 1000);
+    // Show loading indicator
+    const loadingEl = this.addBotLoading();
+    input.disabled = true;
+    const sendBtn = document.getElementById('chatbot-send');
+    if (sendBtn) sendBtn.disabled = true;
+
+    try {
+      const resp = await fetch('/api/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ messages: this.conversation }),
+      });
+
+      const data = await resp.json();
+      if (!data || !data.success) {
+        const errMsg = (data && data.message) || 'Desculpe, não foi possível acessar o serviço de IA no momento.';
+        this.replaceBotLoading(loadingEl, errMsg);
+        return;
+      }
+
+      const reply = data.reply || 'Desculpe, não encontrei uma resposta.';
+
+      // Append assistant reply to conversation and UI
+      this.conversation.push({ role: 'assistant', content: reply });
+      this.replaceBotLoading(loadingEl, reply);
+    } catch (error) {
+      console.error('Error contacting /api/chat:', error);
+      this.replaceBotLoading(loadingEl, 'Ocorreu um erro ao contatar o servidor de IA. Tente novamente mais tarde.');
+    } finally {
+      input.disabled = false;
+      if (sendBtn) sendBtn.disabled = false;
+    }
   }
 
   addUserMessage(message) {
@@ -1107,24 +1148,38 @@ class FinancialChatbot {
     messagesContainer.scrollTop = messagesContainer.scrollHeight;
   }
 
-  respondToQuestion(question) {
-    let response = 'Desculpe, não entendi sua pergunta. ';
+  addBotLoading() {
+    const messagesContainer = document.getElementById('chatbot-messages');
+    const messageDiv = document.createElement('div');
+    messageDiv.className = 'bot-message bot-loading';
+    messageDiv.innerHTML = '<span class="loader">...</span>';
+    messagesContainer.appendChild(messageDiv);
+    messagesContainer.scrollTop = messagesContainer.scrollHeight;
+    return messageDiv;
+  }
 
-    // Buscar resposta no FAQ
+  replaceBotLoading(loadingEl, text) {
+    if (!loadingEl) {
+      this.addBotMessage(text);
+      return;
+    }
+    loadingEl.classList.remove('bot-loading');
+    loadingEl.innerHTML = '';
+    loadingEl.textContent = text;
+  }
+
+  respondToQuestion(question) {
+    // Primeiro tente encontrar uma resposta rápida nas FAQ
     for (const [key, value] of Object.entries(this.faq)) {
       if (question.includes(key)) {
-        response = value;
-        break;
+        this.addBotMessage(value);
+        this.conversation.push({ role: 'assistant', content: value });
+        return;
       }
     }
 
-    // Se não encontrou resposta específica, dar resposta genérica
-    if (response.startsWith('Desculpe')) {
-      response +=
-        'Entre em contato conosco pelo WhatsApp (12) 98282-7447 ou preencha o formulário de contato para falar com um especialista.';
-    }
-
-    this.addBotMessage(response);
+    // Se não houver resposta pronta, encaminha para o serviço de IA
+    this.sendMessage(question);
   }
 }
 
