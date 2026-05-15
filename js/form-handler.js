@@ -282,14 +282,14 @@ class FormHandler {
     const prazo = parseInt(formData.get('prazo'));
     const categoria = formData.get('categoria');
 
-    // Taxas por categoria (exemplo)
+    // Referências de simulação atualizadas em maio/2026
     const taxas = {
       inss: 1.85,
-      servidor: 1.99,
-      militar: 1.75,
-      clt: 2.5,
-      'credito-pessoal': 3.5,
-      fgts: 2.2,
+      servidor: 3.55,
+      militar: 3.45,
+      clt: 4.0,
+      'credito-pessoal': 6.5,
+      fgts: 1.8,
     };
 
     const taxaMensal = taxas[categoria] || 2.5; // Taxa padrão se a categoria não for encontrada

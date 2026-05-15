@@ -5,6 +5,17 @@ Todas as alterações notáveis neste projeto serão documentadas neste arquivo.
 O formato é baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.0.0/),
 e este projeto adere ao [Versionamento Semântico](https://semver.org/spec/v2.0.0.html).
 
+## [1.2.0] - 2026-05-15
+
+### Adicionado
+- Modalidade Crédito do Trabalhador CLT na página inicial, simulador, FAQ e comparadores.
+- Redirecionamentos 301 para os artigos atualizados de 2026.
+
+### Alterado
+- Artigos, sitemap, termos legais e textos de SEO atualizados para maio de 2026.
+- Regras do Saque Aniversário FGTS revisadas conforme limites vigentes de antecipação.
+- Conteúdo de taxas ajustado para diferenciar tetos do INSS de referências variáveis por instituição, perfil e CET.
+
 ## [1.1.0] - 2025-07-17
 
 ### Adicionado

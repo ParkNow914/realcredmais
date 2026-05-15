@@ -14,12 +14,13 @@
   };
 })();
 
-// Configurações de crédito com tetos máximos permitidos - Julho/2025
+// Configurações de crédito e referências de simulação - Maio/2026
 const CREDIT_CONFIG = {
   inss: {
     nome: 'INSS',
-    taxaMaxima: 1.85, // Teto máximo permitido pelo CNPS
-    margemMaxima: 45, // 35% empréstimo + 10% cartão
+    taxaMaxima: 1.85, // Teto CNPS vigente para empréstimo consignado INSS
+    taxaCartao: 2.46, // Teto vigente para cartão consignado e cartão benefício
+    margemMaxima: 45, // 35% empréstimos + 5% cartão consignado + 5% cartão benefício
     prazoMaximo: 96, // 8 anos (máximo permitido)
     valorMinimo: 300, // Valor mínimo padrão
     valorMaximo: 1000000, // Valor máximo padrão
@@ -27,7 +28,7 @@ const CREDIT_CONFIG = {
   },
   servidor: {
     nome: 'Servidor Público',
-    taxaMaxima: 3.55, // Teto máximo para servidores
+    taxaMaxima: 3.55, // Referência de simulação; varia conforme convênio e instituição
     margemMaxima: 40, // % máxima do salário
     prazoMaximo: 96, // 8 anos
     valorMinimo: 1000, // Valor mínimo padrão
@@ -36,7 +37,7 @@ const CREDIT_CONFIG = {
   },
   militar: {
     nome: 'Militar',
-    taxaMaxima: 3.45, // Teto máximo para militares
+    taxaMaxima: 3.45, // Referência de simulação; varia conforme convênio e instituição
     margemMaxima: 40, // % máxima do salário
     prazoMaximo: 96, // 8 anos
     valorMinimo: 1000, // Valor mínimo padrão
@@ -44,8 +45,8 @@ const CREDIT_CONFIG = {
     carencia: 1, // 1 mês de carência
   },
   clt: {
-    nome: 'CLT',
-    taxaMaxima: 4.0, // Teto máximo para CLT
+    nome: 'Crédito do Trabalhador (CLT)',
+    taxaMaxima: 4.0, // Referência de simulação para consignado privado
     margemMaxima: 35, // % máxima do salário
     prazoMaximo: 84, // 7 anos
     valorMinimo: 1000, // Valor mínimo padrão
@@ -54,8 +55,8 @@ const CREDIT_CONFIG = {
   },
   'credito-pessoal': {
     nome: 'Crédito Pessoal',
-    taxaMaxima: 8.0, // Teto do BC para crédito pessoal
-    taxaMedia: 6.5, // Média de mercado (referência)
+    taxaMaxima: 6.5, // Referência de simulação; crédito pessoal não tem teto geral do BC
+    taxaMedia: 6.5, // Referência de mercado para simulação
     margemMaxima: 30, // % máxima do salário
     valorMinimo: 500, // Valor mínimo padrão
     valorMaximo: 100000, // Valor máximo padrão
@@ -64,13 +65,13 @@ const CREDIT_CONFIG = {
   },
   fgts: {
     nome: 'Saque Aniversário FGTS',
-    taxaMinima: 1.25, // Taxa mínima de antecipação
-    taxaMaxima: 1.8, // Teto máximo para FGTS
+    taxaMinima: 1.8, // Referência padrão de simulação; varia conforme instituição e CET
+    taxaMaxima: 1.8, // Referência de simulação; varia conforme instituição
     margemMaxima: 100, // Até 100% do saldo FGTS
-    parcelasMaximas: 10, // Parcelas anuais
-    prazoMaximo: 120, // 10 anos
-    valorMinimo: 1000, // Valor mínimo padrão
-    valorMaximo: 1000000, // Valor máximo padrão
+    parcelasMaximas: 5, // Até 5 saques anuais até 31/10/2026; até 3 a partir de 01/11/2026
+    prazoMaximo: 60, // 5 anos até 31/10/2026
+    valorMinimo: 100, // Valor mínimo por saque antecipado
+    valorMaximo: 2500, // 5 saques anuais de até R$ 500 cada até 31/10/2026
     carencia: 0, // Sem carência
     aliquotas: [
       { faixa: [0, 500], percentual: 50, adicional: 0 },
@@ -185,8 +186,8 @@ class FormValidator {
         } else if (['inss', 'servidor', 'militar', 'clt'].includes(categoriaPrazo) && prazo > 96) {
           message = 'Prazo máximo para esta categoria é 96 meses';
           isValid = false;
-        } else if (categoriaPrazo === 'fgts' && prazo > 120) {
-          message = 'Prazo máximo para FGTS é 10 anos (120 meses)';
+        } else if (categoriaPrazo === 'fgts' && prazo > 60) {
+          message = 'Prazo máximo para FGTS é 5 saques anuais até 31/10/2026';
           isValid = false;
         }
         break;
@@ -1057,17 +1058,19 @@ class FinancialChatbot {
       'empréstimo consignado':
         'O empréstimo consignado é uma modalidade de crédito onde as parcelas são descontadas diretamente do salário ou benefício. É mais seguro para o banco, por isso tem taxas menores.',
       'taxa de juros':
-        'Nossas taxas variam conforme o perfil: INSS até 1,85% a.m., servidores públicos e militares a partir de 3,55% a.m. (média do mercado).',
+        'As taxas variam conforme o perfil e a instituição. Para INSS, o teto vigente é 1,85% a.m. no empréstimo e 2,46% a.m. em operações com cartão consignado ou cartão benefício. Crédito pessoal e convênios de servidores/militares dependem de análise e CET.',
       'documentos necessários':
         'Para INSS: RG, CPF, comprovante de residência e extrato do INSS. Para servidores: RG, CPF, comprovante de residência e contracheque.',
       'prazo pagamento':
         'O prazo varia de 12 a 96 meses, dependendo da categoria e valor solicitado.',
       'margem consignável':
-        'INSS: até 45% (35% empréstimo + 10% cartão). Servidores e militares: até 40% do salário líquido.',
+        'INSS: até 45% (35% empréstimos + 5% cartão consignado + 5% cartão benefício). Servidores, militares e CLT dependem do convênio e das regras da fonte pagadora.',
       aprovação:
         'Para INSS, a aprovação pode ser em até 24 horas. Para servidores e militares, até 48 horas úteis.',
       portabilidade:
         'Sim, fazemos portabilidade de empréstimos de outros bancos. O processo leva de 1 a 8 dias úteis.',
+      fgts:
+        'Na antecipação do Saque-Aniversário FGTS, as regras vigentes limitam a antecipação a até 5 saques anuais até 31/10/2026 e até 3 saques anuais a partir de 01/11/2026, com valor mínimo de R$ 100 e máximo de R$ 500 por saque anual.',
       'open banking':
         'Utilizamos Open Banking para acelerar a análise. Você autoriza o compartilhamento seguro dos seus dados bancários.',
     };
@@ -1917,7 +1920,7 @@ class CreditoPessoalSimulator {
         taxa = config.taxaMedia;
     }
 
-    // Não pode exceder o teto do BC
+    // Mantém a taxa dentro da referência máxima usada na simulação
     taxa = Math.min(taxa, config.taxaMaxima);
 
     // Cálculo da parcela (Price)
@@ -1968,7 +1971,7 @@ class FGTSSimulator {
     const config = CREDIT_CONFIG.fgts;
 
     if (parcelas > config.parcelasMaximas) {
-      throw new Error(`Máximo de ${config.parcelasMaximas} parcelas`);
+      throw new Error(`Máximo de ${config.parcelasMaximas} saques anuais`);
     }
 
     // Taxa padrão se não informada
@@ -2091,7 +2094,7 @@ function exibirResultadoFGTS(resultado) {
                 <strong>${formatCurrency(resultado.saqueAnual)}</strong>
             </div>
             <div class="resultado-item">
-                <span>Parcelas Antecipadas:</span>
+                <span>Saques Anuais Antecipados:</span>
                 <strong>${resultado.parcelas} anos</strong>
             </div>
             <div class="resultado-item">
@@ -2457,8 +2460,8 @@ class EducationalContent {
   static articles = [
     {
       id: 1,
-      title: 'Como Sair das Dívidas em 2025: Guia Completo',
-      excerpt: 'Estratégias práticas para quitar suas dívidas e recuperar o controle financeiro.',
+      title: 'Como Sair das Dívidas em 2026: Guia Atualizado',
+      excerpt: 'Estratégias práticas para renegociar, priorizar juros altos e recuperar o controle financeiro em 2026.',
       category: 'Educação Financeira',
       readTime: '5 min',
       image: '/assets/images/sairdasdividas.png',
@@ -2466,15 +2469,15 @@ class EducationalContent {
     {
       id: 2,
       title: 'Empréstimo Consignado vs Crédito Pessoal: Qual Escolher?',
-      excerpt: 'Entenda as diferenças e escolha a melhor opção para o seu perfil.',
+      excerpt: 'Compare consignado INSS, Crédito do Trabalhador e crédito pessoal com as regras atuais.',
       category: 'Crédito',
       readTime: '4 min',
       image: '/assets/images/creditopessoalvsconsignado.png',
     },
     {
       id: 3,
-      title: 'Saque Aniversário FGTS: Vale a Pena em 2025?',
-      excerpt: 'Tudo o que você precisa saber sobre o Saque Aniversário do FGTS.',
+      title: 'Saque Aniversário FGTS: Vale a Pena em 2026?',
+      excerpt: 'Entenda a tabela vigente e as novas regras de antecipação do FGTS em 2026.',
       category: 'FGTS',
       readTime: '3 min',
       image: '/assets/images/fgtsvaleapena.png',
@@ -2586,9 +2589,9 @@ class EducationalContent {
     if (article) {
       // Mapear IDs de artigo para URLs de páginas
       const articleUrls = {
-        1: 'artigos/como-sair-das-dividas-2025.html',
+        1: 'artigos/como-sair-das-dividas-2026.html',
         2: 'artigos/emprestimo-consignado-vs-credito-pessoal.html',
-        3: 'artigos/saque-aniversario-fgts-2025.html',
+        3: 'artigos/saque-aniversario-fgts-2026.html',
       };
 
       const articleUrl = articleUrls[articleId];

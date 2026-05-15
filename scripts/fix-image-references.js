@@ -8,9 +8,9 @@ const __dirname = path.dirname(__filename);
 const PROJECT_ROOT = path.join(__dirname, '..');
 const FILES_TO_PROCESS = [
   'index.html',
-  'artigos/saque-aniversario-fgts-2025.html',
+  'artigos/saque-aniversario-fgts-2026.html',
   'artigos/emprestimo-consignado-vs-credito-pessoal.html',
-  'artigos/como-sair-das-dividas-2025.html',
+  'artigos/como-sair-das-dividas-2026.html',
   'scripts.js',
   'sw.js',
   'server.js',

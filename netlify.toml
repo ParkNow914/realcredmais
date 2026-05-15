@@ -19,6 +19,16 @@
   status = 200
 
 [[redirects]]
+  from = "/artigos/como-sair-das-dividas-2025.html"
+  to = "/artigos/como-sair-das-dividas-2026.html"
+  status = 301
+
+[[redirects]]
+  from = "/artigos/saque-aniversario-fgts-2025.html"
+  to = "/artigos/saque-aniversario-fgts-2026.html"
+  status = 301
+
+[[redirects]]
   from = "/*"
   to = "/index.html"
   status = 200
