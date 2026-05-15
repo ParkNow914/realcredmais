@@ -6,7 +6,7 @@ Sistema de simulação de empréstimo consignado com integração de envio de e-
 
 ### Pré-requisitos
 
-- Node.js (versão 16 ou superior)
+- Node.js 20 ou superior
 - npm (geralmente vem com o Node.js)
 - Conta de e-mail para envio (recomendado Gmail)
 
@@ -33,7 +33,7 @@ Sistema de simulação de empréstimo consignado com integração de envio de e-
 4. **Configuração do Gmail (recomendado)**
    - Acesse [Conta do Google](https://myaccount.google.com/)
    - Vá em "Segurança"
-   - Ative "Acesso a app menos seguro" ou crie uma Senha de App
+   - Crie uma Senha de App para uso SMTP
    - Use o e-mail e a senha gerada no arquivo `.env`
 
 ### Executando o Projeto
@@ -71,11 +71,16 @@ Sistema de simulação de empréstimo consignado com integração de envio de e-
 | `EMAIL_PASS`         | Senha do e-mail ou senha de app              | `sua-senha`                |
 | `EMAIL_FROM`         | Nome e e-mail que aparecerá no remetente     | `RealCred+ <contato@realcredmais.com.br>` |
 | `EMAIL_TO`           | E-mail que receberá os formulários           | `contato@realcredmais.com.br`|
+| `LEAD_RECEIVER`      | E-mail que receberá leads de simulação       | `leads@realcredmais.com.br`  |
+| `CONTACT_RECEIVER`   | E-mail que receberá mensagens de contato     | `contato@realcredmais.com.br`|
 | `RATE_LIMIT_WINDOW_MS`| Janela de tempo para limite de taxa (ms)    | `900000` (15 minutos)       |
 | `RATE_LIMIT_MAX`     | Número máximo de requisições por janela      | `100`                       |
 | `ALLOWED_ORIGINS`    | URLs permitidas para CORS (separadas por vírgula) | `http://localhost:3000,https://realcredmais.com.br` |
 | `OPENAI_API_KEY`     | Chave da OpenAI usada para o ChatGPT (guarde em segredo!) | `sk-xxxxxxxxxxxxxxxx` |
 | `OPENAI_MODEL`       | Modelo a ser usado para chat completions     | `gpt-3.5-turbo` |
+| `ADMIN_USER`         | Usuário do painel `/admin/chat-metrics`      | `admin` |
+| `ADMIN_PASS`         | Senha do painel `/admin/chat-metrics`        | `senha-forte` |
+| `VITE_GA_MEASUREMENT_ID` | ID opcional do Google Analytics 4        | `<seu-id-ga4>` |
 
 ### Instruções para habilitar o ChatGPT no chatbot
 1. Gere sua chave na OpenAI (ou use uma chave Always Free se aplicável) e adicione em `.env` como `OPENAI_API_KEY`.
@@ -89,9 +94,15 @@ Sistema de simulação de empréstimo consignado com integração de envio de e-
 
 ```
 realcredmais/
-├── public/           # Arquivos estáticos
-├── src/              # Código-fonte do frontend
+├── assets/           # Imagens e arquivos fonte
+├── artigos/          # Artigos publicados pelo build
+├── functions/        # Função Netlify que reutiliza o Express
+├── js/               # Scripts auxiliares servidos estaticamente
+├── public/           # Arquivos estáticos não gerados
+├── scripts/          # Scripts de build/manutenção
 ├── server.js         # Ponto de entrada do servidor
+├── scripts.js        # Código principal do frontend
+├── styles.css        # Estilos principais
 ├── package.json      # Dependências e scripts
 └── .env.example      # Exemplo de variáveis de ambiente
 ```
@@ -103,7 +114,7 @@ realcredmais/
 - `npm run dev:all` - Inicia servidor e frontend juntos
 - `npm run build` - Constrói o frontend para produção
 - `npm start` - Inicia o servidor em produção
-- `npm run deploy` - Faz deploy para Cloudflare Pages
+- `npm run deploy` - Executa o build de produção; o deploy é feito pela configuração do Netlify em `netlify.toml`
 
 ## 📄 Licença
 

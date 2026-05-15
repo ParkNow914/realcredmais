@@ -79,7 +79,7 @@
           </div>
           <div class="article-featured-image">
             <img
-              src="..assets/images/fgtsvaleapena.png"
+              src="/assets/images/fgtsvaleapena.png"
               alt="Cofre do FGTS e dinheiro"
               loading="lazy"
             />
@@ -232,32 +232,6 @@
             </div>
           </div>
 
-          <script>
-            // Script para o funcionamento do FAQ
-            document.querySelectorAll('.faq-question').forEach((button) => {
-              button.addEventListener('click', () => {
-                const answer = button.nextElementSibling;
-                const isOpen = answer.classList.contains('active');
-
-                // Fecha todas as respostas
-                document.querySelectorAll('.faq-answer').forEach((item) => {
-                  item.classList.remove('active');
-                });
-
-                // Atualiza os ícones
-                document.querySelectorAll('.faq-question span').forEach((icon) => {
-                  icon.textContent = '+';
-                });
-
-                // Abre a resposta clicada, se não estiver aberta
-                if (!isOpen) {
-                  answer.classList.add('active');
-                  button.querySelector('span').textContent = '−';
-                }
-              });
-            });
-          </script>
-
           <h2>Conclusão</h2>
           <p>
             O Saque Aniversário do FGTS pode ser uma boa opção para quem precisa de uma renda extra
@@ -333,6 +307,6 @@
       </div>
     </footer>
 
-    <script src="../scripts.js"></script>
+    <script type="module" src="../scripts.js"></script>
   </body>
 </html>

@@ -4,7 +4,10 @@ import { fileURLToPath } from 'url';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-const DB_PATH = process.env.CHAT_DB_PATH || path.join(__dirname, '..', 'data', 'chat_metrics.db');
+const defaultDbPath = process.env.NETLIFY
+  ? path.join('/tmp', 'chat_metrics.db')
+  : path.join(__dirname, '..', 'data', 'chat_metrics.db');
+const DB_PATH = process.env.CHAT_DB_PATH || defaultDbPath;
 
 // Ensure data directory
 import fs from 'fs';

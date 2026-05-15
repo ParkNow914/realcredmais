@@ -1,29 +1,14 @@
-import { fileURLToPath } from 'url';
 import fse from 'fs-extra';
 
 async function copyAssets() {
   try {
-    // Criar diretório de destino se não existir
-    await fse.ensureDir('public/assets');
-    await fse.ensureDir('public/assets/images');
+    await fse.remove('public/assets');
+    await fse.remove('public/artigos');
+    await fse.remove('public/sw.js');
 
-    // Copiar assets estáticos
-    await fse.copy('assets', 'public/assets', { overwrite: true });
-
-    // Copiar artigos para a pasta de build
-    await fse.ensureDir('public/artigos');
-    await fse.copy('artigos', 'public/artigos', { overwrite: true });
-
-    // Copiar service worker para a pasta de build
-    await fse.copy('sw.js', 'public/sw.js', { overwrite: true });
-
-    // Copiar arquivos JavaScript para a pasta dist (após o build do Vite)
-    await fse.ensureDir('dist/js');
-    await fse.copy('js', 'dist/js', { overwrite: true });
-
-    console.log('✅ Assets copiados com sucesso!');
+    console.log('✅ Diretórios públicos gerados limpos com sucesso!');
   } catch (err) {
-    console.error('❌ Erro ao copiar assets:', err);
+    console.error('❌ Erro ao limpar diretórios públicos gerados:', err);
     process.exit(1);
   }
 }

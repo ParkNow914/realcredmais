@@ -97,7 +97,16 @@ function formatPercentage(value) {
 }
 
 function parseCurrency(value) {
-  return parseFloat(value.replace(/[^\d,]/g, '').replace(',', '.')) || 0;
+  if (typeof value === 'number') return value;
+
+  const normalized = String(value || '').trim().replace(/[R$\s]/g, '');
+  if (!normalized) return 0;
+
+  if (normalized.includes(',')) {
+    return parseFloat(normalized.replace(/\./g, '').replace(',', '.')) || 0;
+  }
+
+  return parseFloat(normalized.replace(/[^\d.-]/g, '')) || 0;
 }
 
 // Validação de formulários
@@ -135,7 +144,7 @@ class FormValidator {
         break;
 
       case 'salario':
-        const salario = parseFloat(value);
+        const salario = parseCurrency(value);
         if (!value || salario <= 0) {
           message = 'Valor deve ser maior que zero';
           isValid = false;
@@ -146,7 +155,7 @@ class FormValidator {
         break;
 
       case 'valor':
-        const valorDesejado = parseFloat(value);
+        const valorDesejado = parseCurrency(value);
         const categoria = document.getElementById('categoria')
           ? document.getElementById('categoria').value
           : '';
@@ -330,8 +339,8 @@ class CreditSimulator {
       email: formData.get('email')?.trim() || null,
       telefone: formData.get('telefone')?.trim() || null,
       categoria: formData.get('categoria'),
-      salario: parseFloat(formData.get('salario')),
-      valor: parseFloat(formData.get('valor')),
+      salario: parseCurrency(formData.get('salario')),
+      valor: parseCurrency(formData.get('valor')),
       prazo: parseInt(formData.get('prazo')),
     };
 
@@ -373,11 +382,7 @@ class CreditSimulator {
         submitButton.textContent = 'Enviando...';
       }
 
-      // Determine the API URL based on the current environment
-      const isLocalhost =
-        window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
-      const apiBaseUrl = isLocalhost ? 'http://localhost:3001' : window.location.origin;
-      const apiUrl = `${apiBaseUrl}/api/lead`;
+      const apiUrl = '/api/lead';
 
       console.log('Sending request to:', apiUrl);
 
@@ -554,6 +559,14 @@ class CreditSimulator {
   showResult(result) {
     const resultTitle = this.resultDiv.querySelector('h3');
     const resultDetails = this.resultDiv.querySelector('.result-details');
+    const setResultText = (id, value) => {
+      const element = document.getElementById(id);
+      if (element) element.textContent = value;
+    };
+
+    this.resultDiv
+      .querySelectorAll('.contact-button, .update-button')
+      .forEach((element) => element.remove());
 
     if (result.erro) {
       resultTitle.innerHTML = `<span style="color: var(--error);">⚠️ ${result.erro}</span>`;
@@ -565,18 +578,18 @@ class CreditSimulator {
     }
 
     // Atualizar valores na tabela
-    document.getElementById('valorSolicitado').textContent = formatCurrency(result.valorSolicitado);
-    document.getElementById('parcelaMensal').textContent = formatCurrency(result.parcela);
-    document.getElementById('taxaJuros').textContent = formatPercentage(result.taxa) + ' a.m.';
-    document.getElementById('totalPagar').textContent = formatCurrency(result.totalPagar);
+    setResultText('valorSolicitado', formatCurrency(result.valorSolicitado));
+    setResultText('parcelaMensal', formatCurrency(result.parcela));
+    setResultText('taxaJuros', formatPercentage(result.taxa) + ' a.m.');
+    setResultText('totalPagar', formatCurrency(result.totalPagar));
 
     // Calcular valor total de juros
     const totalJuros = result.totalPagar - result.valorSolicitado;
-    document.getElementById('totalJuros').textContent = formatCurrency(totalJuros);
+    setResultText('totalJuros', formatCurrency(totalJuros));
 
     // Calcular Custo Efetivo Total (CET) - simplificado
     const cet = (Math.pow(1 + result.taxa / 100, 12) - 1) * 100;
-    document.getElementById('cet').textContent = cet.toFixed(2) + '% a.a.';
+    setResultText('cet', cet.toFixed(2) + '% a.a.');
 
     // Mensagem personalizada com base no resultado
     if (result.excedeuMargem) {
@@ -591,7 +604,9 @@ class CreditSimulator {
       updateButton.textContent = `Simular com valor de ${formatCurrency(result.valorMaximo)}`;
       updateButton.onclick = () => {
         document.getElementById('valor').value = result.valorMaximo.toFixed(2);
-        document.getElementById('simulationForm').dispatchEvent(new Event('submit'));
+        document
+          .getElementById('simulationForm')
+          .dispatchEvent(new Event('submit', { bubbles: true, cancelable: true }));
       };
 
       // Limpar botões anteriores e adicionar o novo
@@ -653,7 +668,24 @@ class ContactForm {
   constructor() {
     this.form = document.getElementById('contactForm');
     this.validator = new FormValidator(this.form);
+    this.feedback = this.ensureFeedbackElement();
     this.init();
+  }
+
+  ensureFeedbackElement() {
+    if (!this.form) return null;
+
+    let feedback = document.getElementById('contact-feedback');
+    if (!feedback) {
+      feedback = document.createElement('div');
+      feedback.id = 'contact-feedback';
+      feedback.className = 'feedback-message';
+      feedback.setAttribute('role', 'status');
+      feedback.setAttribute('aria-live', 'polite');
+      this.form.insertAdjacentElement('afterend', feedback);
+    }
+
+    return feedback;
   }
 
   init() {
@@ -693,7 +725,7 @@ class ContactForm {
     field.value = value;
   }
 
-  handleSubmit(event) {
+  async handleSubmit(event) {
     event.preventDefault();
 
     if (!this.validator.validateForm()) {
@@ -707,34 +739,62 @@ class ContactForm {
       telefone: formData.get('telefone'),
       assunto: formData.get('assunto'),
       mensagem: formData.get('mensagem'),
+      website_url: formData.get('website_url') || '',
     };
 
-    this.sendMessage(data);
+    await this.sendMessage(data);
   }
 
-  sendMessage(data) {
-    // Simular envio (em produção, conectar com backend)
+  async sendMessage(data) {
     const button = this.form.querySelector('button[type="submit"]');
     const originalText = button.textContent;
 
     button.textContent = 'Enviando...';
     button.disabled = true;
     button.classList.add('loading');
+    this.showFeedback('Enviando mensagem...', 'info');
 
-    setTimeout(() => {
-      alert('Mensagem enviada com sucesso! Entraremos em contato em breve.');
+    try {
+      const response = await fetch('/api/contact', {
+        method: 'POST',
+        headers: {
+          Accept: 'application/json',
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data),
+      });
+
+      const result = await response.json().catch(() => ({}));
+      if (!response.ok || result.success === false) {
+        throw new Error(result.message || 'Erro ao enviar mensagem. Tente novamente.');
+      }
+
+      this.showFeedback(
+        result.message || 'Mensagem enviada com sucesso! Entraremos em contato em breve.',
+        'success'
+      );
       this.form.reset();
 
-      button.textContent = originalText;
-      button.disabled = false;
-      button.classList.remove('loading');
-
-      // Limpar estados de validação
       const fields = this.form.querySelectorAll('input, select, textarea');
       fields.forEach((field) => {
         this.validator.clearFieldError(field);
       });
-    }, 2000);
+    } catch (error) {
+      console.error('Erro ao enviar contato:', error);
+      this.showFeedback(error.message || 'Erro ao enviar mensagem. Tente novamente.', 'error');
+    } finally {
+      button.textContent = originalText;
+      button.disabled = false;
+      button.classList.remove('loading');
+    }
+  }
+
+  showFeedback(message, type = 'info') {
+    if (!this.feedback) return;
+
+    this.feedback.textContent = message;
+    this.feedback.className = `feedback-message ${type}`;
+    this.feedback.style.display = 'block';
   }
 }
 
@@ -881,6 +941,8 @@ document.addEventListener('DOMContentLoaded', () => {
   new MobileMenu();
   new SmoothScroll();
   new LazyLoader();
+
+  document.getElementById('resetSimulationButton')?.addEventListener('click', resetSimulation);
 
   // Adicionar animações de entrada
   const observerOptions = {
@@ -1140,7 +1202,7 @@ class FinancialChatbot {
       if (useStream && resp.body && resp.body.getReader) {
         const reader = resp.body.getReader();
         const decoder = new TextDecoder();
-        let done = false;
+        const done = false;
         let accumulated = '';
         while (!done) {
           const { value, done: readerDone } = await reader.read();
@@ -1312,6 +1374,14 @@ document.addEventListener('DOMContentLoaded', () => {
   // Inicializar chatbot
   new FinancialChatbot();
 });
+
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('/sw.js').catch((error) => {
+      console.warn('ServiceWorker registration failed:', error.message);
+    });
+  });
+}
 
 // Validação de Formulários no Servidor (Simulação)
 class ServerValidation {
@@ -1504,16 +1574,19 @@ class ServerValidation {
 // Google Analytics 4 Integration
 class GoogleAnalytics {
   constructor() {
+    this.measurementId = window.GA_MEASUREMENT_ID || import.meta.env?.VITE_GA_MEASUREMENT_ID || '';
+    this.enabled = /^G-[A-Z0-9]+$/i.test(this.measurementId);
     this.initGA4();
     this.trackPageView();
     this.setupEventTracking();
   }
 
   initGA4() {
-    // Adicionar script do Google Analytics (substitua GA_MEASUREMENT_ID pelo ID real)
+    if (!this.enabled) return;
+
     const gaScript = document.createElement('script');
     gaScript.async = true;
-    gaScript.src = 'https://www.googletagmanager.com/gtag/js?id=GA_MEASUREMENT_ID';
+    gaScript.src = `https://www.googletagmanager.com/gtag/js?id=${encodeURIComponent(this.measurementId)}`;
     document.head.appendChild(gaScript);
 
     // Configurar gtag
@@ -1523,14 +1596,14 @@ class GoogleAnalytics {
     }
     window.gtag = gtag;
     gtag('js', new Date());
-    gtag('config', 'GA_MEASUREMENT_ID', {
+    gtag('config', this.measurementId, {
       page_title: 'RealCred + | Empréstimos Consignados',
       page_location: window.location.href,
     });
   }
 
   trackPageView() {
-    if (typeof window.gtag !== 'undefined') {
+    if (this.enabled && typeof window.gtag !== 'undefined') {
       window.gtag('event', 'page_view', {
         page_title: document.title,
         page_location: window.location.href,
@@ -1806,9 +1879,6 @@ class LGPDCompliance {
 
 // Inicializar melhorias de segurança e análise
 document.addEventListener('DOMContentLoaded', () => {
-  // Inicializar validação de servidor
-  new ServerValidation();
-
   // Inicializar compliance LGPD
   new LGPDCompliance();
 
@@ -1818,7 +1888,7 @@ document.addEventListener('DOMContentLoaded', () => {
 // Simulador de Crédito Pessoal
 class CreditoPessoalSimulator {
   static calcular(valor, prazo, score = 'medio') {
-    const config = CREDIT_CONFIG.creditoPessoal;
+    const config = CREDIT_CONFIG['credito-pessoal'];
 
     // Validações
     if (valor < config.valorMinimo || valor > config.valorMaximo) {
@@ -2175,10 +2245,11 @@ class PushNotificationManager {
     const notification = document.createElement('div');
     notification.className = 'push-notification';
     notification.innerHTML = `
-            <button class="close-btn" onclick="this.parentElement.remove()">&times;</button>
+        <button class="close-btn" type="button">&times;</button>
             <strong>💰 Oferta Especial!</strong><br>
             Complete sua simulação agora e garanta as melhores taxas do mercado.
         `;
+    notification.querySelector('.close-btn').addEventListener('click', () => notification.remove());
 
     document.body.appendChild(notification);
 
@@ -2241,13 +2312,14 @@ class WhatsAppIntegration {
     const widget = document.createElement('div');
     widget.className = 'whatsapp-widget';
     widget.innerHTML = `
-        <button class="whatsapp-btn" onclick="whatsAppManager.openChat()" aria-label="Falar no WhatsApp">
+      <button class="whatsapp-btn" type="button" aria-label="Falar no WhatsApp">
           <svg class="icon wa-float-svg" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
             <path fill="currentColor" d="M20.52 3.48A11.94 11.94 0 0 0 12.01.5C6.07.5 1.02 5.55 1.02 11.5c0 2.03.53 4.02 1.54 5.76L.03 23.5l6.55-2.16c1.66.9 3.57 1.36 5.43 1.36h.02c5.95 0 10.99-5.05 10.99-11S26.47 3.5 20.52 3.48zm-1.72 15.65c-.41 1.17-1.47 1.2-2.02 1.27-.53.07-1.17.08-2.64-.56-3.43-1.5-5.64-5.02-5.86-5.35-.23-.33-1.82-2.34-1.82-3.55 0-1.21.64-1.8.87-2.05.23-.25.51-.33.68-.33.17 0 .33 0 .48.01.15.01.35-.06.54.37.18.43.6 1.48.65 1.59.05.11.08.24.02.38-.07.14-.1.24-.2.37-.09.13-.22.28-.33.41-.11.13-.22.28.01.54.23.25 1.05 1.72 2.27 2.81 1.56 1.34 2.88 1.74 3.31 1.93.43.18.67.15.92-.09.25-.24 1-1.16 1.28-1.57.28-.41.55-.34.92-.2.37.14 2.34 1.1 2.74 1.3.41.21.68.33.78.52.1.19.1 1.1-.31 2.27z"/>
           </svg>
           <div class="whatsapp-tooltip">Fale conosco no WhatsApp</div>
         </button>
       `;
+    widget.querySelector('.whatsapp-btn').addEventListener('click', () => this.openChat());
 
     document.body.appendChild(widget);
   }
@@ -2260,13 +2332,14 @@ class WhatsAppIntegration {
         const widget = document.createElement('div');
         widget.className = 'whatsapp-widget';
         widget.innerHTML = `
-            <button class="whatsapp-btn" onclick="whatsAppManager.openChat()" aria-label="Falar no WhatsApp">
+          <button class="whatsapp-btn" type="button" aria-label="Falar no WhatsApp">
               <svg class="icon wa-float-svg" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
                 <path fill="currentColor" d="M20.52 3.48A11.94 11.94 0 0 0 12.01.5C6.07.5 1.02 5.55 1.02 11.5c0 2.03.53 4.02 1.54 5.76L.03 23.5l6.55-2.16c1.66.9 3.57 1.36 5.43 1.36h.02c5.95 0 10.99-5.05 10.99-11S26.47 3.5 20.52 3.48zm-1.72 15.65c-.41 1.17-1.47 1.2-2.02 1.27-.53.07-1.17.08-2.64-.56-3.43-1.5-5.64-5.02-5.86-5.35-.23-.33-1.82-2.34-1.82-3.55 0-1.21.64-1.8.87-2.05.23-.25.51-.33.68-.33.17 0 .33 0 .48.01.15.01.35-.06.54.37.18.43.6 1.48.65 1.59.05.11.08.24.02.38-.07.14-.1.24-.2.37-.09.13-.22.28-.33.41-.11.13-.22.28.01.54.23.25 1.05 1.72 2.27 2.81 1.56 1.34 2.88 1.74 3.31 1.93.43.18.67.15.92-.09.25-.24 1-1.16 1.28-1.57.28-.41.55-.34.92-.2.37.14 2.34 1.1 2.74 1.3.41.21.68.33.78.52.1.19.1 1.1-.31 2.27z"/>
               </svg>
               <div class="whatsapp-tooltip">Fale conosco no WhatsApp</div>
             </button>
         `;
+        widget.querySelector('.whatsapp-btn').addEventListener('click', () => this.openChat());
         document.body.appendChild(widget);
         return;
       }
@@ -2302,13 +2375,14 @@ class WhatsAppIntegration {
       const widget = document.createElement('div');
       widget.className = 'whatsapp-widget';
       widget.innerHTML = `
-            <button class="whatsapp-btn" onclick="whatsAppManager.openChat()" aria-label="Falar no WhatsApp">
+        <button class="whatsapp-btn" type="button" aria-label="Falar no WhatsApp">
               <svg class="icon wa-float-svg" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
                 <path fill="currentColor" d="M20.52 3.48A11.94 11.94 0 0 0 12.01.5C6.07.5 1.02 5.55 1.02 11.5c0 2.03.53 4.02 1.54 5.76L.03 23.5l6.55-2.16c1.66.9 3.57 1.36 5.43 1.36h.02c5.95 0 10.99-5.05 10.99-11S26.47 3.5 20.52 3.48zm-1.72 15.65c-.41 1.17-1.47 1.2-2.02 1.27-.53.07-1.17.08-2.64-.56-3.43-1.5-5.64-5.02-5.86-5.35-.23-.33-1.82-2.34-1.82-3.55 0-1.21.64-1.8.87-2.05.23-.25.51-.33.68-.33.17 0 .33 0 .48.01.15.01.35-.06.54.37.18.43.6 1.48.65 1.59.05.11.08.24.02.38-.07.14-.1.24-.2.37-.09.13-.22.28-.33.41-.11.13-.22.28.01.54.23.25 1.05 1.72 2.27 2.81 1.56 1.34 2.88 1.74 3.31 1.93.43.18.67.15.92-.09.25-.24 1-1.16 1.28-1.57.28-.41.55-.34.92-.2.37.14 2.34 1.1 2.74 1.3.41.21.68.33.78.52.1.19.1 1.1-.31 2.27z"/>
               </svg>
               <div class="whatsapp-tooltip">Fale conosco no WhatsApp</div>
             </button>
         `;
+      widget.querySelector('.whatsapp-btn').addEventListener('click', () => this.openChat());
       document.body.appendChild(widget);
     }
   }
@@ -2777,7 +2851,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     if (parcelaAtualInput) {
       parcelaAtualInput.addEventListener('input', function(e) {
-        let value = e.target.value.replace(/[^\d]/g, '');
+        const value = e.target.value.replace(/[^\d]/g, '');
         if (value === '') {
           e.target.value = '';
           return;
@@ -2792,7 +2866,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     if (taxaAtualInput) {
       taxaAtualInput.addEventListener('input', function(e) {
-        let value = e.target.value.replace(/[^\d,]/g, '');
+        const value = e.target.value.replace(/[^\d,]/g, '');
         e.target.value = value;
       });
     }
@@ -3126,162 +3200,6 @@ function simularEmprestimoEnhanced() {
   }
 }
 
-// Integração com backend próprio para envio de leads por e-mail
-const simulationForm = document.getElementById('simulationForm');
-let leadFeedback = document.getElementById('lead-feedback');
-
-// Create feedback element if it doesn't exist
-if (!leadFeedback && simulationForm) {
-  leadFeedback = document.createElement('div');
-  leadFeedback.id = 'lead-feedback';
-  leadFeedback.style.marginTop = '16px';
-  simulationForm.parentNode.insertBefore(leadFeedback, simulationForm.nextSibling);
-}
-
-if (simulationForm) {
-  simulationForm.addEventListener('submit', async function (e) {
-    e.preventDefault();
-    e.stopPropagation();
-
-    const nome = document.getElementById('nome')?.value.trim();
-    const categoria = document.getElementById('categoria')?.value;
-    const salario = document.getElementById('salario')?.value;
-    const valor = document.getElementById('valor')?.value;
-    const prazo = document.getElementById('prazo')?.value;
-
-    // Validação básica
-    if (!nome) {
-      showFeedback(leadFeedback, 'O campo nome é obrigatório.', 'error');
-      return;
-    }
-
-    if (!categoria || !salario || !valor || !prazo) {
-      showFeedback(leadFeedback, 'Por favor, preencha todos os campos.', 'error');
-      return;
-    }
-
-    showFeedback(leadFeedback, 'Enviando simulação...', 'info');
-
-    // Simular envio bem-sucedido
-    setTimeout(() => {
-      showFeedback(
-        leadFeedback,
-        'Simulação enviada com sucesso! Em breve entraremos em contato.',
-        'success'
-      );
-      simulationForm.reset();
-
-      // Opcional: Rolar para o topo do formulário
-      simulationForm.scrollIntoView({ behavior: 'smooth', block: 'center' });
-
-      // Opcional: Focar no primeiro campo
-      const firstInput = simulationForm.querySelector('input, select, textarea');
-      if (firstInput) firstInput.focus();
-    }, 1500);
-
-    /* Código original comentado para referência futura
-    try {
-      const response = await fetch('/api/lead', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ nome, categoria, salario, valor, prazo })
-      });
-
-      if (response.ok) {
-        showFeedback(leadFeedback, 'Simulação enviada com sucesso! Em breve entraremos em contato.', 'success');
-        simulationForm.reset();
-      } else {
-        const data = await response.json();
-        throw new Error(data.error || 'Erro ao enviar. Tente novamente.');
-      }
-    } catch (error) {
-      console.error('Erro ao enviar formulário:', error);
-      showFeedback(leadFeedback, 'Não foi possível enviar sua simulação. Por favor, tente novamente mais tarde.', 'error');
-    }
-    */
-  });
-}
-
-// Função auxiliar para exibir feedback
-function showFeedback(element, message, type = 'info') {
-  if (!element) return;
-
-  element.style.display = 'block';
-  element.textContent = message;
-
-  // Reset styles
-  element.style.padding = '12px';
-  element.style.borderRadius = '4px';
-  element.style.margin = '10px 0';
-
-  // Apply styles based on type
-  switch (type) {
-    case 'error':
-      element.style.color = '#721c24';
-      element.style.backgroundColor = '#f8d7da';
-      element.style.border = '1px solid #f5c6cb';
-      break;
-    case 'success':
-      element.style.color = '#155724';
-      element.style.backgroundColor = '#d4edda';
-      element.style.border = '1px solid #c3e6cb';
-      break;
-    case 'info':
-    default:
-      element.style.color = '#0c5460';
-      element.style.backgroundColor = '#d1ecf1';
-      element.style.border = '1px solid #bee5eb';
-  }
-}
-
-// Integração do formulário de contato com backend SMTP
-const contactForm = document.getElementById('contactForm');
-const contactFeedback = document.createElement('div');
-contactFeedback.id = 'contact-feedback';
-contactFeedback.style.marginTop = '16px';
-if (contactForm) {
-  contactForm.parentNode.insertBefore(contactFeedback, contactForm.nextSibling);
-  contactForm.addEventListener('submit', async function (e) {
-    e.preventDefault();
-    const nome = document.getElementById('contactNome').value.trim();
-    const email = document.getElementById('contactEmail').value.trim();
-    const telefone = document.getElementById('contactTelefone').value.trim();
-    const assunto = document.getElementById('contactAssunto').value;
-    const mensagem = document.getElementById('contactMensagem')
-      ? document.getElementById('contactMensagem').value.trim()
-      : '';
-    // Validação apenas dos campos obrigatórios do contato
-    if (!nome || !email || !assunto || !mensagem) {
-      contactFeedback.style.display = 'block';
-      contactFeedback.style.color = 'red';
-      contactFeedback.textContent = 'Por favor, preencha todos os campos obrigatórios.';
-      return;
-    }
-    contactFeedback.style.display = 'block';
-    contactFeedback.style.color = '#333';
-    contactFeedback.textContent = 'Enviando...';
-    try {
-      const response = await fetch('/api/contact', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ nome, email, telefone, assunto, mensagem }),
-      });
-      if (response.ok) {
-        contactFeedback.style.color = 'green';
-        contactFeedback.textContent =
-          'Mensagem enviada com sucesso! Em breve entraremos em contato.';
-        contactForm.reset();
-      } else {
-        const data = await response.json();
-        throw new Error(data.error || 'Erro ao enviar. Tente novamente.');
-      }
-    } catch (error) {
-      contactFeedback.style.color = 'red';
-      contactFeedback.textContent = error.message;
-    }
-  });
-}
-
 // Corrigir closeModal para evitar erro de removeChild
 function closeModal(modalId) {
   const modal = document.getElementById(modalId);
@@ -3550,8 +3468,8 @@ class PWAInstallPrompt {
       this.deferredPrompt = null;
 
       // Analytics
-      if (typeof gtag !== 'undefined') {
-        gtag('event', 'pwa_installed', {
+      if (typeof window.gtag !== 'undefined') {
+        window.gtag('event', 'pwa_installed', {
           event_category: 'PWA',
           event_label: 'App Installed'
         });
@@ -3736,8 +3654,8 @@ class NewsletterSignup {
       emailInput.value = '';
 
       // Analytics
-      if (typeof gtag !== 'undefined') {
-        gtag('event', 'newsletter_signup', {
+      if (typeof window.gtag !== 'undefined') {
+        window.gtag('event', 'newsletter_signup', {
           event_category: 'Newsletter',
           event_label: email.split('@')[1] // Apenas domínio por privacidade
         });

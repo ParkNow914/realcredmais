@@ -34,6 +34,10 @@ html, body {
   --primary-ultra-light: #E6F0FF;
   --secondary: #6366F1; /* Índigo moderno */
   --secondary-light: #818CF8;
+  --color-primary: var(--primary);
+  --color-secondary: var(--secondary);
+  --color-white: var(--white);
+  --light-blue: var(--primary-light);
   --accent: #FFB800; /* Dourado premium */
   --accent-light: #FFD966;
   --success: #00D9A5; /* Verde turquesa */
@@ -1922,10 +1926,6 @@ textarea:focus:invalid {
   border-color: var(--primary) !important;
 }
 
-.error-message {
-  display: none !important;
-}
-
 /* Estados de formulário modernos */
 .error-message {
   color: var(--error);
@@ -2830,7 +2830,7 @@ html {
   40% { content: '.'; }
   70% { content: '..'; }
   100% { content: '...'; }
-}}
+}
 
 .user-message {
   background: var(--gradient-primary);
@@ -3973,6 +3973,38 @@ html {
 #lead-feedback {
   display: none;
   margin-top: 16px;
+}
+
+.feedback-message {
+  display: none;
+  margin-top: 16px;
+  padding: 12px;
+  border-radius: 4px;
+}
+
+.feedback-message.info {
+  color: #0c5460;
+  background-color: #d1ecf1;
+  border: 1px solid #bee5eb;
+}
+
+.feedback-message.success {
+  color: #155724;
+  background-color: #d4edda;
+  border: 1px solid #c3e6cb;
+}
+
+.feedback-message.error {
+  color: #721c24;
+  background-color: #f8d7da;
+  border: 1px solid #f5c6cb;
+}
+
+.legal-closing-note {
+  text-align: center;
+  margin-top: 40px;
+  padding-top: 20px;
+  border-top: 1px solid #e5e7eb;
 }
 
 #simulationResult {

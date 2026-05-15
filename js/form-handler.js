@@ -324,7 +324,7 @@ class FormHandler {
                     <span class="value">${this.formatCurrency(totalPagar)}</span>
                 </div>
                 <div class="result-actions">
-                    <button type="button" class="btn btn-secondary" onclick="this.closest('.simulation-result').remove(); form.style.display = 'block';">Nova Simulação</button>
+                  <button type="button" class="btn btn-secondary new-simulation-btn">Nova Simulação</button>
                     <a href="https://wa.me/5512982827447" class="btn btn-primary" target="_blank" rel="noopener noreferrer">Falar com Consultor</a>
                 </div>
             </div>
@@ -333,6 +333,12 @@ class FormHandler {
     // Esconder formulário e mostrar resultado
     form.style.display = 'none';
     form.insertAdjacentHTML('afterend', resultHtml);
+    form.nextElementSibling
+      ?.querySelector('.new-simulation-btn')
+      ?.addEventListener('click', () => {
+        form.nextElementSibling?.remove();
+        form.style.display = 'block';
+      });
   }
 
   calcularParcela(valor, taxaMensal, prazo) {

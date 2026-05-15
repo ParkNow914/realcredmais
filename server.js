@@ -2,7 +2,6 @@ import express from 'express';
 import nodemailer from 'nodemailer';
 import dotenv from 'dotenv';
 import rateLimit from 'express-rate-limit';
-import xssClean from 'xss-clean';
 import mongoSanitize from 'express-mongo-sanitize';
 import cors from 'cors';
 import path from 'path';
@@ -25,6 +24,7 @@ dotenv.config();
 
 const app = express();
 const PORT = process.env.PORT || 3002;
+app.set('trust proxy', 1);
 
 // Middleware
 app.use(express.json());
@@ -42,6 +42,7 @@ app.use((req, res, next) => {
 // Para usar __dirname em ES modules
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
+const logsDir = process.env.NETLIFY ? '/tmp' : path.join(__dirname, 'logs');
 
 // Parse JSON bodies
 app.use(express.json());
@@ -53,10 +54,8 @@ const allowedOrigins = process.env.ALLOWED_ORIGINS
   ? process.env.ALLOWED_ORIGINS.split(',').map((origin) => origin.trim())
   : [
       'http://localhost:3000',
-      'http://localhost:3001',
       'http://localhost:3002',
       'http://127.0.0.1:3000',
-      'http://127.0.0.1:3001',
       'http://127.0.0.1:3002',
       'https://realcredplus.com.br',
       'https://www.realcredplus.com.br',
@@ -92,8 +91,8 @@ app.use(cors(corsOptions));
 
 // Ensure logs directory exists
 try {
-  if (!fs.existsSync(path.join(__dirname, 'logs'))) {
-    fs.mkdirSync(path.join(__dirname, 'logs'));
+  if (!fs.existsSync(logsDir)) {
+    fs.mkdirSync(logsDir, { recursive: true });
   }
 } catch (e) {
   console.warn('Could not create logs directory:', e.message);
@@ -128,7 +127,7 @@ const chatLimiter = rateLimit({
 });
 // Apply local middleware to /api/chat later when route is defined.
 
-app.use(xssClean());
+app.use(sanitizeRequestBody);
 app.use(mongoSanitize());
 
 // Servir arquivos estáticos
@@ -151,6 +150,37 @@ const isValidEmail = (email) => {
   const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   return re.test(email);
 };
+
+const escapeHtml = (value = '') =>
+  String(value)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+
+function sanitizeRequestValue(value) {
+  if (typeof value === 'string') {
+    return value.replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '').trim();
+  }
+
+  if (Array.isArray(value)) return value.map(sanitizeRequestValue);
+
+  if (value && typeof value === 'object') {
+    return Object.fromEntries(
+      Object.entries(value).map(([key, entryValue]) => [key, sanitizeRequestValue(entryValue)])
+    );
+  }
+
+  return value;
+}
+
+function sanitizeRequestBody(req, res, next) {
+  if (req.body && typeof req.body === 'object') {
+    req.body = sanitizeRequestValue(req.body);
+  }
+  next();
+}
 
 // Configure nodemailer transporter
 const transporter = nodemailer.createTransport({
@@ -334,12 +364,12 @@ app.post('/api/lead', async (req, res) => {
     // Send email
     const mailOptions = {
       from: process.env.EMAIL_FROM || `"RealCred" <${process.env.EMAIL_USER}>`,
-      to: process.env.LEAD_RECEIVER,
+      to: process.env.LEAD_RECEIVER || process.env.EMAIL_TO || process.env.EMAIL_USER,
       subject: 'Novo Lead - Simulação de Empréstimo',
       html: emailTemplate,
     };
 
-    console.log('Sending email to:', process.env.LEAD_RECEIVER);
+    console.log('Sending email to:', mailOptions.to);
 
     await transporter.sendMail(mailOptions);
 
@@ -359,6 +389,13 @@ app.post('/api/lead', async (req, res) => {
 
 // Rota para processar contatos
 app.post('/api/contact', async (req, res) => {
+  if (req.body.company_name || req.body.website_url) {
+    return res.status(400).json({
+      success: false,
+      message: 'Erro ao processar solicitação.',
+    });
+  }
+
   const { nome, email, telefone, assunto, mensagem } = req.body;
 
   // Validação básica dos campos obrigatórios
@@ -409,7 +446,7 @@ app.get('/api/chat/health', (req, res) => {
 });
 
 // Admin route to view metrics (protected by basic auth)
-app.get('/admin/chat-metrics', (req, res) => {
+app.get('/admin/chat-metrics', async (req, res) => {
   const user = process.env.ADMIN_USER;
   const pass = process.env.ADMIN_PASS;
   const auth = req.headers.authorization;
@@ -430,14 +467,14 @@ app.get('/admin/chat-metrics', (req, res) => {
       .map(
         (r) => `
       <tr>
-        <td>${r.id}</td>
-        <td>${r.timestamp}</td>
-        <td>${r.model}</td>
-        <td>${r.prompt_tokens}</td>
-        <td>${r.completion_tokens}</td>
-        <td>${r.estimated_cost_usd || ''}</td>
-        <td>${r.ip || ''}</td>
-        <td>${r.user_agent || ''}</td>
+        <td>${escapeHtml(r.id)}</td>
+        <td>${escapeHtml(r.timestamp)}</td>
+        <td>${escapeHtml(r.model)}</td>
+        <td>${escapeHtml(r.prompt_tokens)}</td>
+        <td>${escapeHtml(r.completion_tokens)}</td>
+        <td>${escapeHtml(r.estimated_cost_usd || '')}</td>
+        <td>${escapeHtml(r.ip || '')}</td>
+        <td>${escapeHtml(r.user_agent || '')}</td>
         <td>${r.streaming ? 'yes' : 'no'}</td>
       </tr>`
       )
@@ -555,7 +592,7 @@ app.post('/api/chat', chatLimiter, async (req, res) => {
         ip: req.ip,
         userAgent: req.headers['user-agent'] || '',
       };
-      await appendFile(path.join(__dirname, 'logs', 'chat_metrics.log'), JSON.stringify(logEntry) + '\n');
+      await appendFile(path.join(logsDir, 'chat_metrics.log'), JSON.stringify(logEntry) + '\n');
 
       // persist to DB if available
       try {
@@ -589,13 +626,7 @@ app.post('/api/chat', chatLimiter, async (req, res) => {
       ? data.choices[0].message.content
       : '';
 
-    // Log metrics (if available)
-    try {
-      const usage = data.usage || {};
-      // if fallback is configured and openai fails, try fallback
-    } catch (e) {
-      console.warn('Failed to parse usage:', e.message);
-    }
+    const usage = data.usage || {};
 
     // If OpenAI didn't return a usable message and a fallback service is configured, try it
     if ((!assistantMessage || assistantMessage.trim() === '') && process.env.FALLBACK_API_URL) {
@@ -613,7 +644,7 @@ app.post('/api/chat', chatLimiter, async (req, res) => {
           if (fallbackData && fallbackData.reply) {
             // Log fallback as a metric too
             const logEntry = { timestamp: new Date().toISOString(), model: 'fallback', ip: req.ip };
-            await appendFile(path.join(__dirname, 'logs', 'chat_metrics.log'), JSON.stringify(logEntry) + '\n');
+            await appendFile(path.join(logsDir, 'chat_metrics.log'), JSON.stringify(logEntry) + '\n');
             try {
               const { insertMetric } = await import('./db/metrics.js');
               insertMetric({ timestamp: logEntry.timestamp, model: 'fallback', ip: req.ip, userAgent: req.headers['user-agent'] || '' });
@@ -628,6 +659,8 @@ app.post('/api/chat', chatLimiter, async (req, res) => {
         console.warn('Fallback call failed:', e.message);
       }
     }
+
+    try {
       const prices = {
         'gpt-3.5-turbo': parseFloat(process.env.OPENAI_PRICE_GPT35 || '0.002'), // USD per 1k tokens
         'gpt-4': parseFloat(process.env.OPENAI_PRICE_GPT4 || '0.06'),
@@ -644,7 +677,7 @@ app.post('/api/chat', chatLimiter, async (req, res) => {
         ip: req.ip,
         userAgent: req.headers['user-agent'] || '',
       };
-      await appendFile(path.join(__dirname, 'logs', 'chat_metrics.log'), JSON.stringify(logEntry) + '\n');
+      await appendFile(path.join(logsDir, 'chat_metrics.log'), JSON.stringify(logEntry) + '\n');
 
       // persist metrics to DB
       try {
@@ -674,7 +707,7 @@ app.post('/api/chat', chatLimiter, async (req, res) => {
 });
 
 // Only listen when not in test environment
-if (process.env.NODE_ENV !== 'test') {
+if (process.env.NODE_ENV !== 'test' && !process.env.NETLIFY) {
   app.listen(PORT, () => {
     console.log(`Server rodando em http://localhost:${PORT}`);
   });

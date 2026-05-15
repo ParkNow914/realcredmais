@@ -212,7 +212,7 @@ const OUTPUT_DIR = IMG_DIR;
 
 ### 1. Segurança XSS
 
-✅ Servidor usa `xssClean()` middleware
+✅ Servidor usa sanitização local de strings no body das requisições
 ✅ Uso de `innerHTML` verificado - apenas com valores controlados, não input direto do usuário
 
 ### 2. Headers de Segurança

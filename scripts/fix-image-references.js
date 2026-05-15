@@ -11,7 +11,6 @@ const FILES_TO_PROCESS = [
   'artigos/saque-aniversario-fgts-2025.html',
   'artigos/emprestimo-consignado-vs-credito-pessoal.html',
   'artigos/como-sair-das-dividas-2025.html',
-  'artigos/base.html',
   'scripts.js',
   'sw.js',
   'server.js',
@@ -23,33 +22,11 @@ const IMAGE_REPLACEMENTS = {
   'assets/LOGO%202.jpeg': 'assets/LOGO%202.jpeg', // Mantém o mesmo, mas padroniza a referência
   'assets/LOGO 2.jpeg': 'assets/LOGO%202.jpeg',
 
-  // Garante que os caminhos estão corretos
-  '/assets/images/': 'assets/images/',
-  'assets/images//': 'assets/images/',
-
-  // Imagens específicas
-  'assets/images/realcred_logo.png': 'assets/images/realcred_logo.png',
-  'assets/images/realcred_logo.webp': 'assets/images/realcred_logo.webp',
-  'assets/images/happy_people1.jpg': 'assets/images/happy_people1.jpg',
-  'assets/images/happy_people1.webp': 'assets/images/happy_people1.webp',
-  'assets/images/happy_people2.jpg': 'assets/images/happy_people2.jpg',
-  'assets/images/happy_people2.webp': 'assets/images/happy_people2.webp',
-  'assets/images/security_icon1.png': 'assets/images/security_icon1.png',
-  'assets/images/security_icon1.webp': 'assets/images/security_icon1.webp',
-  'assets/images/security_icon2.png': 'assets/images/security_icon2.png',
-  'assets/images/security_icon2.webp': 'assets/images/security_icon2.webp',
-  'assets/images/financial_icon1.png': 'assets/images/financial_icon1.png',
-  'assets/images/financial_icon1.webp': 'assets/images/financial_icon1.webp',
-  'assets/images/financial_icon2.png': 'assets/images/financial_icon2.png',
-  'assets/images/loan_icon1.png': 'assets/images/loan_icon1.png',
-  'assets/images/loan_icon1.webp': 'assets/images/loan_icon1.webp',
-  'assets/images/loan_icon2.png': 'assets/images/loan_icon2.png',
-  'assets/images/loan_icon2.webp': 'assets/images/loan_icon2.webp',
-  'assets/images/sairdasdividas.png': 'assets/images/sairdasdividas.png',
-  'assets/images/creditopessoalvsconsignado.png': 'assets/images/creditopessoalvsconsignado.png',
-  'assets/images/fgtsvaleapena.png': 'assets/images/fgtsvaleapena.png',
-  'assets/images/testimonials_template.png': 'assets/images/testimonials_template.png',
-  'assets/images/testimonials_template.webp': 'assets/images/testimonials_template.webp',
+  // Garante que imagens dos artigos funcionem em /artigos/* e na cópia de build.
+  'src="..assets/images/fgtsvaleapena.png"': 'src="/assets/images/fgtsvaleapena.png"',
+  'src="assets/images/sairdasdividas.png"': 'src="/assets/images/sairdasdividas.png"',
+  'src="assets/images/creditopessoalvsconsignado.png"':
+    'src="/assets/images/creditopessoalvsconsignado.png"',
 };
 
 // Função para processar um arquivo

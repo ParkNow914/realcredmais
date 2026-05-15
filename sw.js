@@ -1,5 +1,5 @@
 // Service Worker para RealCred + PWA
-const CACHE_NAME = 'realcred-v1.1.0';
+const CACHE_NAME = 'realcred-v1.2.0';
 const OFFLINE_URL = '/offline.html';
 
 // URLs essenciais para cache - apenas arquivos que existem
@@ -10,9 +10,8 @@ const urlsToCache = [
   '/styles.css',
   '/scripts.js',
   '/manifest.json',
-  '/js/contact-form.js',
-  '/js/form-handler.js',
   '/js/form-masks.js',
+  '/js/offline.js',
   '/assets/images/realcred_logo.png',
   '/assets/images/realcred_logo.webp',
   '/assets/images/happy_people1.jpg',
