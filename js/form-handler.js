@@ -17,8 +17,8 @@ class FormHandler {
 
   setupFormMasks() {
     // As máscaras agora são gerenciadas pelo form-masks.js
-    // Este método agora apenas configura validações em tempo real
-    console.log('Form masks setup completed by form-masks.js');
+    // Este método é mantido para compatibilidade; validações em tempo real
+    // são configuradas em setupRealTimeValidation.
   }
 
   setupRealTimeValidation(form) {
@@ -231,7 +231,6 @@ class FormHandler {
 
   async sendFormData(form, formData) {
     const formDataObj = Object.fromEntries(formData);
-    console.log('Form data being sent:', formDataObj);
 
     // Se for formulário de simulação, não envia dados, apenas mostra resultado
     if (form.id === 'simulationForm') {
@@ -333,12 +332,10 @@ class FormHandler {
     // Esconder formulário e mostrar resultado
     form.style.display = 'none';
     form.insertAdjacentHTML('afterend', resultHtml);
-    form.nextElementSibling
-      ?.querySelector('.new-simulation-btn')
-      ?.addEventListener('click', () => {
-        form.nextElementSibling?.remove();
-        form.style.display = 'block';
-      });
+    form.nextElementSibling?.querySelector('.new-simulation-btn')?.addEventListener('click', () => {
+      form.nextElementSibling?.remove();
+      form.style.display = 'block';
+    });
   }
 
   calcularParcela(valor, taxaMensal, prazo) {

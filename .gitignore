@@ -1,20 +1,25 @@
 # Dependências
 /node_modules
-/.pnp
-.pnp.js
-.pnp.cjs
-.pnp.mjs
+.pnp
+.pnp.*
 
-# Arquivos de ambiente
+# Variáveis de ambiente (mantém apenas o exemplo)
 .env
 .env.*
 !.env.example
 
-# Arquivos de configuração do Netlify
-.netlify/
-*.env.production
-*.env.development
-*.env.local
+# Saída de build
+/dist
+/build
+/out
+/public/assets/
+/public/artigos/
+/public/sw.js
+
+# Banco de dados local / dados gerados
+/data
+*.sqlite
+*.db
 
 # Logs
 logs
@@ -23,311 +28,42 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 
-# Arquivos do sistema operacional
-.DS_Store
-Thumbs.db
-
-# Editor directories and files
-.idea
-.vscode
-*.suo
-*.ntvs*
-*.njsproj
-*.sln
-*.sw?
-
-# Test coverage
+# Cobertura de testes
 /coverage
+.nyc_output/
 
-# Build output
-/dist
-/.next
-/out
-/build
-/public/assets/
-/public/artigos/
-/public/sw.js
-
-# Cache
-.cache
-.eslintcache
-
-# Dependências locais
-.pnp
-.pnp.*
-
-# Arquivos de cache
+# Caches de ferramentas
 .cache/
 .parcel-cache/
-.next/
-.nuxt/
-.vuepress/dist/
+.vite/
+.eslintcache
+.stylelintcache
+.prettiercache
+*.tsbuildinfo
+
+# Plataformas de deploy
+.netlify/
+.vercel
 
 # Sistema operacional
 .DS_Store
 Thumbs.db
+[Dd]esktop.ini
 
-# IDEs e editores
+# Editores / IDEs
 .idea/
-.vscode/
+.vscode/*
+!.vscode/extensions.json
 *.suo
 *.ntvs*
 *.njsproj
 *.sln
 *.sw?
-
-# Build output
-/dist
-/build
-/out
 
 # Arquivos temporários
 *.tmp
 *.tmp.*
 .temp/
 
-# Arquivos de configuração local
-.eslintcache
-.stylelintcache
-
-# Arquivos de depuração
-.debug/
-
-# Arquivos de cobertura
-yarn-error.log
-coverage/
-.nyc_output/
-
-# Arquivos do Windows
-[Dd]esktop.ini
-
-# Arquivos de configuração local
-*.local
-
-# Arquivos de configuração do editor
-.idea
-.vscode
-*.suo
-*.ntvs*
-*.njsproj
-*.sln
-*.sw?
-
-# Arquivos de cache do npm
-.npm
-
-# Arquivos de cache do Yarn
-.yarn/*
-!.yarn/patches
-!.yarn/plugins
-!.yarn/releases
-!.yarn/sdks
-!.yarn/versions
-
-# Arquivos de cache do pnpm
-.pnpm-store/
-
-# Arquivos de cache do Vite
-.vite/
-
-# Arquivos de cache do Babel
-babel.config.js
-
-# Arquivos de cache do TypeScript
-*.tsbuildinfo
-
-# Arquivos de cache do Next.js
-.next/
-out/
-
-# Arquivos de cache do Nuxt
-.nuxt/
-.nuxt-
-.cache/
-*.lock
-
-# Arquivos de cache do Parcel
-.parcel-cache/
-.parcel-cache-*
-
-# Arquivos de cache do Webpack
-.webpack/
-
-# Arquivos de cache do Rollup
-.rollup.cache/
-
-# Arquivos de cache do Browserslist
-.browserslistrc
-
-# Arquivos de cache do ESLint
-.eslintcache
-
-# Arquivos de cache do Stylelint
-.stylelintcache
-
-# Arquivos de cache do Prettier
-.prettiercache
-
-# Arquivos de cache do Babel
-babel.config.js
-
-# Arquivos de cache do TypeScript
-tsconfig.tsbuildinfo
-
-# Arquivos de cache do VSCode
-.vscode/*
-!.vscode/extensions.json
-.vercel
-
-# Arquivos de cache do Netlify
-.netlify/
-
-# Arquivos de cache do Heroku
-.heroku/
-
-# Arquivos de cache do Docker
-.docker/
-
-# Arquivos de cache do Kubernetes
-.kubernetes/
-
-# Arquivos de cache do Terraform
-.terraform/
-
-# Arquivos de cache do Serverless
-.serverless/
-
-# Arquivos de cache do AWS SAM
-.aws-sam/
-
-# Arquivos de cache do Firebase
-.firebase/
-
-# Arquivos de cache do Google Cloud
-.gcloud/
-
-# Arquivos de cache do Azure
-.azure/
-
-# Arquivos de cache do Docker Compose
-docker-compose.override.yml
-
-# Arquivos de cache do Kubernetes Compose
-kube/
-
-# Arquivos de cache do Terraform
-.terraform.lock.hcl
-
-# Arquivos de cache do Serverless Framework
-.serverless/
-
-# Arquivos de cache do AWS CDK
-cdk.out/
-
-# Arquivos de cache do Pulumi
-.pulumi/
-
-# Arquivos de cache do Ansible
-.ansible/
-
-# Arquivos de cache do Vagrant
-.vagrant/
-
-# Arquivos de cache do Packer
-.packer.d/
-
-# Arquivos de cache do Terraform
-.terraform/
-
-# Arquivos de cache do Terragrunt
-.terragrunt-cache/
-
-# Arquivos de cache do Consul
-.consul/
-
-# Arquivos de cache do Vault
-.vault/
-
-# Arquivos de cache do Nomad
-.nomad/
-
-# Arquivos de cache do Docker
-.docker/
-
-# Arquivos de cache do Kubernetes
-.kubernetes/
-
-# Arquivos de cache do Minikube
-.minikube/
-
-# Arquivos de cache do Rancher
-.rancher/
-
-# Arquivos de cache do Helm
-.helm/
-
-# Arquivos de cache do Kustomize
-kustomization.yaml
-
-# Arquivos de cache do Skaffold
-.skaffold/
-
-# Arquivos de cache do Tilt
-.tilt/
-
-# Arquivos de cache do Garden
-.garden/
-
-# Arquivos de cache do Telepresence
-.telepresence/
-
-# Arquivos de cache do DevSpace
-.devspace/
-
-# Arquivos de cache do Okteto
-.okteto/
-
-# Arquivos de cache do Tilt
-Tiltfile.d
-
-# Arquivos de cache do Skaffold
-skaffold.yaml
-
-# Arquivos de cache do Garden
-garden.yml
-
-# Arquivos de cache do DevSpace
-devspace.yaml
-
-# Arquivos de cache do Okteto
-okteto.yml
-
-# Arquivos de cache do Tilt
-Tiltfile
-
-# Arquivos de cache do Skaffold
-.skaffold/
-
-# Arquivos de cache do Garden
-.garden/
-
-# Arquivos de cache do DevSpace
-.devspace/
-
-# Arquivos de cache do Okteto
-.okteto/
-
-# Arquivos de cache do Tilt
-Tiltfile.d
-
-# Arquivos de cache do Skaffold
-skaffold.yaml
-
-# Arquivos de cache do Garden
-garden.yml
-
-# Arquivos de cache do DevSpace
-devspace.yaml
-
-# Arquivos de cache do Okteto
-okteto.yml
+# Capturas de tela geradas pelos testes
+/test/screenshots/

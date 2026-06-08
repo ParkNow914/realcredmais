@@ -33,6 +33,10 @@ export default defineConfig({
       allow: ['..'],
     },
   },
+  // Remove console.* e debugger do bundle de produção
+  esbuild: {
+    drop: process.env.NODE_ENV === 'production' ? ['console', 'debugger'] : [],
+  },
   build: {
     outDir: 'dist',
     emptyOutDir: true,

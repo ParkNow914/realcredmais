@@ -1,6 +1,8 @@
 import fse from 'fs-extra';
 
-async function copyAssets() {
+// Remove os artefatos gerados em builds anteriores dentro de `public/`
+// para evitar que arquivos obsoletos sejam publicados.
+async function cleanPublic() {
   try {
     await fse.remove('public/assets');
     await fse.remove('public/artigos');
@@ -14,4 +16,4 @@ async function copyAssets() {
 }
 
 // Executa a função principal
-copyAssets().catch(console.error);
+cleanPublic().catch(console.error);

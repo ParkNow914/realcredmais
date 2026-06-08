@@ -39,8 +39,8 @@ self.addEventListener('install', function (event) {
       console.log('RealCred+ Cache opened');
       // Cache individual para evitar falha total se um arquivo não existir
       return Promise.allSettled(
-        urlsToCache.map(url =>
-          cache.add(url).catch(err => {
+        urlsToCache.map((url) =>
+          cache.add(url).catch((err) => {
             console.warn(`Falha ao cachear ${url}:`, err);
             return Promise.resolve();
           })
@@ -63,9 +63,10 @@ self.addEventListener('fetch', function (event) {
   // Skip requests to external domains (except fonts/CDN)
   const url = new URL(event.request.url);
   const isExternal = url.origin !== self.location.origin;
-  const isAllowedExternal = url.hostname.includes('fonts.googleapis.com') ||
-                            url.hostname.includes('fonts.gstatic.com') ||
-                            url.hostname.includes('cdnjs.cloudflare.com');
+  const isAllowedExternal =
+    url.hostname.includes('fonts.googleapis.com') ||
+    url.hostname.includes('fonts.gstatic.com') ||
+    url.hostname.includes('cdnjs.cloudflare.com');
 
   if (isExternal && !isAllowedExternal) return;
 
@@ -106,19 +107,22 @@ self.addEventListener('fetch', function (event) {
 // Activate event - Limpa caches antigos e assume controle
 self.addEventListener('activate', function (event) {
   event.waitUntil(
-    caches.keys().then(function (cacheNames) {
-      return Promise.all(
-        cacheNames.map(function (cacheName) {
-          if (cacheName !== CACHE_NAME) {
-            console.log('Deletando cache antigo:', cacheName);
-            return caches.delete(cacheName);
-          }
-        })
-      );
-    }).then(() => {
-      // Assume controle imediato de todas as abas
-      return self.clients.claim();
-    })
+    caches
+      .keys()
+      .then(function (cacheNames) {
+        return Promise.all(
+          cacheNames.map(function (cacheName) {
+            if (cacheName !== CACHE_NAME) {
+              console.log('Deletando cache antigo:', cacheName);
+              return caches.delete(cacheName);
+            }
+          })
+        );
+      })
+      .then(() => {
+        // Assume controle imediato de todas as abas
+        return self.clients.claim();
+      })
   );
 });
 

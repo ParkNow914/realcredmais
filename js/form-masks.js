@@ -1,9 +1,7 @@
 // Máscaras para campos de formulário
 document.addEventListener('DOMContentLoaded', function () {
-  console.log('Form masks loaded and initializing...');
   // Máscara para CPF
   const cpfInput = document.getElementById('cpf');
-  console.log('CPF input found:', !!cpfInput);
   if (cpfInput) {
     cpfInput.addEventListener('input', function (e) {
       let value = e.target.value.replace(/\D/g, '');
@@ -62,7 +60,6 @@ document.addEventListener('DOMContentLoaded', function () {
 
   // Máscara para telefone
   const telefoneInput = document.getElementById('telefone');
-  console.log('Telefone input found:', !!telefoneInput);
   if (telefoneInput) {
     telefoneInput.addEventListener('input', function (e) {
       let value = e.target.value.replace(/\D/g, '');
@@ -121,7 +118,6 @@ document.addEventListener('DOMContentLoaded', function () {
 
   // Máscara para valor monetário (melhorada)
   const valorInput = document.getElementById('valor');
-  console.log('Valor input found:', !!valorInput);
   if (valorInput) {
     valorInput.addEventListener('input', function (e) {
       const value = e.target.value.replace(/[^\d]/g, '');
@@ -175,7 +171,6 @@ document.addEventListener('DOMContentLoaded', function () {
 
   // Máscara para salário (melhorada)
   const salarioInput = document.getElementById('salario');
-  console.log('Salario input found:', !!salarioInput);
   if (salarioInput) {
     salarioInput.addEventListener('input', function (e) {
       const value = e.target.value.replace(/[^\d]/g, '');
@@ -283,7 +278,6 @@ document.addEventListener('DOMContentLoaded', function () {
   // Função para validar CPF
   function validateCPF(input) {
     const value = input.value.replace(/\D/g, '');
-    const errorElement = document.getElementById(input.id + '-error');
 
     if (!value) {
       showFieldError(input, 'CPF é obrigatório');
@@ -299,7 +293,6 @@ document.addEventListener('DOMContentLoaded', function () {
   // Função para validar telefone
   function validatePhone(input) {
     const value = input.value.replace(/\D/g, '');
-    const errorElement = document.getElementById(input.id + '-error');
 
     if (!value) {
       showFieldError(input, 'Telefone é obrigatório');
@@ -358,24 +351,6 @@ document.addEventListener('DOMContentLoaded', function () {
     return true;
   }
 
-  // Função para testar CPF válido (para debug)
-  function testCPF() {
-    const testCPFs = [
-      '111.444.777-35', // Válido
-      '123.456.789-09', // Inválido
-      '489.770.858-37', // Válido (exemplo do usuário)
-    ];
-
-    testCPFs.forEach((cpf) => {
-      console.log(`CPF ${cpf}: ${isValidCPF(cpf) ? 'VÁLIDO' : 'INVÁLIDO'}`);
-    });
-  }
-
-  // Executar teste se estiver em modo debug
-  if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
-    setTimeout(testCPF, 1000);
-  }
-
   // Função para mostrar erro no campo
   function showFieldError(input, message) {
     const errorId = input.id + '-error';
@@ -409,6 +384,4 @@ document.addEventListener('DOMContentLoaded', function () {
     input.classList.remove('error');
     input.classList.add('success');
   }
-
-  console.log('Form masks initialization completed!');
 });
