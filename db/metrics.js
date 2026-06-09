@@ -34,10 +34,29 @@ db.exec(`
   )
 `);
 
-export function insertMetric({ timestamp, model, prompt_tokens, completion_tokens, estimated_cost_usd, ip, userAgent, streaming = 0 }) {
-  const stmt = db.prepare(`INSERT INTO chat_metrics (timestamp, model, prompt_tokens, completion_tokens, estimated_cost_usd, ip, user_agent, streaming)
+export function insertMetric({
+  timestamp,
+  model,
+  prompt_tokens,
+  completion_tokens,
+  estimated_cost_usd,
+  ip,
+  userAgent,
+  streaming = 0,
+}) {
+  const stmt =
+    db.prepare(`INSERT INTO chat_metrics (timestamp, model, prompt_tokens, completion_tokens, estimated_cost_usd, ip, user_agent, streaming)
     VALUES (?, ?, ?, ?, ?, ?, ?, ?)`);
-  stmt.run(timestamp, model, prompt_tokens || 0, completion_tokens || 0, estimated_cost_usd || 0, ip || '', userAgent || '', streaming ? 1 : 0);
+  stmt.run(
+    timestamp,
+    model,
+    prompt_tokens || 0,
+    completion_tokens || 0,
+    estimated_cost_usd || 0,
+    ip || '',
+    userAgent || '',
+    streaming ? 1 : 0
+  );
 }
 
 export function getMetrics(limit = 200) {

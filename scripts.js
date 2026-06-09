@@ -100,7 +100,9 @@ function formatPercentage(value) {
 function parseCurrency(value) {
   if (typeof value === 'number') return value;
 
-  const normalized = String(value || '').trim().replace(/[R$\s]/g, '');
+  const normalized = String(value || '')
+    .trim()
+    .replace(/[R$\s]/g, '');
   if (!normalized) return 0;
 
   if (normalized.includes(',')) {
@@ -385,11 +387,6 @@ class CreditSimulator {
 
       const apiUrl = '/api/lead';
 
-      console.log('Sending request to:', apiUrl);
-
-      // Log the data being sent
-      console.log('Sending data to server:', data);
-
       // Send data to server
       const response = await fetch(apiUrl, {
         method: 'POST',
@@ -399,9 +396,6 @@ class CreditSimulator {
         },
         body: JSON.stringify(data),
       });
-
-      // Log the response status
-      console.log('Server response status:', response.status);
 
       // Check if response is OK
       if (!response.ok) {
@@ -1048,11 +1042,19 @@ class FinancialChatbot {
 
     // Conversational context stored server-side as messages array sent to OpenAI
     this.conversation = [
-      { role: 'system', content: 'Você é o assistente virtual da RealCred +. Responda de forma clara, objetiva e em Português com foco em empréstimos consignados e serviços financeiros.' },
+      {
+        role: 'system',
+        content:
+          'Você é o assistente virtual da RealCred +. Responda de forma clara, objetiva e em Português com foco em empréstimos consignados e serviços financeiros.',
+      },
     ];
 
     // Push the initial assistant greeting so it becomes part of context
-    this.conversation.push({ role: 'assistant', content: 'Olá! Sou o assistente virtual da RealCred +. Como posso ajudar com seu empréstimo consignado?' });
+    this.conversation.push({
+      role: 'assistant',
+      content:
+        'Olá! Sou o assistente virtual da RealCred +. Como posso ajudar com seu empréstimo consignado?',
+    });
 
     this.faq = {
       'empréstimo consignado':
@@ -1069,8 +1071,7 @@ class FinancialChatbot {
         'Para INSS, a aprovação pode ser em até 24 horas. Para servidores e militares, até 48 horas úteis.',
       portabilidade:
         'Sim, fazemos portabilidade de empréstimos de outros bancos. O processo leva de 1 a 8 dias úteis.',
-      fgts:
-        'Na antecipação do Saque-Aniversário FGTS, as regras vigentes limitam a antecipação a até 5 saques anuais até 31/10/2026 e até 3 saques anuais a partir de 01/11/2026, com valor mínimo de R$ 100 e máximo de R$ 500 por saque anual.',
+      fgts: 'Na antecipação do Saque-Aniversário FGTS, as regras vigentes limitam a antecipação a até 5 saques anuais até 31/10/2026 e até 3 saques anuais a partir de 01/11/2026, com valor mínimo de R$ 100 e máximo de R$ 500 por saque anual.',
       'open banking':
         'Utilizamos Open Banking para acelerar a análise. Você autoriza o compartilhamento seguro dos seus dados bancários.',
     };
@@ -1230,7 +1231,10 @@ class FinancialChatbot {
       }
     } catch (error) {
       console.error('Error contacting /api/chat:', error);
-      this.replaceBotLoading(loadingEl, 'Ocorreu um erro ao contatar o servidor de IA. Tente novamente mais tarde.');
+      this.replaceBotLoading(
+        loadingEl,
+        'Ocorreu um erro ao contatar o servidor de IA. Tente novamente mais tarde.'
+      );
     } finally {
       input.disabled = false;
       if (sendBtn) sendBtn.disabled = false;
@@ -1330,7 +1334,8 @@ class FinancialChatbot {
     banner.style.borderRadius = '8px';
     banner.style.marginLeft = '8px';
     banner.style.fontSize = '13px';
-    banner.textContent = 'Assistente (IA) indisponível no momento. Por favor, use o WhatsApp ou tente novamente mais tarde.';
+    banner.textContent =
+      'Assistente (IA) indisponível no momento. Por favor, use o WhatsApp ou tente novamente mais tarde.';
     header.appendChild(banner);
   }
 
@@ -1568,9 +1573,6 @@ class ServerValidation {
         timestamp: new Date().toISOString(),
       });
     }
-
-    // Log local para debugging
-    console.log(`Form submission tracked: ${formId} - ${status}`);
   }
 }
 
@@ -1655,7 +1657,6 @@ class GoogleAnalytics {
         timestamp: new Date().toISOString(),
       });
     }
-    console.log(`Event tracked: ${eventName}`, parameters);
   }
 
   getElementLocation(element) {
@@ -1875,8 +1876,6 @@ class LGPDCompliance {
     // 'https://connect.facebook.net/en_US/fbevents.js');
     // fbq('init', 'YOUR_PIXEL_ID');
     // fbq('track', 'PageView');
-
-    console.log('Marketing pixels loaded');
   }
 }
 
@@ -2373,7 +2372,7 @@ class WhatsAppIntegration {
       // Garantir que o toggle do chatbot esteja visível (restaurar se previamente escondido)
       const toggle = document.getElementById('chatbot-toggle');
       if (toggle) toggle.style.display = '';
-    } catch (e) {
+    } catch {
       // Em caso de erro, fallback para widget flutuante
       const widget = document.createElement('div');
       widget.className = 'whatsapp-widget';
@@ -2461,7 +2460,8 @@ class EducationalContent {
     {
       id: 1,
       title: 'Como Sair das Dívidas em 2026: Guia Atualizado',
-      excerpt: 'Estratégias práticas para renegociar, priorizar juros altos e recuperar o controle financeiro em 2026.',
+      excerpt:
+        'Estratégias práticas para renegociar, priorizar juros altos e recuperar o controle financeiro em 2026.',
       category: 'Educação Financeira',
       readTime: '5 min',
       image: '/assets/images/sairdasdividas.png',
@@ -2469,7 +2469,8 @@ class EducationalContent {
     {
       id: 2,
       title: 'Empréstimo Consignado vs Crédito Pessoal: Qual Escolher?',
-      excerpt: 'Compare consignado INSS, Crédito do Trabalhador e crédito pessoal com as regras atuais.',
+      excerpt:
+        'Compare consignado INSS, Crédito do Trabalhador e crédito pessoal com as regras atuais.',
       category: 'Crédito',
       readTime: '4 min',
       image: '/assets/images/creditopessoalvsconsignado.png',
@@ -2485,8 +2486,6 @@ class EducationalContent {
   ];
 
   static renderBlogSection() {
-    console.log('Iniciando renderização da seção de blog...');
-
     // Cria o container principal
     const container = document.createElement('div');
     container.className = 'container';
@@ -2519,7 +2518,6 @@ class EducationalContent {
 
       // Adiciona manipuladores de evento para a imagem
       img.onload = function () {
-        console.log('Imagem carregada com sucesso:', this.src);
         this.style.opacity = '1';
       };
 
@@ -2580,7 +2578,6 @@ class EducationalContent {
     container.appendChild(sectionHeader);
     container.appendChild(blogGrid);
 
-    console.log('Seção de blog renderizada com sucesso!');
     return container;
   }
 
@@ -2719,7 +2716,7 @@ function initEducationFinanceira() {
         // Nenhuma imagem encontrada
       }
 
-      images.forEach((img, index) => {
+      images.forEach((img) => {
         // Força o redesenho das imagens
         img.style.opacity = '0';
         img.style.transition = 'opacity 0.5s ease';
@@ -2813,7 +2810,7 @@ class UserBehaviorAnalytics {
 
     // Track form interactions
     document.querySelectorAll('form').forEach((form) => {
-      form.addEventListener('submit', (e) => {
+      form.addEventListener('submit', () => {
         this.trackEvent('form_submission', {
           form_id: form.id,
           timestamp: new Date().toISOString(),
@@ -2823,7 +2820,7 @@ class UserBehaviorAnalytics {
 
     // Track button clicks
     document.querySelectorAll('button, .btn').forEach((button) => {
-      button.addEventListener('click', (e) => {
+      button.addEventListener('click', () => {
         this.trackEvent('button_click', {
           button_text: button.textContent.trim(),
           button_class: button.className,
@@ -2835,7 +2832,6 @@ class UserBehaviorAnalytics {
 
   static trackEvent(eventName, data) {
     // Em implementação real, enviaria dados para Hotjar ou Google Analytics
-    console.log(`Event tracked: ${eventName}`, data);
   }
 }
 
@@ -2853,7 +2849,7 @@ document.addEventListener('DOMContentLoaded', function () {
     const taxaAtualInput = document.getElementById('taxaAtual');
 
     if (parcelaAtualInput) {
-      parcelaAtualInput.addEventListener('input', function(e) {
+      parcelaAtualInput.addEventListener('input', function (e) {
         const value = e.target.value.replace(/[^\d]/g, '');
         if (value === '') {
           e.target.value = '';
@@ -2868,7 +2864,7 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     if (taxaAtualInput) {
-      taxaAtualInput.addEventListener('input', function(e) {
+      taxaAtualInput.addEventListener('input', function (e) {
         const value = e.target.value.replace(/[^\d,]/g, '');
         e.target.value = value;
       });
@@ -2912,17 +2908,26 @@ function calculatePortability() {
 
     // Se a taxa atual já é menor ou igual à nossa, não faz sentido a portabilidade
     if (taxaAtual <= novaTaxa) {
-      alert('Sua taxa atual já é melhor ou igual à nossa taxa de ' + novaTaxa + '% a.m. A portabilidade não traria benefícios.');
+      alert(
+        'Sua taxa atual já é melhor ou igual à nossa taxa de ' +
+          novaTaxa +
+          '% a.m. A portabilidade não traria benefícios.'
+      );
       return;
     }
 
     // Calcular saldo devedor usando a fórmula de valor presente de anuidade
     const taxaAtualDecimal = taxaAtual / 100;
-    const saldoDevedor = parcelaAtual * ((Math.pow(1 + taxaAtualDecimal, prazoRestante) - 1) / (taxaAtualDecimal * Math.pow(1 + taxaAtualDecimal, prazoRestante)));
+    const saldoDevedor =
+      parcelaAtual *
+      ((Math.pow(1 + taxaAtualDecimal, prazoRestante) - 1) /
+        (taxaAtualDecimal * Math.pow(1 + taxaAtualDecimal, prazoRestante)));
 
     // Calcular nova parcela com taxa RealCred+
     const novaTaxaDecimal = novaTaxa / 100;
-    const novaParcela = (saldoDevedor * (novaTaxaDecimal * Math.pow(1 + novaTaxaDecimal, prazoRestante))) / (Math.pow(1 + novaTaxaDecimal, prazoRestante) - 1);
+    const novaParcela =
+      (saldoDevedor * (novaTaxaDecimal * Math.pow(1 + novaTaxaDecimal, prazoRestante))) /
+      (Math.pow(1 + novaTaxaDecimal, prazoRestante) - 1);
 
     // Calcular economia
     const economiaMensal = parcelaAtual - novaParcela;
@@ -2932,7 +2937,8 @@ function calculatePortability() {
     document.getElementById('economiaMensal').textContent = formatCurrency(economiaMensal);
     document.getElementById('economiaTotal').textContent = formatCurrency(economiaTotal);
     document.getElementById('novaParcela').textContent = formatCurrency(novaParcela);
-    document.getElementById('novaTaxa').textContent = novaTaxa.toFixed(2).replace('.', ',') + '% a.m.';
+    document.getElementById('novaTaxa').textContent =
+      novaTaxa.toFixed(2).replace('.', ',') + '% a.m.';
 
     // Mostrar resultado
     const resultDiv = document.getElementById('portabilityResult');
@@ -3466,7 +3472,6 @@ class PWAInstallPrompt {
 
     // Monitora se o app foi instalado
     window.addEventListener('appinstalled', () => {
-      console.log('RealCred+ PWA instalado com sucesso!');
       this.hideInstallBanner();
       this.deferredPrompt = null;
 
@@ -3474,7 +3479,7 @@ class PWAInstallPrompt {
       if (typeof window.gtag !== 'undefined') {
         window.gtag('event', 'pwa_installed', {
           event_category: 'PWA',
-          event_label: 'App Installed'
+          event_label: 'App Installed',
         });
       }
     });
@@ -3580,8 +3585,6 @@ class PWAInstallPrompt {
     this.deferredPrompt.prompt();
     const { outcome } = await this.deferredPrompt.userChoice;
 
-    console.log('PWA install outcome:', outcome);
-
     if (outcome === 'dismissed') {
       localStorage.setItem('pwa-install-rejected', Date.now().toString());
     }
@@ -3623,7 +3626,7 @@ class NewsletterSignup {
     // Procura por formulários de newsletter
     const newsletterForms = document.querySelectorAll('.newsletter-form, #newsletterForm');
 
-    newsletterForms.forEach(form => {
+    newsletterForms.forEach((form) => {
       form.addEventListener('submit', (e) => this.handleSubmit(e, form));
     });
   }
@@ -3660,7 +3663,7 @@ class NewsletterSignup {
       if (typeof window.gtag !== 'undefined') {
         window.gtag('event', 'newsletter_signup', {
           event_category: 'Newsletter',
-          event_label: email.split('@')[1] // Apenas domínio por privacidade
+          event_label: email.split('@')[1], // Apenas domínio por privacidade
         });
       }
     } catch (error) {
@@ -3677,7 +3680,7 @@ class NewsletterSignup {
     return re.test(email);
   }
 
-  async submitToAPI(email) {
+  async submitToAPI(_email) {
     // TODO: Implementar integração com serviço de newsletter
     // Por enquanto, apenas simula um delay
     return new Promise((resolve) => setTimeout(resolve, 1000));
@@ -3711,4 +3714,3 @@ class NewsletterSignup {
 document.addEventListener('DOMContentLoaded', () => {
   new NewsletterSignup();
 });
-

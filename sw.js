@@ -1,5 +1,5 @@
 // Service Worker para RealCred + PWA
-const CACHE_NAME = 'realcred-v1.2.0';
+const CACHE_NAME = 'realcred-v1.2.1';
 const OFFLINE_URL = '/offline.html';
 
 // URLs essenciais para cache - apenas arquivos que existem
@@ -39,8 +39,8 @@ self.addEventListener('install', function (event) {
       console.log('RealCred+ Cache opened');
       // Cache individual para evitar falha total se um arquivo não existir
       return Promise.allSettled(
-        urlsToCache.map(url =>
-          cache.add(url).catch(err => {
+        urlsToCache.map((url) =>
+          cache.add(url).catch((err) => {
             console.warn(`Falha ao cachear ${url}:`, err);
             return Promise.resolve();
           })
@@ -60,14 +60,12 @@ self.addEventListener('fetch', function (event) {
   // Skip non-http/https requests
   if (!event.request.url.startsWith('http')) return;
 
-  // Skip requests to external domains (except fonts/CDN)
+  // Não intercepta requisições cross-origin (fontes, CDNs, analytics).
+  // Deixa o navegador buscá-las diretamente, respeitando as diretivas
+  // style-src/font-src do CSP. Refazer o fetch dentro do Service Worker
+  // seria barrado por connect-src e quebraria o carregamento dos recursos.
   const url = new URL(event.request.url);
-  const isExternal = url.origin !== self.location.origin;
-  const isAllowedExternal = url.hostname.includes('fonts.googleapis.com') ||
-                            url.hostname.includes('fonts.gstatic.com') ||
-                            url.hostname.includes('cdnjs.cloudflare.com');
-
-  if (isExternal && !isAllowedExternal) return;
+  if (url.origin !== self.location.origin) return;
 
   // Check if this is a navigation request
   const isNavigationRequest = event.request.mode === 'navigate';
@@ -91,10 +89,12 @@ self.addEventListener('fetch', function (event) {
           console.warn('Fetch failed for:', event.request.url, error);
           // For navigation requests, show offline page
           if (isNavigationRequest) {
-            return caches.match(OFFLINE_URL);
+            return caches.match(OFFLINE_URL).then(function (offline) {
+              return offline || Response.error();
+            });
           }
-          // Return cached version or nothing
-          return cachedResponse;
+          // Nunca retorna undefined: respondWith exige um Response válido
+          return cachedResponse || Response.error();
         });
 
       // Return cached version immediately if available, otherwise wait for network
@@ -106,19 +106,22 @@ self.addEventListener('fetch', function (event) {
 // Activate event - Limpa caches antigos e assume controle
 self.addEventListener('activate', function (event) {
   event.waitUntil(
-    caches.keys().then(function (cacheNames) {
-      return Promise.all(
-        cacheNames.map(function (cacheName) {
-          if (cacheName !== CACHE_NAME) {
-            console.log('Deletando cache antigo:', cacheName);
-            return caches.delete(cacheName);
-          }
-        })
-      );
-    }).then(() => {
-      // Assume controle imediato de todas as abas
-      return self.clients.claim();
-    })
+    caches
+      .keys()
+      .then(function (cacheNames) {
+        return Promise.all(
+          cacheNames.map(function (cacheName) {
+            if (cacheName !== CACHE_NAME) {
+              console.log('Deletando cache antigo:', cacheName);
+              return caches.delete(cacheName);
+            }
+          })
+        );
+      })
+      .then(() => {
+        // Assume controle imediato de todas as abas
+        return self.clients.claim();
+      })
   );
 });
 

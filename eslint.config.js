@@ -16,8 +16,11 @@ export default [
       },
     },
     rules: {
-      'no-unused-vars': 'warn',
-      'no-console': 'warn',
+      'no-unused-vars': [
+        'warn',
+        { argsIgnorePattern: '^_', varsIgnorePattern: '^_', caughtErrorsIgnorePattern: '^_' },
+      ],
+      'no-console': ['warn', { allow: ['warn', 'error'] }],
       'no-undef': 'error',
       'no-var': 'error',
       'prefer-const': 'error',
@@ -29,6 +32,25 @@ export default [
       globals: {
         ...globals.jest,
       },
+    },
+  },
+  {
+    // Build/CLI/server scripts onde a saída no console é intencional
+    files: [
+      'scripts/**/*.js',
+      'db/**/*.js',
+      'utils/**/*.js',
+      'functions/**/*.js',
+      'server.js',
+      'sw.js',
+      'inline-critical.js',
+      'convert-to-webp.js',
+      'eslint.config.js',
+      'vite.config.js',
+      'test/screenshot.js',
+    ],
+    rules: {
+      'no-console': 'off',
     },
   },
 ];

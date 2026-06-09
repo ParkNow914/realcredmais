@@ -1,4 +1,5 @@
 import express from 'express';
+import helmet from 'helmet';
 import nodemailer from 'nodemailer';
 import dotenv from 'dotenv';
 import rateLimit from 'express-rate-limit';
@@ -8,6 +9,7 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import fs from 'fs';
 import { promisify } from 'util';
+import logger, { maskPII } from './utils/logger.js';
 const appendFile = promisify(fs.appendFile);
 
 // Valid categories
@@ -30,11 +32,11 @@ app.set('trust proxy', 1);
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Log all incoming requests for debugging
+// Log all incoming requests (corpo com PII mascarada para conformidade LGPD)
 app.use((req, res, next) => {
-  console.log(`[${new Date().toISOString()}] ${req.method} ${req.url}`);
-  if (Object.keys(req.body).length > 0) {
-    console.log('Request body:', req.body);
+  logger.info(`[${new Date().toISOString()}] ${req.method} ${req.url}`);
+  if (req.body && Object.keys(req.body).length > 0) {
+    logger.debug('Request body:', maskPII(req.body));
   }
   next();
 });
@@ -43,9 +45,6 @@ app.use((req, res, next) => {
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const logsDir = process.env.NETLIFY ? '/tmp' : path.join(__dirname, 'logs');
-
-// Parse JSON bodies
-app.use(express.json());
 
 // Configuração de CORS dinâmica baseada em ambiente
 const isDevelopment = process.env.NODE_ENV !== 'production';
@@ -95,18 +94,50 @@ try {
     fs.mkdirSync(logsDir, { recursive: true });
   }
 } catch (e) {
-  console.warn('Could not create logs directory:', e.message);
+  logger.warn('Could not create logs directory:', e.message);
 }
 
 // Handle preflight requests
 app.options('*', cors(corsOptions));
 
-// Basic security headers
+// Security headers via Helmet (CSP alinhada com netlify.toml)
+app.use(
+  helmet({
+    contentSecurityPolicy: {
+      useDefaults: false,
+      directives: {
+        defaultSrc: ["'self'"],
+        baseUri: ["'self'"],
+        objectSrc: ["'none'"],
+        scriptSrc: [
+          "'self'",
+          'https://www.googletagmanager.com',
+          'https://www.google-analytics.com',
+        ],
+        scriptSrcAttr: ["'none'"],
+        styleSrc: [
+          "'self'",
+          "'unsafe-inline'",
+          'https://fonts.googleapis.com',
+          'https://cdnjs.cloudflare.com',
+        ],
+        imgSrc: ["'self'", 'data:', 'https:'],
+        fontSrc: ["'self'", 'https://fonts.gstatic.com', 'https://cdnjs.cloudflare.com'],
+        connectSrc: ["'self'", 'https://www.google-analytics.com'],
+        frameSrc: ['https://www.google.com'],
+        workerSrc: ["'self'"],
+        formAction: ["'self'"],
+        upgradeInsecureRequests: [],
+      },
+    },
+    frameguard: { action: 'deny' },
+    referrerPolicy: { policy: 'strict-origin-when-cross-origin' },
+    crossOriginEmbedderPolicy: false,
+  })
+);
 app.use((req, res, next) => {
-  res.setHeader('X-Frame-Options', 'DENY');
-  res.setHeader('X-Content-Type-Options', 'nosniff');
   res.setHeader('X-DNS-Prefetch-Control', 'off');
-  res.setHeader('Referrer-Policy', 'strict-origin-when-cross-origin');
+  res.setHeader('Permissions-Policy', 'geolocation=(), microphone=(), camera=()');
   next();
 });
 
@@ -193,12 +224,12 @@ const transporter = nodemailer.createTransport({
 
 // API endpoint for lead submission
 app.post('/api/lead', async (req, res) => {
-  console.log('Received lead request:', req.body);
+  logger.debug('Received lead request:', maskPII(req.body));
 
   try {
     // Honeypot anti-spam check
     if (req.body.company_name || req.body.website_url) {
-      console.log('Honeypot triggered - spam detected');
+      logger.warn('Honeypot triggered - spam detected');
       return res.status(400).json({
         success: false,
         message: 'Erro ao processar solicitação.',
@@ -207,8 +238,11 @@ app.post('/api/lead', async (req, res) => {
 
     const { nome, email, telefone, categoria, salario, valor, prazo, cpf } = req.body;
 
-    // Log the received data for debugging
-    console.log('Received data:', { nome, cpf, email, telefone, categoria, salario, valor, prazo });
+    // Log the received data for debugging (PII mascarada)
+    logger.debug(
+      'Received data:',
+      maskPII({ nome, cpf, email, telefone, categoria, salario, valor, prazo })
+    );
 
     // Validate required fields
     if (!nome || !telefone || !categoria) {
@@ -221,7 +255,7 @@ app.post('/api/lead', async (req, res) => {
 
     // Validate category
     if (!CATEGORIAS_VALIDAS.includes(categoria)) {
-      console.error(
+      logger.error(
         `Invalid category received: ${categoria}. Valid categories are:`,
         CATEGORIAS_VALIDAS
       );
@@ -253,16 +287,7 @@ app.post('/api/lead', async (req, res) => {
     }
 
     // Here you would typically save the lead to a database
-    console.log('Novo lead recebido:', {
-      nome,
-      email,
-      telefone,
-      categoria,
-      salario,
-      valor,
-      prazo,
-      cpf,
-    });
+    logger.info('Novo lead recebido para a categoria:', categoria);
 
     // Format values - handle both string with comma and dot, and number inputs
     const formatCurrency = (value) => {
@@ -369,17 +394,17 @@ app.post('/api/lead', async (req, res) => {
       html: emailTemplate,
     };
 
-    console.log('Sending email to:', mailOptions.to);
+    logger.debug('Sending lead email to configured receiver');
 
     await transporter.sendMail(mailOptions);
 
-    console.log('Email sent successfully');
+    logger.info('Lead email sent successfully');
     return res.status(200).json({
       success: true,
       message: 'Solicitação enviada com sucesso! Entraremos em contato em breve.',
     });
   } catch (error) {
-    console.error('Error processing lead:', error);
+    logger.error('Error processing lead:', error);
     return res.status(500).json({
       success: false,
       message: 'Erro interno do servidor. Por favor, tente novamente mais tarde.',
@@ -430,7 +455,7 @@ Data/Hora: ${new Date().toLocaleString('pt-BR')}`,
       message: 'Mensagem enviada com sucesso! Entraremos em contato em breve.',
     });
   } catch (error) {
-    console.error('Error processing contact form:', error);
+    logger.error('Error processing contact form:', error);
     res.status(500).json({
       success: false,
       message: 'Ocorreu um erro ao processar sua mensagem. Por favor, tente novamente mais tarde.',
@@ -499,7 +524,7 @@ app.get('/admin/chat-metrics', async (req, res) => {
     `;
     res.send(html);
   } catch (e) {
-    console.error('Error rendering admin metrics:', e.message);
+    logger.error('Error rendering admin metrics:', e.message);
     res.status(500).send('Internal server error');
   }
 });
@@ -511,7 +536,9 @@ app.post('/api/chat', chatLimiter, async (req, res) => {
 
     const apiKey = process.env.OPENAI_API_KEY;
     if (!apiKey) {
-      return res.status(503).json({ success: false, message: 'OpenAI API key not configured on server.' });
+      return res
+        .status(503)
+        .json({ success: false, message: 'OpenAI API key not configured on server.' });
     }
 
     // Accept either an array of messages or a single message string
@@ -521,11 +548,17 @@ app.post('/api/chat', chatLimiter, async (req, res) => {
     } else if (message) {
       // Default system prompt in Portuguese
       chatMessages = [
-        { role: 'system', content: 'Você é o assistente virtual da RealCred +, responda de forma clara e objetiva em Português.' },
+        {
+          role: 'system',
+          content:
+            'Você é o assistente virtual da RealCred +, responda de forma clara e objetiva em Português.',
+        },
         { role: 'user', content: message },
       ];
     } else {
-      return res.status(400).json({ success: false, message: 'Invalid request: no message provided.' });
+      return res
+        .status(400)
+        .json({ success: false, message: 'Invalid request: no message provided.' });
     }
 
     const model = process.env.OPENAI_MODEL || 'gpt-3.5-turbo';
@@ -538,13 +571,21 @@ app.post('/api/chat', chatLimiter, async (req, res) => {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${apiKey}`,
         },
-        body: JSON.stringify({ model, messages: chatMessages, stream: true, temperature: 0.2, max_tokens: 800 }),
+        body: JSON.stringify({
+          model,
+          messages: chatMessages,
+          stream: true,
+          temperature: 0.2,
+          max_tokens: 800,
+        }),
       });
 
       if (!openaiRes.ok) {
         const errText = await openaiRes.text();
-        console.error('OpenAI stream error:', errText);
-        return res.status(502).json({ success: false, message: 'OpenAI returned an error', details: errText });
+        logger.error('OpenAI stream error:', errText);
+        return res
+          .status(502)
+          .json({ success: false, message: 'OpenAI returned an error', details: errText });
       }
 
       res.setHeader('Content-Type', 'text/plain; charset=utf-8');
@@ -568,12 +609,16 @@ app.post('/api/chat', chatLimiter, async (req, res) => {
               }
               try {
                 const parsed = JSON.parse(data);
-                const delta = parsed.choices && parsed.choices[0] && parsed.choices[0].delta && parsed.choices[0].delta.content;
+                const delta =
+                  parsed.choices &&
+                  parsed.choices[0] &&
+                  parsed.choices[0].delta &&
+                  parsed.choices[0].delta.content;
                 if (delta) {
                   // forward raw delta text to client
                   res.write(delta);
                 }
-              } catch (e) {
+              } catch {
                 // ignore JSON parse errors on partial chunks
               }
             }
@@ -597,9 +642,15 @@ app.post('/api/chat', chatLimiter, async (req, res) => {
       // persist to DB if available
       try {
         const { insertMetric } = await import('./db/metrics.js');
-        insertMetric({ timestamp: logEntry.timestamp, model: logEntry.model, ip: logEntry.ip, userAgent: logEntry.userAgent, streaming: 1 });
+        insertMetric({
+          timestamp: logEntry.timestamp,
+          model: logEntry.model,
+          ip: logEntry.ip,
+          userAgent: logEntry.userAgent,
+          streaming: 1,
+        });
       } catch (e) {
-        console.warn('DB metrics insert failed', e.message);
+        logger.warn('DB metrics insert failed', e.message);
       }
 
       return;
@@ -617,46 +668,65 @@ app.post('/api/chat', chatLimiter, async (req, res) => {
 
     if (!response.ok) {
       const errText = await response.text();
-      console.error('OpenAI error:', errText);
-      return res.status(502).json({ success: false, message: 'OpenAI returned an error', details: errText });
+      logger.error('OpenAI error:', errText);
+      return res
+        .status(502)
+        .json({ success: false, message: 'OpenAI returned an error', details: errText });
     }
 
     const data = await response.json();
-    const assistantMessage = data.choices && data.choices[0] && data.choices[0].message && data.choices[0].message.content
-      ? data.choices[0].message.content
-      : '';
+    const assistantMessage =
+      data.choices && data.choices[0] && data.choices[0].message && data.choices[0].message.content
+        ? data.choices[0].message.content
+        : '';
 
     const usage = data.usage || {};
 
     // If OpenAI didn't return a usable message and a fallback service is configured, try it
     if ((!assistantMessage || assistantMessage.trim() === '') && process.env.FALLBACK_API_URL) {
       try {
+        const fallbackHeaders = { 'Content-Type': 'application/json' };
+        if (process.env.FALLBACK_API_KEY) {
+          fallbackHeaders.Authorization = `Bearer ${process.env.FALLBACK_API_KEY}`;
+        }
         const fallbackRes = await fetch(process.env.FALLBACK_API_URL, {
           method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: process.env.FALLBACK_API_KEY ? `Bearer ${process.env.FALLBACK_API_KEY}` : undefined,
-          },
-          body: JSON.stringify({ message: message || (messages && messages[messages.length - 1] && messages[messages.length - 1].content) || '' }),
+          headers: fallbackHeaders,
+          body: JSON.stringify({
+            message:
+              message ||
+              (messages &&
+                messages[messages.length - 1] &&
+                messages[messages.length - 1].content) ||
+              '',
+          }),
         });
         if (fallbackRes.ok) {
           const fallbackData = await fallbackRes.json();
           if (fallbackData && fallbackData.reply) {
             // Log fallback as a metric too
             const logEntry = { timestamp: new Date().toISOString(), model: 'fallback', ip: req.ip };
-            await appendFile(path.join(logsDir, 'chat_metrics.log'), JSON.stringify(logEntry) + '\n');
+            await appendFile(
+              path.join(logsDir, 'chat_metrics.log'),
+              JSON.stringify(logEntry) + '\n'
+            );
             try {
               const { insertMetric } = await import('./db/metrics.js');
-              insertMetric({ timestamp: logEntry.timestamp, model: 'fallback', ip: req.ip, userAgent: req.headers['user-agent'] || '' });
+              insertMetric({
+                timestamp: logEntry.timestamp,
+                model: 'fallback',
+                ip: req.ip,
+                userAgent: req.headers['user-agent'] || '',
+              });
             } catch (e) {
-              console.warn('Failed to persist fallback metric:', e.message);
+              logger.warn('Failed to persist fallback metric:', e.message);
             }
 
             return res.json({ success: true, reply: fallbackData.reply, fallback: true });
           }
         }
       } catch (e) {
-        console.warn('Fallback call failed:', e.message);
+        logger.warn('Fallback call failed:', e.message);
       }
     }
 
@@ -693,15 +763,15 @@ app.post('/api/chat', chatLimiter, async (req, res) => {
           streaming: 0,
         });
       } catch (e) {
-        console.warn('Failed to persist metrics to DB:', e.message);
+        logger.warn('Failed to persist metrics to DB:', e.message);
       }
     } catch (e) {
-      console.warn('Failed to log chat metrics:', e.message);
+      logger.warn('Failed to log chat metrics:', e.message);
     }
 
     return res.json({ success: true, reply: assistantMessage });
   } catch (error) {
-    console.error('Error in /api/chat:', error);
+    logger.error('Error in /api/chat:', error);
     return res.status(500).json({ success: false, message: 'Internal server error' });
   }
 });
@@ -709,7 +779,7 @@ app.post('/api/chat', chatLimiter, async (req, res) => {
 // Only listen when not in test environment
 if (process.env.NODE_ENV !== 'test' && !process.env.NETLIFY) {
   app.listen(PORT, () => {
-    console.log(`Server rodando em http://localhost:${PORT}`);
+    logger.info(`Server rodando em http://localhost:${PORT}`);
   });
 }
 
