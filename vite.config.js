@@ -2,7 +2,7 @@ import { defineConfig } from 'vite';
 import { resolve } from 'path';
 
 // https://vitejs.dev/config/
-export default defineConfig({
+export default defineConfig(({ command }) => ({
   root: '.', // index.html está na raiz
   base: '/', // Usar caminhos absolutos a partir da raiz
   publicDir: 'public', // Pasta de arquivos públicos
@@ -33,9 +33,10 @@ export default defineConfig({
       allow: ['..'],
     },
   },
-  // Remove console.* e debugger do bundle de produção
+  // Remove console.* e debugger em qualquer build de produção (`vite build`),
+  // independente de NODE_ENV (que nem sempre é definido pelo Netlify/npm).
   esbuild: {
-    drop: process.env.NODE_ENV === 'production' ? ['console', 'debugger'] : [],
+    drop: command === 'build' ? ['console', 'debugger'] : [],
   },
   build: {
     outDir: 'dist',
@@ -52,4 +53,4 @@ export default defineConfig({
       },
     },
   },
-});
+}));
