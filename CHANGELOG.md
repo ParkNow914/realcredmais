@@ -1,5 +1,14 @@
 # Changelog
 
+## 2.1.0 · 16/10/2026
+
+- Regras de 2026 conferidas e atualizadas no site inteiro: INSS em até 108 parcelas (IN 204), biometria obrigatória no Meu INSS (Lei 15.327), margem do INSS de volta a 45% com 35% para empréstimos, cartões consignados suspensos (TCU 1.094), SIAPE em até 120 parcelas (Decreto 12.957), Crédito do Trabalhador com garantia do FGTS a até 1,99% ao mês (Portaria MTE 1.115) e antecipação do FGTS limitada a 3 anos a partir de 01/11/2026.
+- Sete páginas novas, uma por crédito, cada uma com simulador já no produto certo, regras em vigor com link da fonte, dúvidas e dados estruturados. Página local de Lorena.
+- Cinco artigos novos e índice em `/artigos/`. Os três artigos antigos foram revisados.
+- Linha do tempo das mudanças de 2026 e faixa de aviso no topo que trocam sozinhas quando a data passa.
+- Capas com o número principal de cada assunto para compartilhamento (Open Graph) e botão de mandar a página pelo WhatsApp.
+- Sitemap com 20 URLs, migalhas em todas as páginas internas e chave do IndexNow.
+
 ## 2.0.0 · 16/10/2026
 
 - O simulador agora calcula no navegador, sem CPF nem e-mail, e envia a simulação pelo WhatsApp. O simulador antigo dependia de uma função do Netlify que quebrava ao iniciar e mostrava erro para todo visitante.

@@ -28,7 +28,8 @@ test('valor presente é o inverso da parcela', () => {
 
 test('prazos respeitam o máximo de cada produto', () => {
   assert.deepEqual(prazos('clt').at(-1), 84);
-  assert.deepEqual(prazos('inss').at(-1), 96);
+  assert.deepEqual(prazos('inss').at(-1), 108);
+  assert.deepEqual(prazos('servidor').at(-1), 120);
   assert.deepEqual(prazos('pessoal').at(-1), 60);
 });
 

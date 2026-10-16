@@ -27,9 +27,24 @@ npm run build    # gera dist/
 | Telefone, endereço, horário, aviso legal | `partials/header.html` e `partials/footer.html` |
 | Textos da página inicial | `index.html` |
 | Visual (cores, fontes, espaçamentos) | `src/site.css` |
-| Artigos | `artigos/*.html` (e incluir em `public/sitemap.xml`) |
+| Páginas de cada crédito, página de Lorena | `content/produtos.mjs` |
+| Artigos novos (gerados) | `content/artigos.mjs` |
+| Artigos escritos à mão | `artigos/*.html` (e listar em `ARTIGOS_ANTIGOS`, em `scripts/gerar.mjs`) |
+| Fontes das regras e data da última conferência | `content/fontes.mjs` |
+| Faixa do topo (aviso com data) | `partials/header.html` e `iniciarAviso` em `src/site.js` |
+| Linha do tempo de 2026 | `index.html` (seção `changes`) |
 | Redirecionamentos | `public/_redirects` |
 | Cabeçalhos de segurança e cache | `netlify.toml` |
+
+## Páginas geradas
+
+`npm run build` roda `scripts/gerar.mjs` antes do Vite. Ele monta as 7 páginas de crédito, a página de Lorena, os artigos de `content/artigos.mjs`, o índice `/artigos/` e o `public/sitemap.xml`. Essas páginas não ficam no git; edite o conteúdo em `content/` e rode `npm run gerar` para ver o resultado.
+
+Quando uma regra mudar: atualize o texto em `content/`, a fonte em `content/fontes.mjs` e a data `ATUALIZADO`.
+
+## Avisar os buscadores
+
+Depois de publicar, `npm run indexnow` avisa Bing e os outros buscadores do IndexNow que as URLs do sitemap mudaram. O Google lê o sitemap pelo Search Console.
 
 ## Ligar o Google Analytics
 
@@ -39,4 +54,4 @@ npm run build    # gera dist/
 
 ## Receber o formulário por e-mail
 
-No Netlify, abra Forms, depois Form notifications, e adicione o e-mail que deve receber as mensagens do formulário `contato`.
+Cada mensagem do formulário `contato` vai para operacional@realcredmais.com.br (Netlify, Forms, Form notifications). Para trocar o e-mail, edite a notificação nesse mesmo lugar.
