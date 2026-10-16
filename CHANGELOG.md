@@ -1,5 +1,18 @@
 # Changelog
 
+## 2.0.0 · 16/10/2026
+
+- O simulador agora calcula no navegador, sem CPF nem e-mail, e envia a simulação pelo WhatsApp. O simulador antigo dependia de uma função do Netlify que quebrava ao iniciar e mostrava erro para todo visitante.
+- Contato pelo Netlify Forms, no lugar da rota `/api/contact`, que respondia 404.
+- Chat com IA, servidor Express e função do Netlify removidos (não estavam configurados em produção e expunham a chave da OpenAI a abuso).
+- Domínio corrigido para realcredmais.com.br no canonical, sitemap, robots, Open Graph e dados estruturados.
+- Removidos os depoimentos de modelo, as avaliações inventadas nos dados estruturados e as promessas sem comprovação.
+- Novo visual, mais leve e legível, com fontes próprias. O JavaScript da página inicial caiu de 69 KB (sem contar a API do Google Maps e o Font Awesome, que saíram) para 10 KB.
+- Aviso contra golpe, razão social e texto de intermediação no rodapé.
+- Página 404 real, fim do redirecionamento de tudo para a home e limpeza do service worker antigo.
+- Google Analytics só depois do aceite de cookies.
+- Dependências reduzidas a ferramentas de build: 0 vulnerabilidades no `npm audit`.
+
 Todas as alterações notáveis neste projeto serão documentadas neste arquivo.
 
 O formato é baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.0.0/),

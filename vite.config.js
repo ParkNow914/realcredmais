@@ -1,51 +1,50 @@
 import { defineConfig } from 'vite';
-import { resolve } from 'path';
+import { readFileSync } from 'node:fs';
+import { resolve } from 'node:path';
 
-// https://vitejs.dev/config/
-export default defineConfig({
-  root: '.', // index.html está na raiz
-  base: '/', // Usar caminhos absolutos a partir da raiz
-  publicDir: 'public', // Pasta de arquivos públicos
-  assetsInclude: ['**/*.jpg', '**/*.jpeg', '**/*.png', '**/*.svg', '**/*.gif', '**/*.webp'],
-  server: {
-    host: true, // Permite acesso em rede local
-    port: 3000,
-    strictPort: true,
-    hmr: {
-      host: 'localhost',
-      protocol: 'ws',
-      port: 3001,
-    },
-    proxy: {
-      '/api': {
-        target: 'http://127.0.0.1:3002',
-        changeOrigin: true,
-        secure: false,
-      },
-      '/lead': {
-        target: 'http://127.0.0.1:3002',
-        changeOrigin: true,
-        secure: false,
-      },
-    },
-    fs: {
-      // Allow serving files from one level up from the package root
-      allow: ['..'],
+const root = import.meta.dirname;
+
+// Cabeçalho e rodapé ficam em partials/ e entram em todas as páginas no lugar de
+// <!-- @header --> e <!-- @footer -->. Assim um telefone ou endereço muda num lugar só.
+const partials = {
+  name: 'partials',
+  transformIndexHtml: {
+    order: 'pre',
+    handler(html) {
+      return html.replace(/<!--\s*@(\w+)\s*-->/g, (match, name) => {
+        try {
+          return readFileSync(resolve(root, 'partials', `${name}.html`), 'utf8');
+        } catch {
+          return match;
+        }
+      });
     },
   },
+};
+
+const page = (path) => resolve(root, path);
+
+export default defineConfig({
+  plugins: [partials],
   build: {
     outDir: 'dist',
     emptyOutDir: true,
-    assetsDir: 'assets',
     rollupOptions: {
       input: {
-        main: resolve(__dirname, 'index.html'),
+        home: page('index.html'),
+        notFound: page('404.html'),
+        privacidade: page('privacy-policy.html'),
+        termos: page('terms-of-use.html'),
+        dividas: page('artigos/como-sair-das-dividas-2026.html'),
+        comparativo: page('artigos/emprestimo-consignado-vs-credito-pessoal.html'),
+        fgts: page('artigos/saque-aniversario-fgts-2026.html'),
       },
       output: {
-        entryFileNames: 'assets/js/[name].[hash].js',
-        chunkFileNames: 'assets/js/[name].[hash].js',
-        assetFileNames: 'assets/[ext]/[name].[hash][ext]',
+        entryFileNames: 'assets/[name].[hash].js',
+        chunkFileNames: 'assets/[name].[hash].js',
+        assetFileNames: 'assets/[name].[hash][extname]',
       },
     },
   },
+  server: { port: 3000 },
 });

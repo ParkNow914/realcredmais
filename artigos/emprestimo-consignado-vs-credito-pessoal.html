@@ -1,164 +1,101 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="pt-BR">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Empréstimo Consignado vs Crédito Pessoal: Qual Escolher? - RealCred +</title>
-    <meta name="description" content="Compare empréstimo consignado, Crédito do Trabalhador CLT e crédito pessoal com regras e taxas atualizadas em maio de 2026.">
-    <link rel="stylesheet" href="../styles.css">
-    <link rel="stylesheet" href="../styles/article.css">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;900&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="icon" type="image/jpeg" href="../assets/LOGO%202.jpeg">
-    <style>
-        .comparison-table {
-            width: 100%;
-            border-collapse: collapse;
-            margin: 2rem 0;
-            background: white;
-            border-radius: 0.5rem;
-            overflow: hidden;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Consignado ou crédito pessoal: qual escolher em 2026? | RealCred+</title>
+    <meta name="description" content="Compare empréstimo consignado, Crédito do Trabalhador CLT e crédito pessoal com regras e taxas atualizadas em maio de 2026." />
+    <link rel="canonical" href="https://realcredmais.com.br/artigos/emprestimo-consignado-vs-credito-pessoal.html" />
+    <meta name="theme-color" content="#061626" />
+    <meta property="og:type" content="article" />
+    <meta property="og:locale" content="pt_BR" />
+    <meta property="og:site_name" content="RealCred+" />
+    <meta property="og:url" content="https://realcredmais.com.br/artigos/emprestimo-consignado-vs-credito-pessoal.html" />
+    <meta property="og:title" content="Consignado ou crédito pessoal: qual escolher?" />
+    <meta property="og:description" content="Compare empréstimo consignado, Crédito do Trabalhador CLT e crédito pessoal com regras e taxas atualizadas em maio de 2026." />
+    <meta property="og:image" content="https://realcredmais.com.br/img/capa-comparativo.jpg" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="article:modified_time" content="2026-05-15" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <link rel="icon" href="/favicon.ico" sizes="48x48" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/img/favicon-32.png" />
+    <link rel="apple-touch-icon" href="/img/apple-touch-icon.png" />
+    <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "Article",
+      "headline": "Consignado ou crédito pessoal: qual escolher?",
+      "description": "Compare empréstimo consignado, Crédito do Trabalhador CLT e crédito pessoal com regras e taxas atualizadas em maio de 2026.",
+      "image": "https://realcredmais.com.br/img/capa-comparativo.jpg",
+      "datePublished": "2026-05-15",
+      "dateModified": "2026-05-15",
+      "inLanguage": "pt-BR",
+      "mainEntityOfPage": "https://realcredmais.com.br/artigos/emprestimo-consignado-vs-credito-pessoal.html",
+      "author": {
+        "@type": "Organization",
+        "name": "RealCred+",
+        "url": "https://realcredmais.com.br/"
+      },
+      "publisher": {
+        "@id": "https://realcredmais.com.br/#empresa",
+        "@type": "Organization",
+        "name": "RealCred+",
+        "logo": {
+          "@type": "ImageObject",
+          "url": "https://realcredmais.com.br/img/icon-512.png"
         }
-        .comparison-table th, 
-        .comparison-table td {
-            padding: 1rem;
-            text-align: left;
-            border-bottom: 1px solid #e2e8f0;
+      }
+    },
+    {
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        {
+          "@type": "ListItem",
+          "position": 1,
+          "name": "Início",
+          "item": "https://realcredmais.com.br/"
+        },
+        {
+          "@type": "ListItem",
+          "position": 2,
+          "name": "Artigos",
+          "item": "https://realcredmais.com.br/#artigos"
+        },
+        {
+          "@type": "ListItem",
+          "position": 3,
+          "name": "Consignado ou crédito pessoal: qual escolher?",
+          "item": "https://realcredmais.com.br/artigos/emprestimo-consignado-vs-credito-pessoal.html"
         }
-        .comparison-table th {
-            background-color: #f8fafc;
-            font-weight: 600;
-            color: #1e293b;
-        }
-        .comparison-table tr:last-child td {
-            border-bottom: none;
-        }
-        .pros-cons {
-            display: flex;
-            gap: 2rem;
-            margin: 2rem 0;
-        }
-        .pros, .cons {
-            flex: 1;
-            padding: 1.5rem;
-            border-radius: 0.5rem;
-        }
-        .pros {
-            background-color: #f0fdf4;
-            border-left: 4px solid #10b981;
-        }
-        .cons {
-            background-color: #fff7ed;
-            border-left: 4px solid #f97316;
-        }
-        .pros h3, .cons h3 {
-            margin-top: 0;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-        .pros h3 {
-            color: #047857;
-        }
-        .cons h3 {
-            color: #c2410c;
-        }
-        .pros ul, .cons ul {
-            padding-left: 1.5rem;
-            margin: 0.5rem 0 0;
-        }
-        .pros li, .cons li {
-            margin-bottom: 0.5rem;
-        }
-        .highlight-box {
-            background-color: #eff6ff;
-            border-left: 4px solid #2563eb;
-            padding: 1.5rem;
-            border-radius: 0 0.5rem 0.5rem 0;
-            margin: 2rem 0;
-        }
-        .highlight-box h3 {
-            margin-top: 0;
-            color: #1d4ed8;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-        @media (max-width: 768px) {
-            .article-title {
-                font-size: 2rem;
-            }
-            .article-featured-image {
-                height: 250px;
-            }
-            .pros-cons {
-                flex-direction: column;
-                gap: 1rem;
-            }
-        }
-    </style>
-</head>
-<body>
-    <a href="#main-content" class="skip-link">Pular para conteúdo principal</a>
-    
-    <!-- Header -->
-    <header class="header">
-        <nav class="nav">
-            <div class="nav-container">
-                <div class="nav-logo">
-                    <a href="../index.html">
-                        <img src="../assets/LOGO%202.jpeg" alt="RealCred + Logotipo" class="logo-img">
-                    </a>
-                </div>
-                <ul class="nav-menu">
-                    <li><a href="../index.html#sobre">Sobre Nós</a></li>
-                    <li><a href="../index.html#servicos">Serviços</a></li>
-                    <li><a href="../index.html#depoimentos">Depoimentos</a></li>
-                    <li><a href="../index.html#contato">Contato</a></li>
-                </ul>
-                <a href="../index.html#simulacao" class="btn btn-primary">Simule seu Crédito</a>
-                <button class="mobile-menu-toggle" aria-label="Abrir menu de navegação" aria-expanded="false">
-                    <span></span>
-                    <span></span>
-                    <span></span>
-                </button>
-            </div>
-        </nav>
-    </header>
+      ]
+    }
+  ]
+}
+    </script>
+    <script type="module" src="/src/site.js"></script>
+  </head>
+  <body>
+    <!-- @header -->
 
-    <main id="main-content" class="article-container">
-        <a href="../index.html#educacao-financeira" class="back-to-blog">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <line x1="19" y1="12" x2="5" y2="12"></line>
-                <polyline points="12 19 5 12 12 5"></polyline>
-            </svg>
-            Voltar para o blog
-        </a>
-        
+    <main id="conteudo" tabindex="-1" class="doc">
+      <div class="wrap doc__inner">
+        <a class="doc__back" href="/#artigos"><svg class="icon" aria-hidden="true"><use href="#i-arrow" /></svg>Todos os artigos</a>
         <article>
-            <header class="article-header">
-                <span class="article-category">Empréstimos</span>
-                <h1 class="article-title">Empréstimo Consignado vs Crédito Pessoal: Qual Escolher?</h1>
-                <div class="article-meta">
-                    <span>📖 7 min de leitura</span>
-                    <span>📅 Atualizado em 15 de maio de 2026</span>
-                </div>
-                <div class="article-featured-image">
-                    <img src="/assets/images/creditopessoalvsconsignado.png" alt="Comparação entre empréstimo consignado e crédito pessoal">
-                </div>
-            </header>
-            
-            <div class="article-content">
+          <h1>Consignado ou crédito pessoal: qual escolher?</h1>
+          <p class="doc__meta">Atualizado em 15 de maio de 2026 · 7 min de leitura</p>
+          <div class="prose">
+
                 <p>Na hora de contratar um empréstimo, é comum surgirem dúvidas sobre qual modalidade escolher. Entre as opções mais procuradas estão o empréstimo consignado, o Crédito do Trabalhador CLT e o crédito pessoal. Neste artigo, vamos comparar essas modalidades com as regras vigentes em maio de 2026 para ajudar você a tomar uma decisão mais segura.</p>
                 
                 <h2>O que é empréstimo consignado?</h2>
                 <p>O empréstimo consignado é um tipo de crédito em que as parcelas são descontadas diretamente da folha de pagamento ou do benefício do contratante. Por ter essa garantia, geralmente oferece taxas de juros menores em comparação a modalidades sem garantia. Em 2026, ele inclui públicos como INSS, servidores, militares e trabalhadores CLT elegíveis ao Crédito do Trabalhador.</p>
                 
-                <div class="pros-cons">
-                    <div class="pros">
-                        <h3>✅ Vantagens</h3>
+                <div class="split">
+                    <div class="split__item">
+                        <h3>Vantagens</h3>
                         <ul>
                             <li>Taxas de juros menores</li>
                             <li>Prazo mais longo para pagamento</li>
@@ -166,8 +103,8 @@
                             <li>Pode ter parcelas menores por causa do prazo maior</li>
                         </ul>
                     </div>
-                    <div class="cons">
-                        <h3>❌ Desvantagens</h3>
+                    <div class="split__item">
+                        <h3>Desvantagens</h3>
                         <ul>
                             <li>Depende de vínculo elegível, margem disponível e regras da fonte pagadora</li>
                             <li>Comprometimento da renda por um período maior</li>
@@ -179,9 +116,9 @@
                 <h2>O que é crédito pessoal?</h2>
                 <p>O crédito pessoal é um empréstimo sem destinação específica, ou seja, o valor pode ser usado para qualquer finalidade. É uma modalidade mais flexível, mas as taxas variam bastante conforme perfil, garantia, instituição financeira e CET. Diferente do consignado INSS, não existe um teto geral do Banco Central para todo crédito pessoal.</p>
                 
-                <div class="pros-cons">
-                    <div class="pros">
-                        <h3>✅ Vantagens</h3>
+                <div class="split">
+                    <div class="split__item">
+                        <h3>Vantagens</h3>
                         <ul>
                             <li>Disponível para qualquer pessoa com renda comprovada</li>
                             <li>Liberação rápida do dinheiro</li>
@@ -189,8 +126,8 @@
                             <li>Não compromete a renda por tanto tempo</li>
                         </ul>
                     </div>
-                    <div class="cons">
-                        <h3>❌ Desvantagens</h3>
+                    <div class="split__item">
+                        <h3>Desvantagens</h3>
                         <ul>
                             <li>Taxas de juros mais altas</li>
                             <li>Prazos menores de pagamento</li>
@@ -201,8 +138,8 @@
                 </div>
                 
                 <h2>Comparação direta</h2>
-                <div class="highlight-box">
-                    <h3>💡 Dados atuais</h3>
+                <div class="callout">
+                    <h3>Dados atuais</h3>
                     <p>Para beneficiários do INSS, o teto vigente do empréstimo consignado é de 1,85% ao mês, e o teto para cartão consignado ou cartão benefício é de 2,46% ao mês. As taxas praticadas por cada instituição podem ser consultadas no Meu INSS, em "extrato de empréstimos" e "instituições e taxas".</p>
                 </div>
                 
@@ -245,8 +182,8 @@
                     </tr>
                 </table>
                 
-                <div class="highlight-box">
-                    <h3>💡 Dica importante</h3>
+                <div class="callout">
+                    <h3>Dica importante</h3>
                     <p>Se você tem margem consignável e vínculo elegível, o consignado costuma ser competitivo por causa do desconto em folha ou benefício. Se não se encaixa nesse perfil, precisa de flexibilidade ou não quer comprometer margem, o crédito pessoal pode ser uma alternativa, desde que o CET caiba no orçamento.</p>
                 </div>
                 
@@ -271,61 +208,23 @@
                 <h2>Conclusão</h2>
                 <p>As modalidades têm vantagens e desvantagens. A escolha entre consignado, Crédito do Trabalhador CLT e crédito pessoal depende do seu vínculo, margem disponível, urgência, prazo e custo total. O importante é analisar todas as condições, comparar taxas, prazos e CET, e escolher a opção que melhor se encaixa no seu orçamento.</p>
                 
-                <p>Na RealCred +, você pode simular diferentes modalidades e comparar as condições disponíveis para o seu caso antes de contratar.</p>
-            </div>
+                <p>Na RealCred+, você pode simular diferentes modalidades e comparar as condições disponíveis para o seu caso antes de contratar.</p>
+            
+          </div>
         </article>
+        <aside class="doc-cta" aria-labelledby="cta-titulo">
+          <h2 id="cta-titulo">Quer ver os números do seu caso?</h2>
+          <p>Simule sem informar CPF ou mande sua dúvida no WhatsApp. A primeira conversa não tem custo.</p>
+          <div class="doc-cta__actions">
+            <a class="btn btn--primary" href="/#simular">Simular agora</a>
+            <a class="btn btn--wa" href="https://wa.me/5512982827447?text=Ol%C3%A1%21%20Li%20o%20artigo%20no%20site%20da%20RealCred%2B%20e%20tenho%20uma%20d%C3%BAvida." target="_blank" rel="noopener" data-wa="artigo-emprestimo-consignado-vs-credito-pessoal">
+              <svg class="icon" aria-hidden="true"><use href="#i-wa" /></svg> Perguntar no WhatsApp
+            </a>
+          </div>
+        </aside>
+      </div>
     </main>
 
-    <!-- Footer -->
-    <footer class="footer">
-        <div class="container">
-            <div class="footer-content">
-                <div class="footer-section">
-                    <div class="footer-logo">
-                        <img src="../assets/LOGO%202.jpeg" alt="RealCred + Logotipo" class="logo-img">
-                        <span class="logo-text">RealCred +</span>
-                    </div>
-                    <p>Especialistas em crédito consignado em Lorena, SP.</p>
-                    <div class="social-links">
-                        <a href="#" aria-label="Instagram" data-tooltip="Instagram"></a>
-                        <a href="#" aria-label="Facebook" data-tooltip="Facebook"></a>
-                        <a href="#" aria-label="WhatsApp" data-tooltip="WhatsApp"></a>
-                    </div>
-                </div>
-                <div class="footer-section">
-                    <h4>Serviços</h4>
-                    <ul>
-                        <li><a href="../index.html#servicos">Empréstimo INSS</a></li>
-                        <li><a href="../index.html#servicos">Servidores Públicos</a></li>
-                        <li><a href="../index.html#servicos">Militares</a></li>
-                        <li><a href="../index.html#servicos">Crédito do Trabalhador CLT</a></li>
-                        <li><a href="../index.html#servicos">Portabilidade</a></li>
-                    </ul>
-                </div>
-                <div class="footer-section">
-                    <h4>Empresa</h4>
-                    <ul>
-                        <li><a href="../index.html#sobre">Sobre Nós</a></li>
-                        <li><a href="../index.html#depoimentos">Depoimentos</a></li>
-                        <li><a href="../index.html#contato">Contato</a></li>
-                    </ul>
-                </div>
-                <div class="footer-section">
-                    <h4>Contato</h4>
-                    <p>📍 R. Dr. José Machado Coelho de Castro, 238<br>
-                    Centro, Lorena - SP, 12600-050</p>
-                    <p>📞 <a href="https://wa.me/5512982827447" target="_blank" rel="noopener noreferrer">(12) 98282-7447</a></p>
-                    <p>✉️ <a href="mailto:realcredlorena@gmail.com">realcredlorena@gmail.com</a></p>
-                    <p>🏢 CNPJ: 35.473.133/0001-60</p>
-                </div>
-            </div>
-            <div class="footer-bottom">
-                <p>&copy; 2026 RealCred +. Todos os direitos reservados.</p>
-                <p>Empréstimos sujeitos à análise e aprovação. Taxas e condições podem variar conforme perfil do cliente.</p>
-            </div>
-        </div>
-    </footer>
-
-    <script type="module" src="../scripts.js"></script>
-</body>
+    <!-- @footer -->
+  </body>
 </html>
