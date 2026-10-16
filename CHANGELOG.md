@@ -7,7 +7,7 @@
 - Cinco artigos novos e índice em `/artigos/`. Os três artigos antigos foram revisados.
 - Linha do tempo das mudanças de 2026 e faixa de aviso no topo que trocam sozinhas quando a data passa.
 - Capas com o número principal de cada assunto para compartilhamento (Open Graph) e botão de mandar a página pelo WhatsApp.
-- Sitemap com 22 URLs, migalhas em todas as páginas internas e chave do IndexNow.
+- Sitemap com 20 URLs, migalhas em todas as páginas internas e chave do IndexNow.
 
 ## 2.0.0 · 16/10/2026
 
