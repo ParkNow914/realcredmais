@@ -54,4 +54,4 @@ Depois de publicar, `npm run indexnow` avisa Bing e os outros buscadores do Inde
 
 ## Receber o formulário por e-mail
 
-No Netlify, abra Forms, depois Form notifications, e adicione o e-mail que deve receber as mensagens do formulário `contato`.
+Cada mensagem do formulário `contato` vai para operacional@realcredmais.com.br (Netlify, Forms, Form notifications). Para trocar o e-mail, edite a notificação nesse mesmo lugar.

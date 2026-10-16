@@ -4,10 +4,6 @@
 
 [build.environment]
   NODE_VERSION = "22"
-  # Variáveis antigas do painel (do servidor removido) têm valores comuns como "gmail" e
-  # "production", que o scan de segredos encontra em textos normais do site. Ficam fora do
-  # scan só as inofensivas; senhas e chaves continuam sendo verificadas.
-  SECRETS_SCAN_OMIT_KEYS = "NODE_ENV,PORT,LOG_LEVEL,LOG_FORMAT,EMAIL_SERVICE,ALLOWED_ORIGINS,ALLOWED_METHODS,ALLOWED_HEADERS,ALLOW_CREDENTIALS,RATE_LIMIT_MAX,RATE_LIMIT_WINDOW_MS,OPENAI_MODEL"
 
 # O Netlify serve dist/404.html automaticamente para endereços que não existem.
 # Redirecionamentos ficam em public/_redirects.
