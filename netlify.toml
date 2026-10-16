@@ -5,6 +5,11 @@
 [build.environment]
   NODE_VERSION = "22"
 
+# Função que manda o e-mail de cada contato do formulário (netlify/functions).
+[functions]
+  directory = "netlify/functions"
+  node_bundler = "esbuild"
+
 # O Netlify serve dist/404.html automaticamente para endereços que não existem.
 # Redirecionamentos ficam em public/_redirects.
 
