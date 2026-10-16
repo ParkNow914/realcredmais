@@ -1,170 +1,34 @@
 [build]
   command = "npm run build"
   publish = "dist"
-  functions = "functions"
 
 [build.environment]
-  NODE_VERSION = "20"
-  NPM_FLAGS = "--production=false"
+  NODE_VERSION = "22"
 
-# Configuração de redirecionamentos
-[[redirects]]
-  from = "/api/*"
-  to = "/.netlify/functions/server/api/:splat"
-  status = 200
+# O Netlify serve dist/404.html automaticamente para endereços que não existem.
+# Redirecionamentos ficam em public/_redirects.
 
-[[redirects]]
-  from = "/admin/*"
-  to = "/.netlify/functions/server/admin/:splat"
-  status = 200
-
-[[redirects]]
-  from = "/artigos/como-sair-das-dividas-2025.html"
-  to = "/artigos/como-sair-das-dividas-2026.html"
-  status = 301
-
-[[redirects]]
-  from = "/artigos/saque-aniversario-fgts-2025.html"
-  to = "/artigos/saque-aniversario-fgts-2026.html"
-  status = 301
-
-[[redirects]]
-  from = "/*"
-  to = "/index.html"
-  status = 200
-  force = true
-
-# Configuração de headers de segurança
 [[headers]]
   for = "/*"
   [headers.values]
+    Strict-Transport-Security = "max-age=31536000; includeSubDomains"
     X-Frame-Options = "DENY"
     X-Content-Type-Options = "nosniff"
-    X-XSS-Protection = "1; mode=block"
     Referrer-Policy = "strict-origin-when-cross-origin"
-    Content-Security-Policy = "default-src 'self'; base-uri 'self'; object-src 'none'; script-src 'self' https://www.googletagmanager.com https://www.google-analytics.com; script-src-attr 'none'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdnjs.cloudflare.com; img-src 'self' data: https:; font-src 'self' https://fonts.gstatic.com https://cdnjs.cloudflare.com; connect-src 'self' https://www.google-analytics.com; frame-src https://www.google.com; worker-src 'self'; form-action 'self'; upgrade-insecure-requests;"
-    Permissions-Policy = "geolocation=(), microphone=(), camera=()"
+    Permissions-Policy = "geolocation=(), microphone=(), camera=(), payment=(), usb=()"
+    Content-Security-Policy = "default-src 'self'; base-uri 'self'; object-src 'none'; script-src 'self' https://www.googletagmanager.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: https://www.google-analytics.com https://www.googletagmanager.com; font-src 'self'; connect-src 'self' https://*.google-analytics.com https://*.analytics.google.com https://www.googletagmanager.com; frame-src https://www.google.com; form-action 'self'; frame-ancestors 'none'; upgrade-insecure-requests"
 
-# Configuração para arquivos de mídia
 [[headers]]
-  for = "/*.js"
+  for = "/assets/*"
   [headers.values]
     Cache-Control = "public, max-age=31536000, immutable"
-    Content-Type = "application/javascript; charset=utf-8"
 
 [[headers]]
-  for = "/*.css"
+  for = "/img/*"
   [headers.values]
-    Cache-Control = "public, max-age=31536000"
-    Content-Type = "text/css; charset=utf-8"
+    Cache-Control = "public, max-age=2592000"
 
 [[headers]]
-  for = "/*.json"
+  for = "/sw.js"
   [headers.values]
-    Cache-Control = "public, max-age=31536000"
-
-[[headers]]
-  for = "/*.png"
-  [headers.values]
-    Cache-Control = "public, max-age=31536000"
-
-[[headers]]
-  for = "/*.jpg"
-  [headers.values]
-    Cache-Control = "public, max-age=31536000"
-
-[[headers]]
-  for = "/*.jpeg"
-  [headers.values]
-    Cache-Control = "public, max-age=31536000"
-
-[[headers]]
-  for = "/*.gif"
-  [headers.values]
-    Cache-Control = "public, max-age=31536000"
-
-[[headers]]
-  for = "/*.svg"
-  [headers.values]
-    Cache-Control = "public, max-age=31536000"
-
-[[headers]]
-  for = "/*.webp"
-  [headers.values]
-    Cache-Control = "public, max-age=31536000"
-
-[[headers]]
-  for = "/*.woff"
-  [headers.values]
-    Cache-Control = "public, max-age=31536000"
-
-[[headers]]
-  for = "/*.woff2"
-  [headers.values]
-    Cache-Control = "public, max-age=31536000"
-
-[[headers]]
-  for = "/*.ttf"
-  [headers.values]
-    Cache-Control = "public, max-age=31536000"
-
-[[headers]]
-  for = "/*.eot"
-  [headers.values]
-    Cache-Control = "public, max-age=31536000"
-
-[[headers]]
-  for = "/*.otf"
-  [headers.values]
-    Cache-Control = "public, max-age=31536000"
-
-# Configuração para arquivos HTML
-[[headers]]
-  for = "/*.html"
-  [headers.values]
-    Cache-Control = "public, max-age=0, must-revalidate"
-
-# Configurações de segurança
-[build.processing]
-  skip_processing = false
-
-# Configuração de segurança para varreduras de segredos
-[context.production]
-  command = "npm run build:production"
-  [context.production.environment]
-    NODE_ENV = "production"
-    SECRETS_SCAN_ENABLED = "true"
-    SECRETS_SCAN_OMIT_PATHS = "node_modules/**,.netlify/**,.git/**,.github/**,.vscode/**,.husky/**,*.log,*.lock,package-lock.json,yarn.lock,.env.example,README.md,CONTRIBUTING.md"
-    SECRETS_SCAN_OMIT_KEYS = "NODE_ENV,PORT,LOG_LEVEL,LOG_FORMAT,EMAIL_SERVICE,ALLOWED_ORIGINS,ALLOWED_METHODS,ALLOWED_HEADERS"
-
-# Configuração para branches de desenvolvimento
-[context.deploy-preview]
-  command = "npm run build"
-  [context.deploy-preview.environment]
-    NODE_ENV = "development"
-    SECRETS_SCAN_ENABLED = "false"
-
-# Configuração para branches de feature
-[context.branch-deploy]
-  command = "npm run build"
-  [context.branch-deploy.environment]
-    NODE_ENV = "development"
-    SECRETS_SCAN_ENABLED = "false"
-
-# Configuração para ambiente de desenvolvimento local
-[dev]
-  command = "npm run dev:all"
-  targetPort = 3000
-  publish = "dist"
-  autoLaunch = false
-  framework = "#custom"
-
-# Configuração de build específica para o Netlify
-[build.lifecycle]
-  preBuild = "npm install"
-  postBuild = "npm run postbuild"
-
-# Configuração de funções serverless (se aplicável)
-[functions]
-  node_bundler = "esbuild"
-  external_node_modules = ["sharp", "better-sqlite3"]
+    Cache-Control = "no-cache"
