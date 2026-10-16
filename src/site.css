@@ -630,6 +630,7 @@ a:hover {
   color: var(--ink-2);
   font-weight: 600;
   pointer-events: none;
+  z-index: 1;
 }
 
 .money input {
@@ -910,6 +911,7 @@ a:hover {
 /* Tabela comparativa */
 .table-scroll {
   overflow-x: auto;
+  padding: 4px;
   border-radius: var(--radius-m);
   background: var(--surface);
   box-shadow: var(--shadow);
@@ -1261,6 +1263,10 @@ a:hover {
   line-height: 1.55;
 }
 
+.site-footer__legal > p {
+  max-width: 80ch;
+}
+
 .site-footer__legal .notice {
   display: flex;
   gap: 12px;
@@ -1322,7 +1328,6 @@ a:hover {
   color: var(--ink);
   border-radius: var(--radius-m);
   box-shadow: var(--shadow);
-  border: 1px solid var(--line);
   padding: 18px;
   display: grid;
   gap: 12px;
