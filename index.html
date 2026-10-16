@@ -105,71 +105,53 @@
               </li>
             </ul>
 
-          <form class="sim" id="sim" novalidate aria-labelledby="sim-title">
-            <h2 class="sim__title" id="sim-title">Simulação rápida</h2>
-            <fieldset class="sim__types">
-              <legend>Você é</legend>
-              <div class="chips">
-                <label class="chip"><input type="radio" name="tipo" value="inss" checked /><span>Aposentado ou pensionista do INSS</span></label>
-                <label class="chip"><input type="radio" name="tipo" value="servidor" /><span>Servidor público</span></label>
-                <label class="chip"><input type="radio" name="tipo" value="militar" /><span>Militar</span></label>
-                <label class="chip"><input type="radio" name="tipo" value="clt" /><span>Carteira assinada</span></label>
-                <label class="chip"><input type="radio" name="tipo" value="pessoal" /><span>Crédito pessoal</span></label>
-                <label class="chip"><input type="radio" name="tipo" value="fgts" /><span>Saque-aniversário FGTS</span></label>
-              </div>
-            </fieldset>
+          <!-- @simulador -->
+        </div>
+      </section>
 
-            <div class="sim__fields" data-mode="parcela">
-              <div class="field">
-                <label for="sim-valor">Quanto você precisa?</label>
-                <div class="money">
-                  <span aria-hidden="true">R$</span>
-                  <input id="sim-valor" name="valor" inputmode="numeric" autocomplete="off" value="5.000" aria-describedby="sim-valor-ajuda" />
-                </div>
-                <p class="field__help" id="sim-valor-ajuda">Digite em reais. Ex.: 5.000</p>
-              </div>
-              <div class="field">
-                <label for="sim-prazo">Em quantas parcelas?</label>
-                <select id="sim-prazo" name="prazo"></select>
-              </div>
-              <details class="sim__margem">
-                <summary>Conferir se a parcela cabe no benefício ou salário</summary>
-                <div class="field">
-                  <label for="sim-renda">Valor líquido que você recebe por mês</label>
-                  <div class="money">
-                    <span aria-hidden="true">R$</span>
-                    <input id="sim-renda" name="renda" inputmode="numeric" autocomplete="off" placeholder="0" />
-                  </div>
-                </div>
-              </details>
-            </div>
-
-            <div class="sim__fields" data-mode="fgts" hidden>
-              <div class="field">
-                <label for="sim-saldo">Saldo do seu FGTS</label>
-                <div class="money">
-                  <span aria-hidden="true">R$</span>
-                  <input id="sim-saldo" name="saldo" inputmode="numeric" autocomplete="off" value="3.000" aria-describedby="sim-saldo-ajuda" />
-                </div>
-                <p class="field__help" id="sim-saldo-ajuda">Você encontra o saldo no app FGTS.</p>
-              </div>
-            </div>
-
-            <div class="sim__result" aria-live="polite">
-              <p class="sim__result-label" id="sim-result-label">Parcela estimada</p>
-              <p class="sim__result-value" id="sim-result-value">R$ 0,00</p>
-              <p class="sim__result-detail" id="sim-result-detail"></p>
-              <p class="sim__alert" id="sim-alert" hidden></p>
-            </div>
-
-            <a class="btn btn--wa btn--block" id="sim-wa" href="https://wa.me/5512982827447" target="_blank" rel="noopener" data-wa="simulador">
-              <svg class="icon" aria-hidden="true"><use href="#i-wa" /></svg>
-              Enviar esta simulação no WhatsApp
-            </a>
-            <p class="sim__note" id="sim-note">
-              Estimativa sem IOF e seguros, com a taxa de referência indicada. A taxa, a parcela e o CET finais vêm da proposta do banco depois da análise.
-            </p>
-          </form>
+      <section class="changes" aria-labelledby="mudancas-title">
+        <div class="wrap">
+          <div class="changes__head">
+            <h2 id="mudancas-title">O que mudou no crédito em 2026</h2>
+            <p>Regras conferidas em 16 de outubro de 2026, com a fonte de cada uma nas páginas de cada crédito.</p>
+          </div>
+          <ol class="changes__list">
+            <li data-date="2026-05-04">
+              <a href="/consignado-inss/">
+                <time datetime="2026-05-04">04/05</time>
+                <strong>INSS em até 108 parcelas</strong>
+                <span>O prazo máximo do consignado do INSS passou de 96 para 108 meses.</span>
+              </a>
+            </li>
+            <li data-date="2026-05-19">
+              <a href="/artigos/golpes-no-consignado.html">
+                <time datetime="2026-05-19">19/05</time>
+                <strong>Biometria no Meu INSS</strong>
+                <span>Todo consignado novo do INSS precisa da sua confirmação com reconhecimento facial.</span>
+              </a>
+            </li>
+            <li data-date="2026-06-26">
+              <a href="/credito-do-trabalhador/">
+                <time datetime="2026-06-26">26/06</time>
+                <strong>CLT com garantia do FGTS</strong>
+                <span>No Crédito do Trabalhador com garantia do FGTS, os juros têm teto de 1,99% ao mês.</span>
+              </a>
+            </li>
+            <li data-date="2026-09-02">
+              <a href="/artigos/margem-consignavel-2026.html">
+                <time datetime="2026-09-02">02/09</time>
+                <strong>Margem do INSS volta a 45%</strong>
+                <span>Continuam 35% para empréstimos. Os cartões consignados seguem suspensos.</span>
+              </a>
+            </li>
+            <li data-date="2026-11-01">
+              <a href="/antecipacao-saque-aniversario-fgts/">
+                <time datetime="2026-11-01">01/11</time>
+                <strong>FGTS: antecipação cai para 3 anos</strong>
+                <span>Contratos assinados até 31/10 ainda podem incluir 5 saques anuais.</span>
+              </a>
+            </li>
+          </ol>
         </div>
       </section>
 
@@ -186,12 +168,13 @@
                 <p>Aposentados e pensionistas</p>
               </div>
               <dl class="product__facts">
-                <div><dt>Taxa máxima</dt><dd>1,85% ao mês no empréstimo e 2,46% ao mês no cartão</dd></div>
-                <div><dt>Margem</dt><dd>Até 45% do benefício: 35% para empréstimos e 10% para cartões</dd></div>
-                <div><dt>Prazo</dt><dd>Até 96 meses</dd></div>
+                <div><dt>Taxa máxima</dt><dd>1,85% ao mês no empréstimo</dd></div>
+                <div><dt>Margem</dt><dd>35% do benefício para empréstimos</dd></div>
+                <div><dt>Prazo</dt><dd>Até 108 meses desde maio de 2026</dd></div>
+                <div><dt>Confirmação</dt><dd>Biometria facial no Meu INSS</dd></div>
                 <div><dt>Documentos</dt><dd>RG, CPF e extrato do INSS</dd></div>
               </dl>
-              <p class="product__also">Contrato novo, refinanciamento e portabilidade. A parcela é descontada direto do benefício.</p>
+              <p class="product__also">Contrato novo, refinanciamento e portabilidade. Cartão consignado e cartão benefício estão com novas contratações suspensas. <a href="/consignado-inss/">Ver as regras de 2026</a></p>
               <div class="product__actions">
                 <button class="btn btn--primary" type="button" data-simular="inss">Simular</button>
                 <a class="btn btn--ghost" href="https://wa.me/5512982827447?text=Ol%C3%A1%21%20Quero%20saber%20mais%20sobre%20o%20consignado%20do%20INSS." target="_blank" rel="noopener" data-wa="servico-inss">Perguntar no WhatsApp</a>
@@ -204,11 +187,11 @@
               </div>
               <dl class="product__facts">
                 <div><dt>Taxa</dt><dd>Conforme convênio, órgão pagador e banco</dd></div>
-                <div><dt>Margem</dt><dd>Até 40% do salário líquido, conforme o convênio</dd></div>
-                <div><dt>Prazo</dt><dd>Até 96 meses</dd></div>
+                <div><dt>Margem</dt><dd>Federal: 35% para empréstimos. Estaduais e municipais: conforme o convênio</dd></div>
+                <div><dt>Prazo</dt><dd>Federal: até 120 meses. Demais: conforme o convênio</dd></div>
                 <div><dt>Documentos</dt><dd>RG, CPF e contracheque</dd></div>
               </dl>
-              <p class="product__also">Contrato novo, refinanciamento e portabilidade, com desconto em folha.</p>
+              <p class="product__also">Contrato novo, refinanciamento e portabilidade, com desconto em folha. <a href="/consignado-servidor-publico/">Ver as regras de 2026</a></p>
               <div class="product__actions">
                 <button class="btn btn--primary" type="button" data-simular="servidor">Simular</button>
                 <a class="btn btn--ghost" href="https://wa.me/5512982827447?text=Ol%C3%A1%21%20Sou%20servidor%20p%C3%BAblico%20e%20quero%20saber%20sobre%20o%20consignado." target="_blank" rel="noopener" data-wa="servico-servidor">Perguntar no WhatsApp</a>
@@ -221,11 +204,11 @@
               </div>
               <dl class="product__facts">
                 <div><dt>Taxa</dt><dd>Conforme convênio e banco</dd></div>
-                <div><dt>Margem</dt><dd>Até 40% do salário líquido, conforme o convênio</dd></div>
-                <div><dt>Prazo</dt><dd>Até 96 meses</dd></div>
+                <div><dt>Margem</dt><dd>Pela regra de cada Força, a partir da remuneração e dos descontos obrigatórios</dd></div>
+                <div><dt>Prazo</dt><dd>Conforme o convênio e o banco</dd></div>
                 <div><dt>Documentos</dt><dd>RG, CPF e contracheque</dd></div>
               </dl>
-              <p class="product__also">Contrato novo, refinanciamento e portabilidade.</p>
+              <p class="product__also">Ativa, reserva, reformados e pensionistas. <a href="/consignado-militar/">Ver como a margem é calculada</a></p>
               <div class="product__actions">
                 <button class="btn btn--primary" type="button" data-simular="militar">Simular</button>
                 <a class="btn btn--ghost" href="https://wa.me/5512982827447?text=Ol%C3%A1%21%20Sou%20militar%20e%20quero%20saber%20sobre%20o%20consignado." target="_blank" rel="noopener" data-wa="servico-militar">Perguntar no WhatsApp</a>
@@ -238,10 +221,11 @@
               </div>
               <dl class="product__facts">
                 <div><dt>Como funciona</dt><dd>Consignado privado, com desconto em folha</dd></div>
-                <div><dt>Taxa e prazo</dt><dd>Conforme o vínculo e a instituição habilitada</dd></div>
+                <div><dt>Margem</dt><dd>Até 35% do salário</dd></div>
+                <div><dt>Com garantia do FGTS</dt><dd>Juros de até 1,99% ao mês desde junho de 2026</dd></div>
                 <div><dt>Documentos</dt><dd>RG, CPF, dados do vínculo e autorização de consulta</dd></div>
               </dl>
-              <p class="product__also">Costuma sair mais barato que cartão de crédito e cheque especial. Pode servir para trocar uma dívida cara.</p>
+              <p class="product__also">Costuma sair mais barato que cartão de crédito e cheque especial. <a href="/credito-do-trabalhador/">Ver as regras de 2026</a></p>
               <div class="product__actions">
                 <button class="btn btn--primary" type="button" data-simular="clt">Simular</button>
                 <a class="btn btn--ghost" href="https://wa.me/5512982827447?text=Ol%C3%A1%21%20Tenho%20carteira%20assinada%20e%20quero%20saber%20sobre%20o%20Cr%C3%A9dito%20do%20Trabalhador." target="_blank" rel="noopener" data-wa="servico-clt">Perguntar no WhatsApp</a>
@@ -258,6 +242,7 @@
                 <div><dt>Taxa</dt><dd>Varia por banco, perfil e garantia. Compare sempre o CET.</dd></div>
                 <div><dt>Documentos</dt><dd>RG, CPF, comprovante de residência e de renda</dd></div>
               </dl>
+              <p class="product__also"><a href="/credito-pessoal/">Quando vale a pena</a></p>
               <div class="product__actions">
                 <button class="btn btn--primary" type="button" data-simular="pessoal">Simular</button>
                 <a class="btn btn--ghost" href="https://wa.me/5512982827447?text=Ol%C3%A1%21%20Quero%20saber%20sobre%20cr%C3%A9dito%20pessoal." target="_blank" rel="noopener" data-wa="servico-pessoal">Perguntar no WhatsApp</a>
@@ -274,6 +259,7 @@
                 <div><dt>Parcelas</dt><dd>Nenhuma. O pagamento sai do próprio FGTS.</dd></div>
                 <div><dt>Documentos</dt><dd>RG e CPF</dd></div>
               </dl>
+              <p class="product__also">Contratos feitos até 31/10 ainda podem antecipar 5 anos. <a href="/antecipacao-saque-aniversario-fgts/">Ver o que muda</a></p>
               <div class="product__actions">
                 <button class="btn btn--primary" type="button" data-simular="fgts">Simular</button>
                 <a class="btn btn--ghost" href="https://wa.me/5512982827447?text=Ol%C3%A1%21%20Quero%20antecipar%20o%20saque-anivers%C3%A1rio%20do%20FGTS." target="_blank" rel="noopener" data-wa="servico-fgts">Perguntar no WhatsApp</a>
@@ -313,42 +299,9 @@
             <p>
               A portabilidade leva sua dívida para um banco com taxa menor. Informe o que você paga hoje e a taxa da nova proposta para ver a diferença.
             </p>
+            <p><a href="/portabilidade-de-consignado/">Como funciona a portabilidade, passo a passo</a></p>
           </div>
-          <form class="calc" id="port" novalidate>
-            <div class="calc__grid">
-              <div class="field">
-                <label for="port-parcela">Parcela atual</label>
-                <div class="money"><span aria-hidden="true">R$</span><input id="port-parcela" inputmode="numeric" autocomplete="off" value="350" /></div>
-              </div>
-              <div class="field">
-                <label for="port-restantes">Parcelas que faltam</label>
-                <input id="port-restantes" type="number" inputmode="numeric" min="1" max="96" value="60" />
-              </div>
-              <div class="field">
-                <label for="port-taxa">Taxa atual (% ao mês)</label>
-                <input id="port-taxa" inputmode="decimal" autocomplete="off" value="1,85" aria-describedby="port-taxa-ajuda" />
-                <p class="field__help" id="port-taxa-ajuda">Está no contrato ou no extrato do INSS.</p>
-              </div>
-              <div class="field">
-                <label for="port-nova">Taxa da nova proposta (% ao mês)</label>
-                <input id="port-nova" inputmode="decimal" autocomplete="off" value="1,60" aria-describedby="port-nova-ajuda" />
-                <p class="field__help" id="port-nova-ajuda">Valor de exemplo. Mude para comparar.</p>
-              </div>
-            </div>
-            <div class="calc__result" aria-live="polite">
-              <dl>
-                <div><dt>Saldo devedor estimado</dt><dd id="port-saldo">R$ 0,00</dd></div>
-                <div><dt>Nova parcela</dt><dd id="port-nova-parcela">R$ 0,00</dd></div>
-                <div class="calc__hi"><dt>Economia por mês</dt><dd id="port-economia">R$ 0,00</dd></div>
-                <div><dt>Economia até o fim</dt><dd id="port-total">R$ 0,00</dd></div>
-              </dl>
-              <p class="sim__alert" id="port-alert" hidden></p>
-              <a class="btn btn--wa" id="port-wa" href="https://wa.me/5512982827447" target="_blank" rel="noopener" data-wa="portabilidade">
-                <svg class="icon" aria-hidden="true"><use href="#i-wa" /></svg>
-                Pedir uma proposta de portabilidade
-              </a>
-            </div>
-          </form>
+          <!-- @portabilidade -->
         </div>
       </section>
 
@@ -356,7 +309,7 @@
         <div class="wrap">
           <div class="section__head">
             <h2 id="comp-title">As modalidades lado a lado</h2>
-            <p>Regras gerais de 2026. As condições exatas dependem do convênio e do banco.</p>
+            <p>Regras conferidas em 16 de outubro de 2026. As condições exatas dependem do convênio e do banco.</p>
           </div>
           <div class="table-scroll" tabindex="0" role="region" aria-labelledby="comp-title">
             <table class="compare">
@@ -370,9 +323,9 @@
                 </tr>
               </thead>
               <tbody>
-                <tr><th scope="row">Juros</th><td>Até 1,85% ao mês</td><td>Conforme instituição habilitada</td><td>Varia por perfil, veja o CET</td><td>Varia por instituição, veja o CET</td></tr>
-                <tr><th scope="row">Limite</th><td>Margem de 45%</td><td>Conforme vínculo e folha</td><td>Análise de renda</td><td>Saldo do FGTS</td></tr>
-                <tr><th scope="row">Prazo</th><td>Até 96 meses</td><td>Conforme proposta</td><td>Até 60 meses</td><td>Até 5 saques anuais (3 a partir de 01/11/2026)</td></tr>
+                <tr><th scope="row">Juros</th><td>Até 1,85% ao mês</td><td>Até 1,99% ao mês com garantia do FGTS; sem ela, conforme o banco</td><td>Varia por perfil, veja o CET</td><td>Varia por instituição, veja o CET</td></tr>
+                <tr><th scope="row">Limite</th><td>35% do benefício para empréstimos</td><td>35% do salário</td><td>Análise de renda</td><td>Saldo do FGTS</td></tr>
+                <tr><th scope="row">Prazo</th><td>Até 108 meses</td><td>Conforme proposta</td><td>Até 60 meses</td><td>Até 5 saques anuais (3 a partir de 01/11/2026)</td></tr>
                 <tr><th scope="row">Valor mínimo</th><td>R$ 100</td><td>Conforme instituição</td><td>R$ 500</td><td>R$ 100 por saque</td></tr>
                 <tr><th scope="row">Documentos</th><td>RG, CPF, comprovante de residência e extrato do INSS</td><td>RG, CPF, vínculo e autorização de consulta</td><td>RG, CPF, comprovante de residência e de renda</td><td>RG, CPF e extrato do FGTS</td></tr>
               </tbody>
@@ -417,22 +370,23 @@
             <p>Guias curtos sobre as dúvidas que mais aparecem na loja.</p>
           </div>
           <div class="articles">
+            <a class="article-card" href="/artigos/consignado-inss-2026-o-que-mudou.html">
+              <picture><source srcset="/img/capa-consignado-inss-2026-o-que-mudou-800.webp" type="image/webp" /><img src="/img/capa-consignado-inss-2026-o-que-mudou.jpg" alt="" width="800" height="420" loading="lazy" /></picture>
+              <h3>Consignado INSS: o que mudou em 2026</h3>
+              <p>108 parcelas, biometria, margem de 45% e cartões suspensos.</p>
+            </a>
             <a class="article-card" href="/artigos/saque-aniversario-fgts-2026.html">
               <picture><source srcset="/img/capa-fgts-800.webp" type="image/webp" /><img src="/img/capa-fgts.jpg" alt="" width="800" height="420" loading="lazy" /></picture>
-              <h3>Saque-aniversário do FGTS em 2026</h3>
-              <p>Quanto dá para antecipar e o que muda em 1º de novembro.</p>
+              <h3>Saque-aniversário: o que muda em 1º de novembro</h3>
+              <p>Antecipação cai de 5 para 3 anos em contratos novos.</p>
             </a>
-            <a class="article-card" href="/artigos/emprestimo-consignado-vs-credito-pessoal.html">
-              <picture><source srcset="/img/capa-comparativo-800.webp" type="image/webp" /><img src="/img/capa-comparativo.jpg" alt="" width="800" height="420" loading="lazy" /></picture>
-              <h3>Consignado ou crédito pessoal?</h3>
-              <p>Taxas, prazos e riscos para escolher sem pressa.</p>
-            </a>
-            <a class="article-card" href="/artigos/como-sair-das-dividas-2026.html">
-              <picture><source srcset="/img/capa-dividas-800.webp" type="image/webp" /><img src="/img/capa-dividas.jpg" alt="" width="800" height="420" loading="lazy" /></picture>
-              <h3>Como sair das dívidas em 2026</h3>
-              <p>Um passo a passo para organizar as contas e reduzir os juros.</p>
+            <a class="article-card" href="/artigos/credito-do-trabalhador-garantia-fgts.html">
+              <picture><source srcset="/img/capa-credito-do-trabalhador-garantia-fgts-800.webp" type="image/webp" /><img src="/img/capa-credito-do-trabalhador-garantia-fgts.jpg" alt="" width="800" height="420" loading="lazy" /></picture>
+              <h3>Consignado CLT com garantia do FGTS</h3>
+              <p>Juros de até 1,99% ao mês. Veja quem pode usar e o que fica de garantia.</p>
             </a>
           </div>
+          <p class="articles__more"><a href="/artigos/">Ver os 8 artigos</a></p>
         </div>
       </section>
 
@@ -457,7 +411,19 @@
             </details>
             <details>
               <summary>Qual é a taxa de juros do consignado do INSS hoje?</summary>
-              <p>O teto é de 1,85% ao mês no empréstimo e de 2,46% ao mês no cartão consignado e no cartão benefício, conforme decisão do Conselho Nacional de Previdência Social. Para servidores, militares, Crédito do Trabalhador, crédito pessoal e FGTS, a taxa depende do convênio, do banco e do seu perfil. Compare sempre o CET da proposta.</p>
+              <p>O teto é de 1,85% ao mês no empréstimo, definido pelo Conselho Nacional de Previdência Social e mantido pelo STF em 2026. Novas contratações de cartão consignado e cartão benefício estão suspensas desde maio de 2026. Para servidores, militares, Crédito do Trabalhador, crédito pessoal e FGTS, a taxa depende do convênio, do banco e do seu perfil. Compare sempre o CET da proposta.</p>
+            </details>
+            <details>
+              <summary>Em quantas parcelas posso pagar o consignado do INSS?</summary>
+              <p>Em até 108 parcelas, desde maio de 2026, pela Instrução Normativa PRES/INSS 204. Antes o limite era de 96. Mais parcelas deixam a prestação menor, mas o total pago fica maior. O banco também pode dar até 90 dias de carência para a primeira parcela.</p>
+            </details>
+            <details>
+              <summary>Por que agora preciso fazer biometria no Meu INSS?</summary>
+              <p>Desde 19 de maio de 2026, todo consignado novo do INSS precisa ser confirmado pelo próprio aposentado com reconhecimento facial no aplicativo Meu INSS, pela Lei 15.327/2026. Sem essa confirmação o contrato não vale. Na loja, a gente ajuda você a fazer pelo celular.</p>
+            </details>
+            <details>
+              <summary>Qual é a margem consignável em 2026?</summary>
+              <p>No INSS, a margem total voltou a 45% do benefício em setembro de 2026: 35% para empréstimos e 5% para cada cartão, que estão com novas contratações suspensas. No Crédito do Trabalhador, até 35% do salário. Para servidores e militares, depende do órgão e do convênio. <a href="/artigos/margem-consignavel-2026.html">Veja o guia completo</a>.</p>
             </details>
             <details>
               <summary>Preciso informar meu CPF para simular?</summary>
@@ -469,7 +435,7 @@
             </details>
             <details>
               <summary>Como funciona a antecipação do saque-aniversário do FGTS?</summary>
-              <p>Você recebe hoje o valor de saques anuais futuros, e o banco recebe esses saques direto do FGTS. Até 31/10/2026 é possível antecipar até 5 anos; a partir de 01/11/2026, até 3. Cada saque antecipado fica entre R$ 100 e R$ 500, e o saldo correspondente fica bloqueado até o pagamento.</p>
+              <p>Você recebe hoje o valor de saques anuais futuros, e o banco recebe esses saques direto do FGTS. Contratos feitos até 31/10/2026 podem antecipar até 5 anos; a partir de 01/11/2026, até 3, pela Resolução CCFGTS 1.130/2025. Cada saque antecipado fica entre R$ 100 e R$ 500, e o saldo correspondente fica bloqueado até o pagamento.</p>
             </details>
             <details>
               <summary>Posso fazer portabilidade e ainda pegar um valor extra?</summary>

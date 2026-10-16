@@ -331,3 +331,19 @@ devspace.yaml
 
 # Arquivos de cache do Okteto
 okteto.yml
+
+# Páginas geradas por scripts/gerar.mjs a partir de content/ (o build gera de novo)
+/consignado-inss/
+/consignado-servidor-publico/
+/consignado-militar/
+/credito-do-trabalhador/
+/antecipacao-saque-aniversario-fgts/
+/portabilidade-de-consignado/
+/credito-pessoal/
+/emprestimo-consignado-lorena/
+/artigos/index.html
+/artigos/consignado-inss-2026-o-que-mudou.html
+/artigos/margem-consignavel-2026.html
+/artigos/credito-do-trabalhador-garantia-fgts.html
+/artigos/golpes-no-consignado.html
+/artigos/portabilidade-de-consignado-passo-a-passo.html

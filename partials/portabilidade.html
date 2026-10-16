@@ -1,0 +1,35 @@
+<form class="calc" id="port" novalidate>
+            <div class="calc__grid">
+              <div class="field">
+                <label for="port-parcela">Parcela atual</label>
+                <div class="money"><span aria-hidden="true">R$</span><input id="port-parcela" inputmode="numeric" autocomplete="off" value="350" /></div>
+              </div>
+              <div class="field">
+                <label for="port-restantes">Parcelas que faltam</label>
+                <input id="port-restantes" type="number" inputmode="numeric" min="1" max="120" value="60" />
+              </div>
+              <div class="field">
+                <label for="port-taxa">Taxa atual (% ao mês)</label>
+                <input id="port-taxa" inputmode="decimal" autocomplete="off" value="1,85" aria-describedby="port-taxa-ajuda" />
+                <p class="field__help" id="port-taxa-ajuda">Está no contrato ou no extrato do INSS.</p>
+              </div>
+              <div class="field">
+                <label for="port-nova">Taxa da nova proposta (% ao mês)</label>
+                <input id="port-nova" inputmode="decimal" autocomplete="off" value="1,60" aria-describedby="port-nova-ajuda" />
+                <p class="field__help" id="port-nova-ajuda">Valor de exemplo. Mude para comparar.</p>
+              </div>
+            </div>
+            <div class="calc__result" aria-live="polite">
+              <dl>
+                <div><dt>Saldo devedor estimado</dt><dd id="port-saldo">R$ 0,00</dd></div>
+                <div><dt>Nova parcela</dt><dd id="port-nova-parcela">R$ 0,00</dd></div>
+                <div class="calc__hi"><dt>Economia por mês</dt><dd id="port-economia">R$ 0,00</dd></div>
+                <div><dt>Economia até o fim</dt><dd id="port-total">R$ 0,00</dd></div>
+              </dl>
+              <p class="sim__alert" id="port-alert" hidden></p>
+              <a class="btn btn--wa" id="port-wa" href="https://wa.me/5512982827447" target="_blank" rel="noopener" data-wa="portabilidade">
+                <svg class="icon" aria-hidden="true"><use href="#i-wa" /></svg>
+                Pedir uma proposta de portabilidade
+              </a>
+            </div>
+          </form>

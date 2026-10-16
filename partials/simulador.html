@@ -1,0 +1,65 @@
+<form class="sim" id="sim" novalidate aria-labelledby="sim-title">
+            <h2 class="sim__title" id="sim-title">Simulação rápida</h2>
+            <fieldset class="sim__types">
+              <legend>Você é</legend>
+              <div class="chips">
+                <label class="chip"><input type="radio" name="tipo" value="inss" checked /><span>Aposentado ou pensionista do INSS</span></label>
+                <label class="chip"><input type="radio" name="tipo" value="servidor" /><span>Servidor público</span></label>
+                <label class="chip"><input type="radio" name="tipo" value="militar" /><span>Militar</span></label>
+                <label class="chip"><input type="radio" name="tipo" value="clt" /><span>Carteira assinada</span></label>
+                <label class="chip"><input type="radio" name="tipo" value="pessoal" /><span>Crédito pessoal</span></label>
+                <label class="chip"><input type="radio" name="tipo" value="fgts" /><span>Saque-aniversário FGTS</span></label>
+              </div>
+            </fieldset>
+
+            <div class="sim__fields" data-mode="parcela">
+              <div class="field">
+                <label for="sim-valor">Quanto você precisa?</label>
+                <div class="money">
+                  <span aria-hidden="true">R$</span>
+                  <input id="sim-valor" name="valor" inputmode="numeric" autocomplete="off" value="5.000" aria-describedby="sim-valor-ajuda" />
+                </div>
+                <p class="field__help" id="sim-valor-ajuda">Digite em reais. Ex.: 5.000</p>
+              </div>
+              <div class="field">
+                <label for="sim-prazo">Em quantas parcelas?</label>
+                <select id="sim-prazo" name="prazo"></select>
+              </div>
+              <details class="sim__margem">
+                <summary>Conferir se a parcela cabe no benefício ou salário</summary>
+                <div class="field">
+                  <label for="sim-renda">Valor líquido que você recebe por mês</label>
+                  <div class="money">
+                    <span aria-hidden="true">R$</span>
+                    <input id="sim-renda" name="renda" inputmode="numeric" autocomplete="off" placeholder="0" />
+                  </div>
+                </div>
+              </details>
+            </div>
+
+            <div class="sim__fields" data-mode="fgts" hidden>
+              <div class="field">
+                <label for="sim-saldo">Saldo do seu FGTS</label>
+                <div class="money">
+                  <span aria-hidden="true">R$</span>
+                  <input id="sim-saldo" name="saldo" inputmode="numeric" autocomplete="off" value="3.000" aria-describedby="sim-saldo-ajuda" />
+                </div>
+                <p class="field__help" id="sim-saldo-ajuda">Você encontra o saldo no app FGTS.</p>
+              </div>
+            </div>
+
+            <div class="sim__result" aria-live="polite">
+              <p class="sim__result-label" id="sim-result-label">Parcela estimada</p>
+              <p class="sim__result-value" id="sim-result-value">R$ 0,00</p>
+              <p class="sim__result-detail" id="sim-result-detail"></p>
+              <p class="sim__alert" id="sim-alert" hidden></p>
+            </div>
+
+            <a class="btn btn--wa btn--block" id="sim-wa" href="https://wa.me/5512982827447" target="_blank" rel="noopener" data-wa="simulador">
+              <svg class="icon" aria-hidden="true"><use href="#i-wa" /></svg>
+              Enviar esta simulação no WhatsApp
+            </a>
+            <p class="sim__note" id="sim-note">
+              Estimativa sem IOF e seguros, com a taxa de referência indicada. A taxa, a parcela e o CET finais vêm da proposta do banco depois da análise.
+            </p>
+          </form>

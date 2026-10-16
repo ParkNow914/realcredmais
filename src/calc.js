@@ -2,10 +2,12 @@
 
 // Taxas de referência para simulação (% ao mês). INSS usa o teto do CNPS; as demais são
 // as referências que a RealCred+ já usava no site, porque a taxa real depende do convênio.
+// Prazos de 2026: INSS 108 (IN PRES/INSS 204), SIAPE 120 (Decreto 12.957). Margem de militar
+// segue a regra de cada Força, por isso o simulador não confere a renda nesse caso.
 export const PRODUTOS = {
-  inss: { nome: 'Consignado INSS', taxa: 1.85, prazoMax: 96, margem: 0.35, taxaTexto: 'teto do INSS' },
-  servidor: { nome: 'Consignado de servidor público', taxa: 3.55, prazoMax: 96, margem: 0.4, taxaTexto: 'taxa de referência' },
-  militar: { nome: 'Consignado de militar', taxa: 3.45, prazoMax: 96, margem: 0.4, taxaTexto: 'taxa de referência' },
+  inss: { nome: 'Consignado INSS', taxa: 1.85, prazoMax: 108, margem: 0.35, taxaTexto: 'teto do INSS' },
+  servidor: { nome: 'Consignado de servidor público', taxa: 3.55, prazoMax: 120, margem: 0.35, taxaTexto: 'taxa de referência' },
+  militar: { nome: 'Consignado de militar', taxa: 3.45, prazoMax: 96, margem: null, taxaTexto: 'taxa de referência' },
   clt: { nome: 'Crédito do Trabalhador', taxa: 4.0, prazoMax: 84, margem: 0.35, taxaTexto: 'taxa de referência' },
   pessoal: { nome: 'Crédito pessoal', taxa: 6.5, prazoMax: 60, margem: null, taxaTexto: 'taxa de referência' },
   fgts: { nome: 'Antecipação do saque-aniversário do FGTS', taxa: 1.8, taxaTexto: 'taxa de referência' },

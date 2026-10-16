@@ -5,8 +5,10 @@
   "description": "Site da RealCred+ (Lorena, SP): simulador de consignado no navegador, contato pelo WhatsApp e Netlify Forms.",
   "type": "module",
   "scripts": {
-    "dev": "vite --host --port 3000",
-    "build": "vite build",
+    "dev": "node scripts/gerar.mjs && vite --host --port 3000",
+    "build": "node scripts/gerar.mjs && vite build",
+    "gerar": "node scripts/gerar.mjs",
+    "indexnow": "node scripts/indexnow.mjs",
     "preview": "vite preview --port 4173",
     "test": "node --test tests/calc.test.js",
     "lint": "eslint .",

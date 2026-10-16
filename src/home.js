@@ -53,6 +53,33 @@ function iniciarSimulador() {
     campoPrazo.value = String(escolhido);
   }
 
+  // O número corre do valor anterior até o novo em 320 ms. Com movimento reduzido, troca direto.
+  const semMovimento = window.matchMedia('(prefers-reduced-motion: reduce)');
+  let valorAtual = 0;
+  let quadro = 0;
+  function mostrarValor(alvo) {
+    cancelAnimationFrame(quadro);
+    const inicio = valorAtual;
+    valorAtual = alvo;
+    if (semMovimento.matches || !Number.isFinite(inicio) || Math.abs(alvo - inicio) < 1) {
+      valorTela.textContent = brl(alvo);
+      valorTela.closest('[aria-live]')?.setAttribute('aria-busy', 'false');
+      return;
+    }
+    // aria-busy evita que o leitor de tela anuncie os números intermediários.
+    const caixa = valorTela.closest('[aria-live]');
+    caixa?.setAttribute('aria-busy', 'true');
+    const t0 = performance.now();
+    const passo = (agora) => {
+      const t = Math.min(1, (agora - t0) / 320);
+      const k = 1 - Math.pow(1 - t, 3);
+      valorTela.textContent = brl(inicio + (alvo - inicio) * k);
+      if (t < 1) quadro = requestAnimationFrame(passo);
+      else caixa?.setAttribute('aria-busy', 'false');
+    };
+    quadro = requestAnimationFrame(passo);
+  }
+
   function mostrarAlerta(texto) {
     alerta.textContent = texto;
     alerta.hidden = !texto;
@@ -69,7 +96,7 @@ function iniciarSimulador() {
       const saldo = lerNumero(campoSaldo.value);
       const r = antecipacaoFgts(saldo);
       rotulo.textContent = 'Você recebe cerca de';
-      valorTela.textContent = brl(r.recebe);
+      mostrarValor(r.recebe);
       if (!r.saques.length) {
         detalhe.textContent = '';
         mostrarAlerta('Com esse saldo, o saque anual fica abaixo de R$ 100 e não dá para antecipar.');
@@ -92,7 +119,7 @@ function iniciarSimulador() {
     const meses = Number(campoPrazo.value);
     const p = parcela(valor, produto.taxa, meses);
     rotulo.textContent = 'Parcela estimada';
-    valorTela.textContent = brl(p);
+    mostrarValor(p);
     detalhe.textContent = valor
       ? `${meses} parcelas para ${brl(valor)}, com ${pct(produto.taxa)} ao mês (${produto.taxaTexto}). Total aproximado: ${brl(p * meses)}.`
       : 'Informe o valor para ver a parcela.';
@@ -145,6 +172,10 @@ function iniciarSimulador() {
     });
   });
 
+  // Nas páginas de produto, o simulador já abre no produto da página.
+  const presetado = form.querySelector(`input[name="tipo"][value="${document.body.dataset.produto || ''}"]`);
+  if (presetado) presetado.checked = true;
+
   preencherPrazos(tipoAtual());
   calcular();
 }
@@ -159,7 +190,7 @@ function iniciarPortabilidade() {
 
   function calcular() {
     const parcelaAtual = lerNumero($('port-parcela').value);
-    const restantes = Math.min(96, Math.max(0, Math.round(lerNumero($('port-restantes').value))));
+    const restantes = Math.min(120, Math.max(0, Math.round(lerNumero($('port-restantes').value))));
     const taxaAtual = lerNumero($('port-taxa').value);
     const taxaNova = lerNumero($('port-nova').value);
 

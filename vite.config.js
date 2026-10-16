@@ -1,6 +1,6 @@
 import { defineConfig } from 'vite';
-import { readFileSync } from 'node:fs';
-import { resolve } from 'node:path';
+import { readFileSync, readdirSync } from 'node:fs';
+import { relative, resolve, sep } from 'node:path';
 
 const root = import.meta.dirname;
 
@@ -22,7 +22,21 @@ const partials = {
   },
 };
 
-const page = (path) => resolve(root, path);
+// Toda página .html do projeto vira uma entrada do build, inclusive as geradas por
+// scripts/gerar.mjs (páginas de produto, Lorena e artigos).
+const IGNORAR = new Set(['node_modules', 'dist', 'partials', 'public', '.git', 'content', 'scripts', 'tests']);
+function paginas(dir = root, lista = {}) {
+  for (const item of readdirSync(dir, { withFileTypes: true })) {
+    if (IGNORAR.has(item.name)) continue;
+    const caminho = resolve(dir, item.name);
+    if (item.isDirectory()) paginas(caminho, lista);
+    else if (item.name.endsWith('.html')) {
+      const nome = relative(root, caminho).split(sep).join('/').replace(/\.html$/, '').replace(/[/.]/g, '_');
+      lista[nome] = caminho;
+    }
+  }
+  return lista;
+}
 
 export default defineConfig({
   plugins: [partials],
@@ -30,15 +44,7 @@ export default defineConfig({
     outDir: 'dist',
     emptyOutDir: true,
     rollupOptions: {
-      input: {
-        home: page('index.html'),
-        notFound: page('404.html'),
-        privacidade: page('privacy-policy.html'),
-        termos: page('terms-of-use.html'),
-        dividas: page('artigos/como-sair-das-dividas-2026.html'),
-        comparativo: page('artigos/emprestimo-consignado-vs-credito-pessoal.html'),
-        fgts: page('artigos/saque-aniversario-fgts-2026.html'),
-      },
+      input: paginas(),
       output: {
         entryFileNames: 'assets/[name].[hash].js',
         chunkFileNames: 'assets/[name].[hash].js',
