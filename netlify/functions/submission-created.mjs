@@ -21,7 +21,8 @@ export const handler = async (event) => {
   }
   if (payload.form_name !== 'contato') return { statusCode: 200, body: 'ignorado' };
 
-  const senha = process.env.GMAIL_APP_PASSWORD;
+  // O Google mostra a senha de app em blocos com espaço; aceita das duas formas.
+  const senha = (process.env.GMAIL_APP_PASSWORD || '').replace(/\s+/g, '');
   if (!senha) {
     console.warn('GMAIL_APP_PASSWORD não configurada; e-mail personalizado não enviado.');
     return { statusCode: 200, body: 'sem senha' };
