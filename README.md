@@ -54,4 +54,6 @@ Depois de publicar, `npm run indexnow` avisa Bing e os outros buscadores do Inde
 
 ## Receber o formulário por e-mail
 
-Cada mensagem do formulário `contato` vai para operacional@realcredmais.com.br (Netlify, Forms, Form notifications). Para trocar o e-mail, edite a notificação nesse mesmo lugar.
+Cada mensagem do formulário `contato` vira um e-mail com o visual do site para operacional@realcredmais.com.br. Quem envia é a função `netlify/functions/submission-created.mjs`, que o Netlify chama sozinho depois do filtro de spam, usando a conta do Google Workspace da RealCred+. O modelo do e-mail fica em `emails/lead.mjs`.
+
+A função precisa da variável `GMAIL_APP_PASSWORD` no Netlify (senha de app de operacional@, marcada como secreta). Sem ela, a função não envia nada e só o aviso simples do Netlify chega (Forms, Form notifications).

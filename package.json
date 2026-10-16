@@ -10,7 +10,7 @@
     "gerar": "node scripts/gerar.mjs",
     "indexnow": "node scripts/indexnow.mjs",
     "preview": "vite preview --port 4173",
-    "test": "node --test tests/calc.test.js",
+    "test": "node --test tests/calc.test.js tests/email.test.js",
     "lint": "eslint .",
     "format": "prettier --write \"**/*.{js,json,html,css}\""
   },
@@ -26,5 +26,8 @@
   },
   "engines": {
     "node": ">=20.19"
+  },
+  "dependencies": {
+    "nodemailer": "10.0.13"
   }
 }
